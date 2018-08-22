@@ -1,0 +1,102 @@
+% IEEEAerospace2012.cls requires the following packages: times, rawfonts, oldfont, geometry
+\documentclass[twocolumn,letterpaper]{IEEEAerospaceCLS}  % only supports two-column, letterpaper format
+
+% The next line gives some packages you may find useful for your paper--these are not required though.
+%\usepackage[]{graphicx,float,latexsym,amssymb,amsfonts,amsmath,amstext,times,psfig}
+% NOTE: The .cls file is now compatible with amsmath!!!
+
+\usepackage[]{graphicx}    % We use this package in this document
+\newcommand{\ignore}[1]{}  % {} empty inside = %% comment
+
+\begin{document}
+\title{Planetary Rover Simulation for Lunar Exploration Missions}
+
+\author{%
+}
+
+\maketitle
+
+\thispagestyle{plain}
+\pagestyle{plain}
+
+\maketitle
+
+\thispagestyle{plain}
+\pagestyle{plain}
+
+\begin{abstract}
+
+Put abstract here.
+
+\end{abstract}
+
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+- Resource Prospector Background
+  - High level overview of mission objectives
+  - Differences to Mars ops
+  - High level concept of operations
+  - High level software architecture
+    - flight/ground software split
+- Simulator goals / overview
+  - Development approach
+    - create driving sim as fast as possible
+      - development/refinement of conops
+    - prototype mission software architecture with stubs and existing components
+    - use sim-generated data for flight software development
+      - flight software -> Gazebo
+      - Gazebo & ROS output -> nav & localization
+    - incrementatlly replace stubs and emulated components with flight versions
+    - use for training
+- Synthetic Terrain Generation
+- Lunar Visual Environment
+  - Gazebo terrain enhancements
+    - LOD
+    - backround tiles
+  - Shadows
+    - real time shadow challenges 
+    - baked shadows
+    - Gazebo shadow improvements
+  - GLSL shader
+  - Wheel tracks
+  - Ephemeris
+  - HDR
+    - Earthshine, bounced light
+    - high bit depth rendering in Gazebo
+    - PBR indirect lighting experiment 
+    - attempt to reproduce in GLSL 
+- Vehicle simulation
+  - Use existing, similar robots to emulate 
+    - Husky
+    - KRex2
+  - Flight software integration with Gazebo
+  - Wheel slip plugin
+    - first order approximation
+    - fault injection
+- Flight Software Prototype
+  - flight/ground split
+  - emulation with ROS components
+  - Ops software
+    - WARP
+    - VERVE
+  - Science sim and software
+- Driving ConOps Experiments
+- Results
+  - visual odometry
+  - lunar illumination comparison 
+  - wheel slip results
+  
+
+
+
+
+
+
+
+
