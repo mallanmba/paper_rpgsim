@@ -104,12 +104,41 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
 
   
   
-Synthetic Terrain Generation
+\section{Synthetic Terrain Generation}
 
 To produce a viable lunar driving experience the simulated world must be representative of the target physical environment. Specifically, the morphology of the terrain should accuarately represent terrain features that would be considered either positive or negative obstacles for the rover. Although DEMs are available for much of the lunar surface, the resolution of these models are not sufficient to represent rover-scale hazards. To make matters worse, the best resolution lunar DEMs are generated from stereo orbital imagery, yet the reference mission was targeting areas with permanently shadowed regions. 
 
 Because the reference mission defined rocks larger than 10-25cm as positive obstacles, we desired a terrain resolution of 5cm or greater. Given that 5cm resolution is well beyond available lunar DEMs, we developed tools to artificially increase resolution using established techniques {parkes2004planet}. 
 
+
+\section{Lunar Visual Environment}
+some text
+
+\subsection{Shadows}
+Shadow rendering provides countless challenges and has been under continuous development since the advent of computer graphics. Like most aspects of real-time computer graphics, a good solution involves finding a set of approximations that work well for you particular problem. Our problem was to render shadows that would appear as realistic as possible from the perspective of our rover's cameras. And, since one of our simulation goals was exploration of polar regions, we needed a shadow solution that would support low illumination angles (e.g. the sun close to the horizon).
+
+For our purposes, we were only concerned with shadows cast by the sun. On a rover, any lights would necessarily be mounted close to the rover's cameras, so the shadows they cast would be mostly hidden from view.
+
+The dominant real-time shadow technique and the one we used is called shadow mapping. It involves rendering a texture map that contains the depth of objects in a scene from the point-of-view of a light source and then comparing these depths with object positions when rendering the scene from the user's point-of-view. These comparisons reveal which surfaces are illuminated by the light and which are in shadow. There are other shadow techniques, but shadow mapping provides a popular combination of speed and flexibility.
+
+\subsubsection{Real-time Shadow Challenges}
+One common challenge related to shadow mapping is providing an appropriate amount of shadow map resolution in every part of a scene. Ideally, shadow detail decreases with distance from the user's point of view such that there is a unique shadow map texel for every pixel in the final image. In a small scene (e.g. indoors) a uniform distribution of shadow resolution can work well enough. However, when rendering a landscape out to the horizon, a uniform distribution of shadow resolution is impractical from the standpoint of memory consumption.
+
+A related challenge stems from the relationship of the light ray direction compared to the user's view direction. When these directions are close to parallel, as is often the case in our simulation because the sun is close to the horizon, it becomes difficult to make a good distribution of shadow resolution. This is known as the dueling frusta problem. There are refinements of shadow mapping that exaggerate this problem and others that minimize it.
+
+It is possible to improve shadow quality if you know, for a given scene, which shadows are static and which are dynamic. If the light source moves then all the shadows it casts are dynamic. The orientation of the sun relative to the moon changes so slowly that we can assume it is stationary in our simulation. The only moving object is the rover itself. Therefore, we can pre-compute shadows cast by the terrain (often referred to as baked shadows), and we only need to compute real-time shadows for the rover.
+
+\subsubsection{Baked Shadows}
+Useful to cover large area, show diffuse shadows from distant shadow casters. EXPAND ON THIS.
+
+\subsubsection{Gazebo Shadow Improvements}
+Gazebo originally used a shadow mapping technique called Parallel Split Shadow Maps (PSSM) to render real-time shadows. On the surface, this was a good choice because PSSM uses multiple shadow maps to provide a quality distribution of shadow resolution, even in the dueling frusta case. However, there were several problems with the implementation that conspired to ruin the shadows in our simulation, often leaving us with low-resolution shadows or no shadow on parts of the screen.
+
+Gazebo uses Ogre3D for rendering, and so it was using Ogre3D's PSSM implementation for rendering shadows. Each shadow map in that implementation was also being processed by a Light-Space Perspective Shadow Map (liSPSM) technique, which performs poorly in the dueling frusta case and also exhibited some mysterious bugs. Additionally, Ogre3D assumes all scenes are oriented with the y-axis pointing up while gazebo assumes the z-axis points up. This decreased the usable region of each shadow map and often caused shadow edges to be more jagged than necessary. We corrected both problems by adding code to Gazebo that bypasses these troublesome parts of Ogre3D.
+
+To further refine the PSSM implementation, we added hooks to the Gazebo API that allow aspects of the shadows to be tuned through Gazebo plugins. We were then able to affect the relative size of the shadow maps and the distance from the observer within which shadows would be applied.
+
+With the resolution distribution problems mitigated, we turned to the overall lack of shadow resolution. The easiest first step was to increase Gazebo's default shadow map resolution from 1024 to 2048. This double our resolution everywhere, but there were still small features on the rover, such as the mast, that were not casting shadows consistently. The shader that Gazebo was using to apply shadows was smoothing shadow edges using Percentage Closest Filtering (PCF) with a 3x3 grid of sample positions. This worked well for smoothing jagged shadow edges, but, due to the filter's symmetry, sometimes small features would fall through the cracks and not affect the final shadow intensity. We replaced PCF with something known as hardware PCF, a common graphics driver hack that accomplishes the same type of smoothing with little performance impact. Then we applied a 9-sample Poisson filter (not a uniform grid like before), which smoothed the shadows even more and did a much better job of preserving small features.
 
 
   
