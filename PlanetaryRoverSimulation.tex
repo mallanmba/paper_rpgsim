@@ -3,8 +3,10 @@
 
 % The next line gives some packages you may find useful for your paper--these are not required though.
 %\usepackage[]{graphicx,float,latexsym,amssymb,amsfonts,amsmath,amstext,times,psfig}
+\usepackage[]{graphicx,float,latexsym,amssymb,amsfonts,amsmath,amstext,times}
 % NOTE: The .cls file is now compatible with amsmath!!!
 
+\usepackage[ampersand]{easylist}
 \usepackage[]{graphicx}    % We use this package in this document
 \newcommand{\ignore}[1]{}  % {} empty inside = %% comment
 
@@ -46,12 +48,18 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{easylist}
+& Main item~:
+&& Sub item.
+&& Another sub item.
+\end{easylist}
+
+\begin{easylist}
 & Resource Prospector Background
-  && High level overview of mission objectives
-  && Differences to Mars ops
-  && High level concept of operations
-  && High level software architecture
-    &&& flight/ground software split
+&& High level overview of mission objectives
+&& Differences to Mars ops
+&& High level concept of operations
+&& High level software architecture
+&&& flight/ground software split
 & Simulator goals / overview
   && Development approach
     &&& create driving sim as fast as possible
