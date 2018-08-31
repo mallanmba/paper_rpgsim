@@ -45,61 +45,61 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
 \section{Introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-- Resource Prospector Background
-  - High level overview of mission objectives
-  - Differences to Mars ops
-  - High level concept of operations
-  - High level software architecture
-    - flight/ground software split
-- Simulator goals / overview
-  - Development approach
-    - create driving sim as fast as possible
-      - development/refinement of conops
-    - prototype mission software architecture with stubs and existing components
-    - use sim-generated data for flight software development
-      - flight software --> Gazebo
-      - Gazebo and ROS output --> nav and localization
-    - incrementatlly replace stubs and emulated components with flight versions
-    - use for training
-- Synthetic Terrain Generation
-- Lunar Visual Environment
-  - Gazebo terrain enhancements
-    - LOD
-    - backround tiles
-  - Shadows
-    - real time shadow challenges 
-    - baked shadows
-    - Gazebo shadow improvements
-  - GLSL shader
-  - Wheel tracks
-  - Ephemeris
-  - HDR
-    - Earthshine, bounced light
-    - high bit depth rendering in Gazebo
-    - PBR indirect lighting experiment 
-    - attempt to reproduce in GLSL 
-- Vehicle simulation
-  - Use existing, similar robots to emulate 
-    - Husky
-    - KRex2
-  - Flight software integration with Gazebo
-  - Wheel slip plugin
-    - first order approximation
-    - fault injection
-- Flight Software Prototype
-  - flight/ground split
-  - emulation with ROS components
-  - Ops software
-    - WARP
-    - VERVE
-  - Science sim and software
-- Driving ConOps Experiments
-- Results
-  - visual odometry
-  - lunar illumination comparison 
-  - wheel slip results
-  
+\begin{easylist}
+& Resource Prospector Background
+  && High level overview of mission objectives
+  && Differences to Mars ops
+  && High level concept of operations
+  && High level software architecture
+    &&& flight/ground software split
+& Simulator goals / overview
+  && Development approach
+    &&& create driving sim as fast as possible
+    &&& development/refinement of conops
+  && prototype mission software architecture with stubs and existing components
+  && use sim-generated data for flight software development
+      &&& flight software --> Gazebo
+      &&& Gazebo and ROS output --> nav and localization
+    && incrementatlly replace stubs and emulated components with flight versions
+    && use for training
+& Synthetic Terrain Generation
+& Lunar Visual Environment
+  && Gazebo terrain enhancements
+    &&& LOD
+    &&& backround tiles
+  && Shadows
+    &&& real time shadow challenges 
+    &&& baked shadows
+    &&& Gazebo shadow improvements
+  && GLSL shader
+  && Wheel tracks
+  && Ephemeris
+  && HDR
+    &&& Earthshine, bounced light
+    &&& high bit depth rendering in Gazebo
+    &&& PBR indirect lighting experiment 
+    &&& attempt to reproduce in GLSL 
+& Vehicle simulation
+  && Use existing, similar robots to emulate 
+    &&& Husky
+    &&& KRex2
+  && Flight software integration with Gazebo
+  && Wheel slip plugin
+    &&& first order approximation
+    &&& fault injection
+& Flight Software Prototype
+  && flight/ground split
+  && emulation with ROS components
+  && Ops software
+    &&& WARP
+    &&& VERVE
+  && Science sim and software
+& Driving ConOps Experiments
+& Results
+  && visual odometry
+  && lunar illumination comparison 
+  && wheel slip results
+ \end{easylist} 
 
 
   
