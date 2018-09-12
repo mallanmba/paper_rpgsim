@@ -66,7 +66,7 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
     && use for training
 & Synthetic Terrain Generation
 & Lunar Visual Environment
-  && Gazebo terrain enhancements
+  && Gazebo terrain enhancements [Chen]
     &&& LOD
     &&& background tiles
   && GLSL shader
@@ -100,7 +100,7 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
 & Results
   && stereo visual odometry (Welsh)
   && lunar illumination comparison (Wong)
-  && wheel slip results (Rogg/Peters)
+  && wheel slip results (Allan/Rogg/Peters)
  \end{easylist} 
 
 
@@ -138,6 +138,7 @@ The diamond-and-square method of fractal terrain generation is straightforward t
 some text
 
 \subsection{Gazebo Terrain Improvements}
+[enabling Gazebo features *Chen*]
 
 \subsection{GLSL Shader}
 
@@ -156,7 +157,9 @@ A related challenge stems from the relationship of the light ray direction compa
 It is possible to improve shadow quality if you know, for a given scene, which shadows are static and which are dynamic. If the light source moves then all the shadows it casts are dynamic. The orientation of the sun relative to the moon changes so slowly that we can assume it is stationary in our simulation. The only moving object is the rover itself. Therefore, we can pre-compute shadows cast by the terrain (often referred to as baked shadows), and we only need to compute real-time shadows for the rover.
 
 \subsubsection{Baked Shadows}
-Useful to cover large area, show penumbra from distant shadow casters [ Mark Shirley ]
+Lightmapping is a popular technique to use for static shadows in a rendered scene because illumination is calculated in a preprocessing step and it incurs very little runtime overhead. In the preprocessing step, accurate shadows are generated via ray tracing or global illumination techniques and baked into  texture maps. 
+
+Useful to cover large area, show penumbra from distant shadow casters [ *Shirley* ]
 
 \subsubsection{Gazebo Shadow Improvements}
 Gazebo originally used a shadow mapping technique called Parallel Split Shadow Maps (PSSM) to render real-time shadows. On the surface, this was a good choice because PSSM uses multiple shadow maps to provide a quality distribution of shadow resolution, even in the dueling frusta case. However, there were several problems with the implementation that conspired to ruin the shadows in our simulation, often leaving us with low-resolution shadows or no shadow on parts of the screen.
