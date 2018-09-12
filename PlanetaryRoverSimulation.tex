@@ -70,13 +70,13 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
     &&& LOD
     &&& background tiles
   && GLSL shader
+  && Wheel tracks
   && Shadows
     &&& real time shadow challenges 
     &&& baked shadows
     &&& Gazebo shadow improvements
-  && Wheel tracks
   && Ephemeris
-  && HDR
+  && Lighting / HDR
     &&& Earthshine, bounced light
     &&& high bit depth rendering in Gazebo
     &&& PBR indirect lighting experiment 
@@ -108,6 +108,13 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
 \section{Introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Lunar polar environment different to prior extra-terrestrial rover missions. Mars has long time delays that make interactive commanding impossible, lunar comm delays enable semi-interactive commanding. Science involved in operations. Operations needed to develop and mature concept of operations.  
+
+There are many unknowns early in mission development, and one way to reduce uncertainty about mission elements is through the use of simulation. blah blah skid steer versus explicit steer, impact of bandwidth on driving tempo, interaction between driver and real time science. Develop complete sim capability as quicly as possible, using stubs and analogous functionality where necessary. 
+
+Due to the broad scope of the simulation and the desire to have a functional, end-to-end lunar driving simulation as quickly as possible, a simulation framework that offered a rich set of off-the-shelf capability was necessary. [ why ROS and Gazebo were a great choice - *Gerkey* ] 
+
+
   
 \section{Synthetic Terrain Generation}
 
@@ -130,6 +137,8 @@ The diamond-and-square method of fractal terrain generation is straightforward t
 \section{Lunar Visual Environment}
 some text
 
+\subsection{Gazebo Terrain Improvements}
+
 \subsection{GLSL Shader}
 
 \subsection{Shadows}
@@ -147,7 +156,7 @@ A related challenge stems from the relationship of the light ray direction compa
 It is possible to improve shadow quality if you know, for a given scene, which shadows are static and which are dynamic. If the light source moves then all the shadows it casts are dynamic. The orientation of the sun relative to the moon changes so slowly that we can assume it is stationary in our simulation. The only moving object is the rover itself. Therefore, we can pre-compute shadows cast by the terrain (often referred to as baked shadows), and we only need to compute real-time shadows for the rover.
 
 \subsubsection{Baked Shadows}
-Useful to cover large area, show diffuse shadows from distant shadow casters. EXPAND ON THIS.
+Useful to cover large area, show penumbra from distant shadow casters [ Mark Shirley ]
 
 \subsubsection{Gazebo Shadow Improvements}
 Gazebo originally used a shadow mapping technique called Parallel Split Shadow Maps (PSSM) to render real-time shadows. On the surface, this was a good choice because PSSM uses multiple shadow maps to provide a quality distribution of shadow resolution, even in the dueling frusta case. However, there were several problems with the implementation that conspired to ruin the shadows in our simulation, often leaving us with low-resolution shadows or no shadow on parts of the screen.
