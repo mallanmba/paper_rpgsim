@@ -8,6 +8,7 @@
 
 \usepackage[ampersand]{easylist}
 \usepackage[]{graphicx}    % We use this package in this document
+\usepackage{url}
 \newcommand{\ignore}[1]{}  % {} empty inside = %% comment
 
 \begin{document}
@@ -51,7 +52,7 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
 && High level overview of mission objectives
 && Differences to Mars ops
 && High level concept of operations
-&& High level software architecture
+&& High level software architecture 
 &&& flight/ground software split
 & Simulator goals / overview
   && Development approach
@@ -67,12 +68,12 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
 & Lunar Visual Environment
   && Gazebo terrain enhancements
     &&& LOD
-    &&& backround tiles
+    &&& background tiles
+  && GLSL shader
   && Shadows
     &&& real time shadow challenges 
     &&& baked shadows
     &&& Gazebo shadow improvements
-  && GLSL shader
   && Wheel tracks
   && Ephemeris
   && HDR
@@ -80,26 +81,26 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
     &&& high bit depth rendering in Gazebo
     &&& PBR indirect lighting experiment 
     &&& attempt to reproduce in GLSL 
-& Vehicle simulation
-  && Use existing, similar robots to emulate 
+& Vehicle simulation 
+  && Use existing, similar robots to emulate (Furlong)
     &&& Husky
     &&& KRex2
   && Flight software integration with Gazebo
-  && Wheel slip plugin
+  && Wheel slip plugin (Rogg/Peters)
     &&& first order approximation
     &&& fault injection
-& Flight Software Prototype
+& Flight Software Prototype (Furlong)
   && flight/ground split
   && emulation with ROS components
   && Ops software
     &&& WARP
     &&& VERVE
   && Science sim and software
-& Driving ConOps Experiments
+& Driving ConOps Experiments (Deans)
 & Results
-  && visual odometry
-  && lunar illumination comparison 
-  && wheel slip results
+  && stereo visual odometry (Welsh)
+  && lunar illumination comparison (Wong)
+  && wheel slip results (Rogg/Peters)
  \end{easylist} 
 
 
@@ -110,19 +111,26 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
   
 \section{Synthetic Terrain Generation}
 
-To produce a viable lunar driving experience the simulated world must be representative of the target physical environment. Specifically, the morphology of the terrain should accuarately represent terrain features that would be considered either positive or negative obstacles for the rover. Although DEMs are available for much of the lunar surface, the resolution of these models are not sufficient to represent rover-scale hazards. To make matters worse, the best resolution lunar DEMs are generated from stereo orbital imagery, yet the reference mission was targeting areas with permanently shadowed regions. 
+To produce a viable lunar driving experience the simulated world must be representative of the target physical environment. Specifically, the morphology of the terrain should accurately represent terrain features that would be considered either positive or negative obstacles for the rover. Although DEMs are available for much of the lunar surface, the resolution of these models are not sufficient to represent rover-scale hazards. To make matters worse, the best resolution lunar DEMs are generated from stereo orbital imagery, yet the reference mission was targeting areas with permanently shadowed regions. 
+
+On the Moon, the principal obstacles of interest to rovers are rocks and craters. The size-frequency distributions of these obstacles have significant consequences to mission traverse paths and timing. While mean values are published in literature [cite JPL report 1969] for Highlands/Mare/Polar regions, these distributions vary widely according to locality, with parameters such as proximity to large or fresh craters being significant modulating factors for rocks in particular. These variations were reproduced by procedural placement of craters and ejecta fields and simulating the processes of Lunar terrain formation. 
+
+sample crater Size-frequency \\
+move through time in sequential ordering \\
+place craters larger than x meters first, form rocks using intra-crater distribution, replace rocks at crater interior \\
+parameters of ejecta (radii, sharpness, falloff) can be tuned \\
+place craters smaller than x, uniform in time, only change terrain \\
+crater ejecta degraded by age (small rocks removed) \\
+place rocks with background distribution uniformly \\
 
 Because the reference mission defined rocks larger than 10-25cm as positive obstacles, we desired a terrain resolution of 5cm or greater. Given that 5cm resolution is well beyond available lunar DEMs, we developed tools to artificially increase resolution using established techniques {parkes2004planet}. ** insert summary of PANGU paper **
 
 The diamond-and-square method of fractal terrain generation is straightforward to implement and a reasonable choice for adding higher frequency details. However, the method is known to create interpolation artifacts when constrained {miller1986definition}, particularly on low frequency features like aged crater rims. We employed two approaches to mitigating these artifacts. First, we replace linear interpolation with Catmull-Rom splines in the diamond-and-square algorithm which reduces the number of artifacts. Second, prior to scaling up we split the terrain into high and low frequency components by running a low pass filter on the DEM, and subtracting it from the original. The high frequency component is scaled up with the diamond-and-square algorithm whereas the low frequency component is scaled up with bilinear interpolation. Craters are inserted into the low frequency component before adding the high and low frequency components back together to reconstitute the DEM. This process is repeated until the desired resolution is reached. 
-  
-\section{Lunar Visual Environment}
-some text
-
-\subsection{Shadows}
 
 \section{Lunar Visual Environment}
 some text
+
+\subsection{GLSL Shader}
 
 \subsection{Shadows}
 Shadow rendering provides countless challenges and has been under continuous development since the advent of computer graphics. Like most aspects of real-time computer graphics, a good solution involves finding a set of approximations that work well for you particular problem. Our problem was to render shadows that would appear as realistic as possible from the perspective of our rover's cameras. And, since one of our simulation goals was exploration of polar regions, we needed a shadow solution that would support low illumination angles (i.e. the sun close to the horizon).
@@ -144,11 +152,32 @@ Useful to cover large area, show diffuse shadows from distant shadow casters. EX
 \subsubsection{Gazebo Shadow Improvements}
 Gazebo originally used a shadow mapping technique called Parallel Split Shadow Maps (PSSM) to render real-time shadows. On the surface, this was a good choice because PSSM uses multiple shadow maps to provide a quality distribution of shadow resolution, even in the dueling frusta case. However, there were several problems with the implementation that conspired to ruin the shadows in our simulation, often leaving us with low-resolution shadows or no shadow on parts of the screen.
 
-Gazebo uses Ogre3D for rendering, and so it was using Ogre3D's PSSM implementation for rendering shadows. Each shadow map in that implementation was also being processed by a Light-Space Perspective Shadow Map (liSPSM) technique, which performs poorly in the dueling frusta case and also exhibited some mysterious bugs. Additionally, Ogre3D assumes all scenes are oriented with the y-axis pointing up while gazebo assumes the z-axis points up. This decreased the usable region of each shadow map and often caused shadow edges to be more jagged than necessary. We corrected both problems by adding code to Gazebo that bypasses these troublesome parts of Ogre3D.
+Gazebo uses Ogre3D for rendering, and so it was using Ogre3D's PSSM implementation for rendering shadows. Each shadow map in that implementation was also being processed by a Light-Space Perspective Shadow Map (LiSPSM) technique, which performs poorly in the dueling frusta case and also exhibited some mysterious bugs. Additionally, Ogre3D assumes all scenes are oriented with the y-axis pointing up while gazebo assumes the z-axis points up. This decreased the usable region of each shadow map and often caused shadow edges to be more jagged than necessary. We corrected both problems by adding code to Gazebo that bypasses these troublesome parts of Ogre3D.
 
 To further refine the PSSM implementation, we added hooks to the Gazebo API that allow aspects of the shadows to be tuned through Gazebo plugins. We were then able to affect the relative size of the shadow maps and the distance from the observer within which shadows would be applied.
 
-With the resolution distribution problems mitigated, we turned to the overall lack of shadow resolution. The easiest first step was to increase Gazebo's default shadow map resolution from 1024 to 2048. This double our resolution everywhere, but there were still small features on the rover, such as the mast, that were not casting shadows consistently. The shader that Gazebo was using to apply shadows was smoothing shadow edges using Percentage Closest Filtering (PCF) with a 3x3 grid of sample positions. This worked well for smoothing jagged shadow edges, but, due to the filter's symmetry, sometimes small features would fall through the cracks and not affect the final shadow intensity. We replaced PCF with something known as hardware PCF, a common graphics driver hack that accomplishes the same type of smoothing with little performance impact. Then we applied a 9-sample Poisson filter (not a uniform grid like before), which smoothed the shadows even more and does a much better job of preserving small features.
+With the resolution distribution problems mitigated, we turned to the overall lack of shadow resolution. The easiest first step was to increase Gazebo's default shadow map resolution from 1024 to 2048. This double our resolution everywhere, but there were still small features on the rover, such as the mast, that were not casting shadows consistently. The shader that Gazebo was using to apply shadows was smoothing shadow edges using Percentage Closest Filtering (PCF) with a 3x3 grid of sample positions. This worked well for smoothing jagged shadow edges, but, due to the filter's uniformity, sometimes small features would fall through the cracks and not affect the final shadow intensity. We replaced PCF with something known as hardware PCF, a common graphics driver hack that accomplishes the same type of smoothing with little performance impact. Then we applied a 9-sample Poisson filter (not a uniform grid like before), which smoothed the shadows even more and does a much better job of preserving small features.
 
+\subsection{Wheel Tracks}
+Any rover will leave wheel tracks in the powdery lunar regolith. We wanted to include these tracks in our visual simulation for realism and as an orientation aid for operators. It would be possible to reshape the terrain geometry to represent wheel tracks, but this method is difficult to implement and would provide more fidelity than we needed. A much simpler alternative is to use a technique called bump mapping to give the illusion of wheel tracks on flat geometry.
+
+Our shader already employs bump mapping to give the regolith its fine detail, so we expand on this to add wheel tracks. We apply a 1-channel texture to the drivable area of the terrain. It starts out with every texel set to the maximum value, 255. Wherever a rover wheel travels we draw a groove in the texture, setting texels to 0 or some medium value. Wherever this texture is less than 255, the shader mixes a surface normal into the bump mapping. To approximate a surface normal it compares neighboring texels in the wheel tracks texture to find the slope in the x- and y-directions. Assuming a z-value of 1.0, the three values are normalized to produce a final surface normal.
+
+To draw the wheel tracks in the texture we use a Gazebo plugin. We use Gazebo's knowledge of the rover model and the terrain layout to compute what part of the texture each wheel position corresponds with. Everywhere each wheel travels, we draw an anti-aliased dot in the texture of a size in texels that appears to match the wheel size when the texture is projected on the terrain. These dots overlap to give the appearance of a continuous groove made by each wheel.
+
+\subsection{Ephemeris}
+
+The position of the Sun and Earth relative to the moon is computed using the SPICE C toolkit provided by the Navigation and Ancillary Information Facility (NAIF) \url{https://naif.jpl.nasa.gov/naif/toolkit.html}.  Using the timestamp maintained by the simulator, this toolkit generates the transformations between the Moon, the Sun, and the Earth at the current simulated time.  By chaining these transformations with the rover's current position on the surface of the moon we are able to compute the positions of the Sun and the Earth relative to the rover and position them accurately in the simulator.
+
+\section{Results}
+
+\subsection{Stereo Visual Odometry}
+One of the goals of the visual simulation was to provide data for computer vision work, and an example of such work is the stereo visual odometry we implemented for Resource Prospector's ground software. It generates 3D point clouds from successive stereo camera images, aligns them using the Point Cloud Library's implementation of the Iterative Closest Point algorithm, and uses the transforms between point clouds to track changes in the rover's movements. This stereo visual odometry interacts with other software and sensors to estimate the rover's absolute pose.
+
+To refine the mission's concept of operations, we wanted to know how much overlap is required between camera images for stereo visual odometry to be effective. The easiest way to lose overlap between successive images is by yawing the camera or rover, so that is the first test we ran. We learned that with camera rotations of 50-degrees or less, stereo visual odometry yields more accurate results than the wheel odometry we had been using (shown in the following graph).
+
+\includegraphics[width=\columnwidth]{figures/rotating_clouds_with_odom_error.png}
+
+We also learned that there are occasionally incorrect point cloud alignments, telling us we need to improve our alignment algorithm or find a way to detect the quality of each alignment. It is important to note the results we found for stereo visual odometry are preliminary. There are further tests to run and improvements to be made to both our visual simulation and visual odometry. For example, after a specific camera is chosen for the mission we will be able to refine our camera simulation. This will affect the images rendered and require us to run these tests again.
 
 \end{document}
