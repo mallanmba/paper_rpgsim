@@ -108,9 +108,13 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
 \section{Introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+
 Lunar polar environment different to prior extra-terrestrial rover missions. Mars has long time delays that make interactive commanding impossible, lunar comm delays enable semi-interactive commanding. Science involved in operations. Operations needed to develop and mature concept of operations.  
 
-There are many unknowns early in mission development, and one way to reduce uncertainty about mission elements is through the use of simulation. blah blah skid steer versus explicit steer, impact of bandwidth on driving tempo, interaction between driver and real time science. Develop complete sim capability as quicly as possible, using stubs and analogous functionality where necessary. 
+\section{Simulator Goals}
+
+Early in mission development, there are many unknowns. One way to reduce uncertainty about mission elements is through the use of simulation. blah blah skid steer versus explicit steer, impact of bandwidth on driving tempo, interaction between driver and real time science. Develop complete sim capability as quicly as possible, using stubs and analogous functionality where necessary. 
 
 Due to the broad scope of the simulation and the desire to have a functional, end-to-end lunar driving simulation as quickly as possible, a simulation framework that offered a rich set of off-the-shelf capability was necessary. [ why ROS and Gazebo were a great choice - *Gerkey* ] 
 
@@ -132,7 +136,9 @@ place rocks with background distribution uniformly \\
 
 Because the reference mission defined rocks larger than 10-25cm as positive obstacles, we desired a terrain resolution of 5cm or greater. Given that 5cm resolution is well beyond available lunar DEMs, we developed tools to artificially increase resolution using established techniques {parkes2004planet}. ** insert summary of PANGU paper **
 
-The diamond-and-square method of fractal terrain generation is straightforward to implement and a reasonable choice for adding higher frequency details. However, the method is known to create interpolation artifacts when constrained {miller1986definition}, particularly on low frequency features like aged crater rims. We employed two approaches to mitigate these artifacts. First, we replace linear interpolation with Catmull-Rom splines in the diamond-and-square algorithm which reduces the number of artifacts. Second, prior to scaling up we split the terrain into high and low frequency components by running a low pass filter on the DEM, and subtracting it from the original. The high frequency component is scaled up with the diamond-and-square algorithm whereas the low frequency component is scaled up with bilinear interpolation. Craters are inserted into the low frequency component before adding the high and low frequency components back together to reconstitute the DEM. This process is repeated until the desired resolution is reached. 
+The diamond-and-square method of fractal terrain generation is straightforward to implement and a reasonable choice for adding higher frequency details. However, the method is known to create interpolation artifacts when constrained {miller1986definition}, particularly on low frequency features like aged crater rims. We employed two approaches to mitigate these artifacts. First, we replace linear interpolation with Catmull-Rom splines in the diamond-and-square algorithm which reduces the severity of the artifacts. Second, prior to scaling up we split the terrain into high and low frequency components by running a low pass filter on the DEM, and subtracting it from the original. The high frequency component is scaled up with the diamond-and-square algorithm whereas the low frequency component is scaled up with bilinear interpolation. Craters are inserted into the low frequency component before adding the high and low frequency components back together to reconstitute the DEM. This process is repeated until the desired resolution is reached. 
+
+
 
 \section{Lunar Visual Environment}
 some text
@@ -191,5 +197,15 @@ To refine the mission's concept of operations, we wanted to know how much overla
 \includegraphics[width=\columnwidth]{figures/rotating_clouds_with_odom_error.png}
 
 We also learned that there are occasionally incorrect point cloud alignments, telling us we need to improve our alignment algorithm or find a way to detect the quality of each alignment. It is important to note the results we found for stereo visual odometry are preliminary. There are further tests to run and improvements to be made to both our visual simulation and visual odometry. For example, after a specific camera is chosen for the mission we will be able to refine our camera simulation. This will affect the images rendered and require us to run these tests again.
+
+\subsection{Wheel Slip}
+In order to characterize the wheel_slip_plugin, we set up a test harness to gather data on wheel slip behavior over multiple runs. We created a Gazebo world with ramps from 0 to 30 degrees at 2 degree increments. A rostest script would spawn the rover at the base of each ramp and command it to drive 10 meters forward. Wheel slip was measured by comparing dead reckoning distance driven to ground truth and test runs covered sets of parameter values for longitudinal compliance, physics engine solver iterations, and drive speed. 
+
+Overall, the wheel_slip_plugin demonstrated the expected behavior and compared favorably with physical testbed results as can be seen in Figure ??, which compares wheel slip measured from MGRU with the wheel_slip_plugin. However, our test results show that at certain angles and compliance values, there is a wide variation in measured wheel slip. 
+
+
+
+
+
 
 \end{document}
