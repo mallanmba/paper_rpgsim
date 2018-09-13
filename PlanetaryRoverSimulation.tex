@@ -138,8 +138,6 @@ Because the reference mission defined rocks larger than 10-25cm as positive obst
 
 The diamond-and-square method of fractal terrain generation is straightforward to implement and a reasonable choice for adding higher frequency details. However, the method is known to create interpolation artifacts when constrained {miller1986definition}, particularly on low frequency features like aged crater rims. We employed two approaches to mitigate these artifacts. First, we replace linear interpolation with Catmull-Rom splines in the diamond-and-square algorithm which reduces the severity of the artifacts. Second, prior to scaling up we split the terrain into high and low frequency components by running a low pass filter on the DEM, and subtracting it from the original. The high frequency component is scaled up with the diamond-and-square algorithm whereas the low frequency component is scaled up with bilinear interpolation. Craters are inserted into the low frequency component before adding the high and low frequency components back together to reconstitute the DEM. This process is repeated until the desired resolution is reached. 
 
-
-
 \section{Lunar Visual Environment}
 some text
 
@@ -185,7 +183,7 @@ To draw the wheel tracks in the texture we use a Gazebo plugin. We use Gazebo's 
 
 \subsection{Ephemeris}
 
-The position of the Sun and Earth relative to the moon is computed using the SPICE C toolkit provided by the Navigation and Ancillary Information Facility (NAIF) \url{https://naif.jpl.nasa.gov/naif/toolkit.html}.  Using the timestamp maintained by the simulator, this toolkit generates the transformations between the Moon, the Sun, and the Earth at the current simulated time.  By chaining these transformations with the rover's current position on the surface of the moon we are able to compute the positions of the Sun and the Earth relative to the rover and position them accurately in the simulator.
+The position of the Sun and Earth relative to the moon is computed using the SPICE C toolkit provided by the Navigation and Ancillary Information Facility (NAIF) \url{https://naif.jpl.nasa.gov/naif/toolkit.html}.  Using the timestamp maintained by the simulator, this toolkit generates the transformations between the Moon, the Sun, and the Earth at the current simulated time.  By chaining these transformations with the rover's current position on the surface of the moon we are able to compute the positions of the Sun and the Earth relative to our local coordinate system and position them accurately in the simulator.  We are not concerned about the locations of stars because they are not drawn in the simulator.
 
 \section{Results}
 
@@ -199,9 +197,9 @@ To refine the mission's concept of operations, we wanted to know how much overla
 We also learned that there are occasionally incorrect point cloud alignments, telling us we need to improve our alignment algorithm or find a way to detect the quality of each alignment. It is important to note the results we found for stereo visual odometry are preliminary. There are further tests to run and improvements to be made to both our visual simulation and visual odometry. For example, after a specific camera is chosen for the mission we will be able to refine our camera simulation. This will affect the images rendered and require us to run these tests again.
 
 \subsection{Wheel Slip}
-In order to characterize the wheel_slip_plugin, we set up a test harness to gather data on wheel slip behavior over multiple runs. We created a Gazebo world with ramps from 0 to 30 degrees at 2 degree increments. A rostest script would spawn the rover at the base of each ramp and command it to drive 10 meters forward. Wheel slip was measured by comparing dead reckoning distance driven to ground truth and test runs covered sets of parameter values for longitudinal compliance, physics engine solver iterations, and drive speed. 
+In order to characterize the \texttt{wheel\_slip\_plugin}, we set up a test harness to gather data on wheel slip behavior over multiple runs. We created a Gazebo world with ramps from 0 to 30 degrees at 2 degree increments. A rostest script would spawn the rover at the base of each ramp and command it to drive 10 meters forward. Wheel slip was measured by comparing dead reckoning distance driven to ground truth and test runs covered sets of parameter values for longitudinal compliance, physics engine solver iterations, and drive speed. 
 
-Overall, the wheel_slip_plugin demonstrated the expected behavior and compared favorably with physical testbed results as can be seen in Figure ??, which compares wheel slip measured from MGRU with the wheel_slip_plugin. However, our test results show that at certain angles and compliance values, there is a wide variation in measured wheel slip. 
+Overall, the \texttt{wheel\_slip\_plugin} demonstrated the expected behavior and compared favorably with physical testbed results as can be seen in Figure ??, which compares wheel slip measured from MGRU with the  \texttt{wheel\_slip\_plugin}. However, our test results show that at certain angles and compliance values, there is a wide variation in measured wheel slip. 
 
 
 
