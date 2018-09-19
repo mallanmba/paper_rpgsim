@@ -9,6 +9,7 @@
 \usepackage[ampersand]{easylist}
 \usepackage[]{graphicx}    % We use this package in this document
 \usepackage{url}
+\usepackage{todonotes}
 \newcommand{\ignore}[1]{}  % {} empty inside = %% comment
 
 \begin{document}
@@ -49,38 +50,38 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{easylist}[checklist]
 & Resource Prospector Background
-&& High level overview of mission objectives
-&& Differences to Mars ops
-&& High level concept of operations
-&& High level software architecture 
-&&& flight/ground software split
-& Simulator goals / overview
+&& High level overview of mission objectives (Fong/Deans)
+&& Differences to Mars ops (Furlong/Deans)
+&& High level concept of operations (Deans/Shirley/Allan/Furlong)
+&& High level software architecture (Furlong/Allan)
+&&& flight/ground software split (Furlong)
+& Simulator goals / overview 
   && Development approach
     &&& create driving sim as fast as possible
     &&& development/refinement of conops
-  && prototype mission software architecture with stubs and existing components
+  && prototype mission software architecture with stubs and existing components with ROS (Gerkey)
   && use sim-generated data for flight software development
       &&& flight software --> Gazebo
       &&& Gazebo and ROS output --> nav and localization
     && incrementally replace stubs and emulated components with flight versions
     && use for training
-& Synthetic Terrain Generation
-& Lunar Visual Environment
-  && Gazebo terrain enhancements [Chen]
+& Synthetic Terrain Generation (Allan/Wong)
+& Lunar Visual Environment (Allan/Wong)
+  && Gazebo terrain enhancements (Chen)
     &&& LOD
-    &&& background tiles
-  && GLSL shader
+    &&& background tiles (Allan)
+  && GLSL shader (Allan/Wong/Welsh)
   && Wheel tracks
-  && Shadows
+  && Shadows (Welsh/Chen)
     &&& real time shadow challenges 
-    &&& baked shadows
-    &&& Gazebo shadow improvements
-  && Ephemeris
+    &&& baked shadows (Shirley)
+    &&& Gazebo shadow improvements 
+  && Ephemeris (McMichael)
   && Lighting / HDR
-    &&& Earthshine, bounced light
-    &&& high bit depth rendering in Gazebo
-    &&& PBR indirect lighting experiment 
-    &&& attempt to reproduce in GLSL 
+    &&& Earthshine, bounced light (Wong)
+    &&& high bit depth rendering in Gazebo (Chen)
+    &&& PBR indirect lighting experiment (Wong)
+    &&& attempt to reproduce in GLSL (Allan)
 & Vehicle simulation 
   && Use existing, similar robots to emulate (Furlong)
     &&& Husky
@@ -112,6 +113,21 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
 
 Lunar polar environment different to prior extra-terrestrial rover missions. Mars has long time delays that make interactive commanding impossible, lunar comm delays enable semi-interactive commanding. Science involved in operations. Operations needed to develop and mature concept of operations.  
 
+\section{Background}
+
+
+Lunar surface operations provide for qualitatively different mission operation scenarios than what is possible in the Martian surface.  The most important aspect is the broad swings in temperature on the Moon.  From lunar day to lunar night there can be swings in temperature of over three hundred degrees.  Building a robot to survive lunar night comes with additional costs and reliance on heat sources, like the radioactive materials used in the Lunokhod missions \cite{XXX}.  This can increase mission complexity substantially.  
+
+If the rover is not designed to survive lunar night then the mission either has the time pressure to complete in fourteen days, or the operational pressure to chase sunlight to peaks of eternal light, as proposed in \cite{otten2018strategic}.  The Resource Prospector mission planned to operate within the constraints of the lunar solar day, creating a need for high-tempo mission operations. 
+
+Lunar regolith presents two challenges, both relating to the microbombardment processes which produce the soil \cite{XXX}.  Because the lunar soil is not produced by the erosion processes we are accustomed to on Earth the particular matter is sharp, which is a hazard to the vehicle, and it has reflectance properties very much unlike the Earth\todo{cite Hapke models}, which poses a challenge to both human and automated perception systems.
+
+The Moon is not without its operational advantages.  First, the relative closeness of the Moon means that the time-of-flight communications delay is only 2.5 seconds, and not on the order of minutes\todo[author=pmf]{get time of flight delay for Mars} for a Mars mission.  Second, through the use of the Deep Space Network, it is possible to be in constant communication with a lunar surface vehicle, barring shadows from terrain features.  Constant availability of a rover supports the high-tempo mission cadence missions like Resource Prospector.
+
+
+Taking advantage of the high communications availability we designed our system autonomy 
+
+
 \section{Simulator Goals}
 
 Early in mission development, there are many unknowns. One way to reduce uncertainty about mission elements is through the use of simulation. blah blah skid steer versus explicit steer, impact of bandwidth on driving tempo, interaction between driver and real time science. Develop complete sim capability as quicly as possible, using stubs and analogous functionality where necessary. 
@@ -138,8 +154,33 @@ Because the reference mission defined rocks larger than 10-25cm as positive obst
 
 The diamond-and-square method of fractal terrain generation is straightforward to implement and a reasonable choice for adding higher frequency details. However, the method is known to create interpolation artifacts when constrained {miller1986definition}, particularly on low frequency features like aged crater rims. We employed two approaches to mitigate these artifacts. First, we replace linear interpolation with Catmull-Rom splines in the diamond-and-square algorithm which reduces the severity of the artifacts. Second, prior to scaling up we split the terrain into high and low frequency components by running a low pass filter on the DEM, and subtracting it from the original. The high frequency component is scaled up with the diamond-and-square algorithm whereas the low frequency component is scaled up with bilinear interpolation. Craters are inserted into the low frequency component before adding the high and low frequency components back together to reconstitute the DEM. This process is repeated until the desired resolution is reached. 
 
-In addition to the enhanced GeoTIFF DEM, the synthetic terrain generation process produces other assets that will be used for appearance modeling in Gazebo. First, an albedo map is generated by inserting crater splash patterns using crater location, size, and freshness parameters. The excavated regolith from a fresh crater impact is lighter in shade due to lack of exposure to solar radiation, and over time the ejecta blanket weathers and blends into the surrounding terrain. An expoential function applied to the freshness parameter determines ejecta ray lightness. Next, a rock mask maps which cells in the DEM correspond to regolith and which cells correspond to rocks. Finally, we generate a normal map which captures the surface normal at each DEM posting. 
+In addition to the enhanced GeoTIFF DEM, the synthetic terrain generation process produces other assets that will be used for appearance modeling in Gazebo. An albedo map is generated by inserting crater splash patterns using crater location, size, and freshness parameters. The excavated regolith from a fresh crater impact is lighter in shade due to lack of exposure to solar radiation, and over time the ejecta blanket weathers and blends into the surrounding terrain. An exponential function applied to the freshness parameter determines ejecta ray lightness. Next, a rock mask maps which cells in the DEM correspond to regolith and which cells correspond to rocks. Finally, we generate a normal map which captures the surface normal at each DEM posting. 
 
+\section{Wheel Slip}
+\textit{DRAFT ARNO}
+
+The wheel/terrain interaction plays an important role in the fidelity of the simulation. An input drive command will result in a none-zero slip of the rover wheel on the loose terrain which will generate some drift in the localization algorithms. In order for this drift to be realistic, a wheel slip plug-in was developed and implemented based on a test results from two test: RP single wheel drawbar pull test and RP lunar mass equivalent unit test (see figure \ref{fig:mgru}) in the SLOPElab facility at NASA Glenn Research Center (GRC) (ref: \url{https://www.nasa.gov/centers/glenn/events/tour_erb_slope.html}). The simulant for these test was GRC-1 (ref: \url{https://etd.ohiolink.edu/!etd.send_file?accession=case1269272964&disposition=inline}), which has similar mechanical characteristics as the lunar regolith. 
+\begin{figure}[h!]
+	\includegraphics[width=\columnwidth]{figures/wheel_slip_MGRU.JPG}
+   	\caption{A picture of the RP lunar mass equivalent rover at the SLOPElab in NASA GRC.}
+    \label{fig:mgru}
+\end{figure}
+The Gazebo simulator physics engine provide the following framework to deal with wheel/terrain interaction (see figure \ref{fig:wheelsoilmodel}). The is based on the Coulomb-Mohr friction theory. With a compliance tuning parameter that enables to simulate loose material generating slip greater than zero on shallow angle slopes.
+\begin{figure}[h!]
+	\includegraphics[width=\columnwidth]{figures/wheel_slip_MGRU.JPG}
+   	\caption{Wheel/soil interaction model}
+    \label{fig:wheelsoilmodel}
+\end{figure}
+In order to characterize the \texttt{wheel\_slip\_plugin}, we set up a test harness to gather data on wheel slip behavior over multiple runs. We created a Gazebo world with ramps from 0 to 30 degrees at 2 degree increments (see figure \ref{fig:simulationramps}). A rostest script would spawn the rover at the base of each ramp and command it to drive 10 meters forward. Wheel slip was measured by comparing dead reckoning distance driven to ground truth and test runs covered sets of parameter values for longitudinal compliance, physics engine solver iterations, and drive speed. 
+\begin{figure}[h!]
+	\includegraphics[width=\columnwidth]{figures/world_lots_o_ramps.jpg}
+   	\caption{Gazebo simulation for the slip vs slope test with the RP rover.}
+    \label{fig:simulationramps}
+\end{figure}
+
+Although not perfect at simulating the wheel/soil interaction, this plug-in enables the simulated rover to have a high level slip behavior relatively close to what will be expected on a lunar terrain. In order to increase the fidelity and give more realism for wheel sinkage and rover embedding, this simple model would need to be replaced by a discrete element method (DEM) model which is very costly in terms of computational power and existing system are unproven due to the complexity of the particle interaction.
+
+\textit{END OF DRAFT ARNO}
 
 \section{Lunar Visual Environment}
 some text
@@ -164,9 +205,14 @@ A related challenge stems from the relationship of the light ray direction compa
 It is possible to improve shadow quality if you know, for a given scene, which shadows are static and which are dynamic. If the light source moves then all the shadows it casts are dynamic. The orientation of the sun relative to the moon changes so slowly that we can assume it is stationary in our simulation. The only moving object is the rover itself. Therefore, we can pre-compute shadows cast by the terrain (often referred to as baked shadows), and we only need to compute real-time shadows for the rover.
 
 \subsubsection{Baked Shadows}
-Lightmapping is a popular technique to use for static shadows in a rendered scene because illumination is calculated in a preprocessing step and it incurs very little runtime overhead. In the preprocessing step, accurate shadows are generated via ray tracing or global illumination techniques and baked into  texture maps. 
 
-Useful to cover large area, show penumbra from distant shadow casters [ *Shirley* ]
+Because the sun moves slowly (~0.5 deg/hour), we elected to pre-render the shadows generated by the terrain shadowing itself, capturing the result in a lightmap that was used by the shader to render static shadows with very little runtime overhead.
+
+To generate the lightmap, a 2-dimensional form of ray-tracing called ray-casting was used because the terrain was modeled as a height field with no overhangs.  (Our approach is very similar to the technique used in Wolfenstein 3D on the PC.)  The lightmap was calculated at the same 4 cm resolution as the terrain, and the sun was modeled as an extended source with rays cast from 280 points within the sun's disk.
+
+This approach produces high-quality shadows over the whole terrain, with smoothly varying penumbras cast by distant features and tiny shadows cast by one pixel bumps.  For any given rover camera image, most of these shadows are too distant to see; the most important shadows are close to the rover, particularly those cast by the rover itself and rendered using the real-time techniques described above.  But the static shadows are very visible in the gazebo camera used for debugging and their soft edges add to the images' realism.
+
+While the sun moves slowly, it's not fixed.  The sun's disk is also 0.5 deg, so any terrain pixel can potentially go from fully lit to fully unlit or vice versa within one hour.  This only happens at the edges of shadows, however, and is rarely important to rover operations because the rover's path is planned to avoid these areas.  Our approach to this slow movement is to linearly interpolate between two lightmaps in the shader, however, this enhancement has not been implemented yet.
 
 \subsubsection{Gazebo Shadow Improvements}
 Gazebo originally used a shadow mapping technique called Parallel Split Shadow Maps (PSSM) to render real-time shadows. On the surface, this was a good choice because PSSM uses multiple shadow maps to provide a quality distribution of shadow resolution, even in the dueling frusta case. However, there were several problems with the implementation that conspired to ruin the shadows in our simulation, often leaving us with low-resolution shadows or no shadow on parts of the screen.
@@ -194,15 +240,32 @@ The position of the Sun and Earth relative to the moon is computed using the SPI
 One of the goals of the visual simulation was to provide data for computer vision work, and an example of such work is the stereo visual odometry we implemented for Resource Prospector's ground software. It generates 3D point clouds from successive stereo camera images, aligns them using the Point Cloud Library's implementation of the Iterative Closest Point algorithm, and uses the transforms between point clouds to track changes in the rover's movements. This stereo visual odometry interacts with other software and sensors to estimate the rover's absolute pose.
 
 To refine the mission's concept of operations, we wanted to know how much overlap is required between camera images for stereo visual odometry to be effective. The easiest way to lose overlap between successive images is by yawing the camera or rover, so that is the first test we ran. We learned that with camera rotations of 50-degrees or less, stereo visual odometry yields more accurate results than the wheel odometry we had been using (shown in the following graph).
-
-\includegraphics[width=\columnwidth]{figures/rotating_clouds_with_odom_error.png}
+\begin{figure}[h!]
+	\includegraphics[width=\columnwidth]{figures/rotating_clouds_with_odom_error.png}
+    \caption{TBD}
+\end{figure}
 
 We also learned that there are occasionally incorrect point cloud alignments, telling us we need to improve our alignment algorithm or find a way to detect the quality of each alignment. It is important to note the results we found for stereo visual odometry are preliminary. There are further tests to run and improvements to be made to both our visual simulation and visual odometry. For example, after a specific camera is chosen for the mission we will be able to refine our camera simulation. This will affect the images rendered and require us to run these tests again.
 
+\textit{DRAFT ARNO}
 \subsection{Wheel Slip}
-In order to characterize the \texttt{wheel\_slip\_plugin}, we set up a test harness to gather data on wheel slip behavior over multiple runs. We created a Gazebo world with ramps from 0 to 30 degrees at 2 degree increments. A rostest script would spawn the rover at the base of each ramp and command it to drive 10 meters forward. Wheel slip was measured by comparing dead reckoning distance driven to ground truth and test runs covered sets of parameter values for longitudinal compliance, physics engine solver iterations, and drive speed. 
+Overall, the \texttt{wheel\_slip\_plugin} demonstrated the expected behavior and compared favorably with physical testbed results as can be seen in figure \ref{fig:wheelsliptuningchart}, which compares wheel slip measured from MGRU with the  \texttt{wheel\_slip\_plugin}. 
+\begin{figure}[h!]
+	\includegraphics[width=\columnwidth]{figures/wheel_slip_roverslip.png}
+   	\caption{Comparison of the RP lunar mass equivalent rover slip on GRC-1 simulant and RP rover slip in the Gazebo simulator.}
+    \label{fig:wheelsliptuningchart}
+\end{figure}
 
-Overall, the \texttt{wheel\_slip\_plugin} demonstrated the expected behavior and compared favorably with physical testbed results as can be seen in Figure ??, which compares wheel slip measured from MGRU with the  \texttt{wheel\_slip\_plugin}. However, our test results show that at certain angles and compliance values, there is a wide variation in measured wheel slip. 
+However, our test results show that at certain angles and compliance values, there is a wide variation in measured wheel slip (see figure \ref{fig:slipdisparities}). Those disparities are particularly large on a flat terrain.
+\begin{figure}[h!]
+	\includegraphics[width=\columnwidth]{figures/slip_compliance_longitudinal.png}
+   	\caption{Graph of the slip of the RP rover in Gazebo showing the disparities in the amount of slip.}
+    \label{fig:slipdisparities}
+\end{figure}
+
+\textit{END OF DRAFT ARNO}
+
+
 
 
 
