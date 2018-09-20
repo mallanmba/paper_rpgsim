@@ -120,12 +120,12 @@ Lunar surface operations provide for qualitatively different mission operation s
 
 If the rover is not designed to survive lunar night then the mission either has the time pressure to complete in fourteen days, or the operational pressure to chase sunlight to peaks of eternal light, as proposed in \cite{otten2018strategic}.  The Resource Prospector mission planned to operate within the constraints of the lunar solar day, creating a need for high-tempo mission operations. 
 
-Lunar regolith presents two challenges, both relating to the microbombardment processes which produce the soil \cite{XXX}.  Because the lunar soil is not produced by the erosion processes we are accustomed to on Earth the particular matter is sharp, which is a hazard to the vehicle, and it has reflectance properties very much unlike the Earth\todo{cite Hapke models}, which poses a challenge to both human and automated perception systems.
+Lunar regolith presents two challenges, both relating to the microbombardment processes which produce the soil \cite{XXX}.  Because the lunar soil is not produced by the erosion processes we are accustomed to on Earth the particular matter is sharp, which is a hazard to the vehicle, and it has reflectance properties very much unlike the Earth\todo{cite Hapke models}, which poses a challenge to both human and automated perception systems. \todo{I think this is too much information about regolith up front. Especially since we have to explain how we implement the reflective properties in the shader below. -uland}
 
 The Moon is not without its operational advantages.  First, the relative closeness of the Moon means that the time-of-flight communications delay is only 2.5 seconds, and not on the order of minutes\todo[author=pmf]{get time of flight delay for Mars} for a Mars mission.  Second, through the use of the Deep Space Network, it is possible to be in constant communication with a lunar surface vehicle, barring shadows from terrain features.  Constant availability of a rover supports the high-tempo mission cadence missions like Resource Prospector.
 
 
-Taking advantage of the high communications availability we designed our autonomy system to be distributed between the rover on the surface of the moon and the remote operations team on Earth.  The architecture would place lower-level components of an autonomous system on-board the 
+Taking advantage of the high communications availability we designed our autonomy system to be distributed between the rover on the surface of the moon and the remote operations team on Earth.  The architecture would place lower-level components of an autonomous system -- e.g., waypoint following, relative pose estimation, vehicle safeguarding \todo{Is safeguarding the word we use?} -- on-board the robot.  Higher-level algorithms 
 
 
 \section{Simulator Goals}
@@ -140,15 +140,11 @@ Due to the broad scope of the simulation and the desire to have a functional, en
 
 To produce a viable lunar driving experience the simulated world must be representative of the target physical environment. Specifically, the morphology of the terrain should accurately represent terrain features that would be considered either positive or negative obstacles for the rover. Although DEMs are available for much of the lunar surface, the resolution of these models are not sufficient to represent rover-scale hazards. To make matters worse, the best resolution lunar DEMs are generated from stereo orbital imagery, yet the reference mission was targeting areas with permanently shadowed regions. 
 
-On the Moon, the principal obstacles of interest to rovers are rocks and craters. The size-frequency distributions of these obstacles have significant consequences to mission traverse paths and timing. While mean values are published in literature [cite JPL report 1969] for Highlands/Mare/Polar regions, these distributions vary widely according to locality, with parameters such as proximity to large or fresh craters being significant modulating factors for rocks in particular. These variations were reproduced by procedural placement of craters and ejecta fields and simulating the processes of Lunar terrain formation. 
+On the Moon, the principal obstacles of interest to rovers are rocks and craters. Getting the "density" right was one of the primary objectives of this work as the distributions of obstacles have significant impact on mission traverse paths and schedule. While mean values are published in literature [cite JPL report 1969] for Highlands/Mare/Polar regions, these size-frequency distributions vary widely according to locality. Parameters such as proximity to large or fresh craters, in particular, are significant modulating factors for rocks. We attempted to model these variations by procedural placement of craters and ejecta fields and simulating the processes of Lunar terrain formation with the most current orbital information. 
 
-sample crater Size-frequency \\
-move through time in sequential ordering \\
-place craters larger than x meters first, form rocks using intra-crater distribution, replace rocks at crater interior \\
-parameters of ejecta (radii, sharpness, falloff) can be tuned \\
-place craters smaller than x, uniform in time, only change terrain \\
-crater ejecta degraded by age (small rocks removed) \\
-place rocks with background distribution uniformly \\
+In our process, crater distributions are first sampled to produce an estimate of size-frequency per unit area. For a scene of specific dimension, we can predict how many craters of a particular diameter are present. These distributions take an inverse-exponential form introduced in [jpl report 1969]. We have updated parameters for Polar regions based on manual identification in LRO images and curve fitting. Variation from uncertainty is allowed by estimating sigma from fitting residuals. In the case where the scene is based on a prior DEM, large craters are identified by hand and this is factored into the sampled distribution so that double counting does not occur. Next, an age is assigned pseudo-randomly to each crater, with the probability of a crater being old decreasing with size such that small craters are uniform. The sampled distribution is ordered sequentially in time and assigned a flag based on whether it is large enough to generate ejecta. Working forward in time, ejecta generating craters are "placed" by assigning a uniform random (x,y) location while their shape is stencilled onto a spatial probability map used to generate ejecta rocks. Shape consists of an interior, rim, and ejecta blanket which are all tunable physical parameters. Small craters do not generate ejecta and are thus only assigned spatial coordinates without contributing to the ejecta map.           
+
+Unlike craters, it is difficult and time consuming to identify existing rocks from orbital imagery for each terrain. Moreover, small rocks are under image resolution limits and must be extrapolated from models. Thus, all rocks are generated by randomly sampling from distributions of size-frequency similar to craters. There are two populations associated with rocks, one for ejecta thrown during crater formation, and a second uniform background distribution for terrain between large craters. For the Polar regions, the background distribution is several orders of magnitude sparser than ejecta. During the process of sampling rocks and assigning spatial coordinates, the ejecta probability map is consulted in order to modulate local density. At each time step, old rocks have a probability of being covered by regolith, and a new crater forming will cover old rocks under its extent. When the number of generated rocks and craters equals the expected number plus some variation, the sizes, ages, and coordinates of the features are passed into fractal terrain generator.     
 
 Because the reference mission defined rocks larger than 10-25cm as positive obstacles, we desired a terrain resolution of 5cm or greater. Given that 5cm resolution is well beyond available lunar DEMs, we developed tools to artificially increase resolution using established techniques {parkes2004planet}. ** insert summary of PANGU paper **
 
@@ -186,9 +182,31 @@ Although not perfect at simulating the wheel/soil interaction, this plug-in enab
 some text
 
 \subsection{Gazebo Terrain Improvements}
-[enabling Gazebo features *Chen*]
+
+As high resolution synthetic terrains are generated and used in simulation, it became evident that the existing terrain visualization support in Gazebo has its performance limitations. At the highest resolution of 8K in our experiments, the DEM can take up to several minutes to load in Gazebo, and once loaded, a significant drop in framerate was observed. To address these performance issues, we added two features to Gazebo: 1) caching of terrain data to disk, and 2) Level-Of-Detail (LOD) support. Gazebo uses the Ogre3D rendering engine, which conveniently has support for both of these features. 
+
+\subsubsection{Terrain data caching}
+
+It was observed that a large portion of the Gazebo startup time was attributed to the loading and parsing of DEM data into Ogre3d internal terrain tile data format. Adding the ability to cache these data means that the overhead would only need to be incurred once. All subsequent Gazebo sessions using the same DEM file and textures will fetch and load the generated Ogre3D terrain cache from disk, bypassing the DEM parsing and terrain tile generation process. In our tests, the Gazebo startup time reduced by a factor of 10 (from ~5 minutes to ~30 seconds) when loading a simulation environment constructed from an 8K resolution DEM.
+
+\subsubsection{LOD}
+
+The most noticeable drop in runtime rendering performance occurs when the entire terrain is within the camera view, in which case, no parts of the terrain are frustum-culled. While the camera sensors onboard on rover do not necessary see the entire terrain, the degraded performance was affecting normal usage of the simulator such as basic user interaction with the simulation environment. Integrating LOD support helped to reduce the triangle count and hence improves the frame rate in this scenario (see figure \ref{fig:heightmaplod}). The quad-tree based LOD implementation in Ogre3D lets users configure LOD transitions to some degree by specifying the maximum screen pixel error allowed when rendering. In general, a node higher up the tree, i.e. lower detail, can only be rendered if its screen space pixel error, computed based on the height characteristics of the node and the current camera distance, does not exceed the specified maximum. 
+
+\begin{figure}[h!]
+	\includegraphics[width=\columnwidth]{figures/heightmap_lod_bright.jpg}
+   	\caption{Wireframe visualization of terrain with LOD enabled}
+    \label{fig:heightmaplod}
+\end{figure}
+
+Enabling LOD helped resolved framerate issue but in some cases, especially when large DEMs are used, it introduced noticeable popping effects during LOD transitions. This issue was mitigated by pre-subdividing the DEM into smaller terrain chunks. In doing so, we also had to make sure that the UV coordinates of each terrain chunk are transformed so that the texture maps, which applies to the whole terrain, can be sampled correctly during shading.
+
+\subsubsection{Terrain Meshes}
+
+[*Allan* to describe terrain dae meshes?]
 
 \subsection{GLSL Shader}
+Regolith is the layer of powdery dust which covers most of the moon except for the rare vertical rocky surface. As such, correctly simulating the appearance of regolith via the bidirectional reflectance distribution function (BRDF) is a major factor in achieving visual fidelity. The reflectance of Lunar regolith and regolith-like materials have been comprehensively studied and the Hapke functions remain the most accurate physically-based models \cite{hapke11}. However, the Hapke BRDF has several drawbacks when used for rover-scale rendering including mathematical complexity, non-invertibility, and edge artifacts\cite{wong2012}. We implement an approximation to the full BRDF suggested by Hapke, which combines coherent-backscatter and shadow hiding into a single term. Furthermore, our Hapke approximation shader is combined with a Lambertian BRDF with a nadir-dependent angle to reduce rendering artifacts. This is a similar strategy used by \cite{McEwen1996} in developing the Lunar-Lambertian model derived from Lommel-Seeliger reflectance. Our Hapke parameters are estimated from prior literature for Highlands regolith, which is a stand-in for Polar regions of the moon. Our model achieves the desired loss of contrast and opposition surge while behaving properly under direct illumination.           
 
 \subsection{Shadows}
 Shadow rendering provides countless challenges and has been under continuous development since the advent of computer graphics. Like most aspects of real-time computer graphics, a good solution involves finding a set of approximations that work well for you particular problem. Our problem was to render shadows that would appear as realistic as possible from the perspective of our rover's cameras. And, since one of our simulation goals was exploration of polar regions, we needed a shadow solution that would support low illumination angles (i.e. the sun close to the horizon).
@@ -233,6 +251,15 @@ To draw the wheel tracks in the texture we use a Gazebo plugin. We use Gazebo's 
 \subsection{Ephemeris}
 
 The position of the Sun and Earth relative to the moon is computed using the SPICE C toolkit provided by the Navigation and Ancillary Information Facility (NAIF) \url{https://naif.jpl.nasa.gov/naif/toolkit.html}.  Using the timestamp maintained by the simulator, this toolkit generates the transformations between the Moon, the Sun, and the Earth at the current simulated time.  By chaining these transformations with the rover's current position on the surface of the moon we are able to compute the positions of the Sun and the Earth relative to our local coordinate system and position them accurately in the simulator.  We are not concerned about the locations of stars because they are not drawn in the simulator.
+
+\subsection {Photometry}
+The reference mission required training in use of photographic systems coupled with active illumination for driving. Developments were made to model complex illumination effects from natural sources, rover-based lighting, and finally sensor processes in order to produce an accurate camera image. To accomplish this in a real-time manner, we used physically-based raytracing to produce exemplar scenes which were then approximated with shader tricks. 
+
+The dynamic range of scenes on the Moon drives the perfomance of stereo safeguarding, human situational awareness, and the design of rover lighting. To accurately simulate dynamic range, global illumination must be modeled. If direct sunlight were the only source of illumination, shadows would be pitch black. However, we know this is not the case in images of the Lunar surface despite the high dynamic range. Light reaches shadowed areas from multiple natural sources including diffuse interreflection of the Lunar surface, Earthshine, and starlight. Using ray tracing, we simulated the contribution of indirect scattering in ideal surface craters given particular phase angle combinations. Our findings indicate that an average of 6\% of the direct illumination reflects into shadows in polar scenes. This effect was approximated in rendering by illuminating the scene with a low-intensity virtual source opposing the sun in azimuth \todo{is this true for the final version? -uland}. Analytically we also showed that light from the star field is insignificant and that Earthshine, while fractionally powerful compared to indirect scattering, is complexly dependent on the phase of Earth. Thus, these other sources were not implemented.       
+
+lens flares\\
+rover lights\\
+16bit rendering image post processing\\
 
 \section{Results}
 
