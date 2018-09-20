@@ -128,9 +128,9 @@ The Moon is not without its operational advantages.  First, the relative closene
 Taking advantage of the high communications availability we designed our autonomy system to be distributed between the rover on the surface of the moon and the remote operations team on Earth.  The architecture would place lower-level components of an autonomous system -- e.g., waypoint following, relative pose estimation, vehicle safeguarding \todo{Is safeguarding the word we use?} -- on-board the robot.  Higher-level algorithms 
 
 
-\section{Simulator Goals}
+\section{Simulator Approach}
 
-Early in mission development, there are many unknowns. One way to reduce uncertainty about mission elements is through the use of simulation. blah blah skid steer versus explicit steer, impact of bandwidth on driving tempo, interaction between driver and real time science. Develop complete sim capability as quicly as possible, using stubs and analogous functionality where necessary. 
+Early in mission development, there are many unknowns. As the various mission elements work to address their specific requirements within budget and technology constraints, the trade space is large and a design decision in one element may have ripple effects that impact overall system performance. One way to reduce uncertainty about design alternatives and to answer questions about system performance, particularly from an operational perspective, is through simulation. For example, it may be obvious that a skid steer mobility system would be simple, cheap, and robust from a mechanical perspective but odometry from an explicit steer platform would give superior localization results. But how would the driving behavior of those platforms impact solar charging rates over a traverse? 
 
 Due to the broad scope of the simulation and the desire to have a functional, end-to-end lunar driving simulation as quickly as possible, a simulation framework that offered a rich set of off-the-shelf capability was necessary. [ why ROS and Gazebo were a great choice - *Gerkey* ] 
 
@@ -220,7 +220,7 @@ One common challenge related to shadow mapping is providing an appropriate amoun
 
 A related challenge stems from the relationship of the light ray direction compared to the user's view direction. When these directions are close to parallel, as is often the case in our simulation because the sun is close to the horizon, it becomes difficult to make a good distribution of shadow resolution. This is known as the dueling frusta problem. There are refinements of shadow mapping that exaggerate this problem and others that minimize it.
 
-It is possible to improve shadow quality if you know, for a given scene, which shadows are static and which are dynamic. If the light source moves then all the shadows it casts are dynamic. The orientation of the sun relative to the moon changes so slowly that we can assume it is stationary in our simulation. The only moving object is the rover itself. Therefore, we can pre-compute shadows cast by the terrain (often referred to as baked shadows), and we only need to compute real-time shadows for the rover.
+It is possible to improve shadow quality if you know, for a given scene, which shadows are static and which are dynamic. If the light source moves then all the shadows it casts are dynamic. The orientation of the sun relative to the moon changes so slowly that we can assume it is effectively stationary in our simulation. The only moving object is the rover itself. Therefore, we can pre-compute shadows cast by the terrain (often referred to as baked shadows), and we only need to compute real-time shadows for the rover.
 
 \subsubsection{Baked Shadows}
 
