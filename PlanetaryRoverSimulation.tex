@@ -135,7 +135,6 @@ Early in mission development, there are many unknowns. As the various mission el
 Due to the broad scope of the simulation and the desire to have a functional, end-to-end lunar driving simulation as quickly as possible, a simulation framework that offered a rich set of off-the-shelf capability was necessary. [ why ROS and Gazebo were a great choice - *Gerkey* ] 
 
 
-  
 \section{Synthetic Terrain Generation}
 
 To produce a viable lunar driving experience the simulated world must be representative of the target physical environment. Specifically, the morphology of the terrain should accurately represent terrain features that would be considered either positive or negative obstacles for the rover. Although DEMs are available for much of the lunar surface, the resolution of these models are not sufficient to represent rover-scale hazards. To make matters worse, the best resolution lunar DEMs are generated from stereo orbital imagery, yet the reference mission was targeting areas with permanently shadowed regions. 
@@ -166,12 +165,6 @@ The Gazebo simulator physics engine provide the following framework to deal with
 	\includegraphics[width=\columnwidth]{figures/wheel_slip_MGRU.JPG}
    	\caption{Wheel/soil interaction model}
     \label{fig:wheelsoilmodel}
-\end{figure}
-In order to characterize the \texttt{wheel\_slip\_plugin}, we set up a test harness to gather data on wheel slip behavior over multiple runs. We created a Gazebo world with ramps from 0 to 30 degrees at 2 degree increments (see figure \ref{fig:simulationramps}). A rostest script would spawn the rover at the base of each ramp and command it to drive 10 meters forward. Wheel slip was measured by comparing dead reckoning distance driven to ground truth and test runs covered sets of parameter values for longitudinal compliance, physics engine solver iterations, and drive speed. 
-\begin{figure}[h!]
-	\includegraphics[width=\columnwidth]{figures/world_lots_o_ramps.jpg}
-   	\caption{Gazebo simulation for the slip vs slope test with the RP rover.}
-    \label{fig:simulationramps}
 \end{figure}
 
 Although not perfect at simulating the wheel/soil interaction, this plug-in enables the simulated rover to have a high level slip behavior relatively close to what will be expected on a lunar terrain. In order to increase the fidelity and give more realism for wheel sinkage and rover embedding, this simple model would need to be replaced by a discrete element method (DEM) model which is very costly in terms of computational power and existing system are unproven due to the complexity of the particle interaction.
@@ -276,6 +269,12 @@ We also learned that there are occasionally incorrect point cloud alignments, te
 
 \textit{DRAFT ARNO}
 \subsection{Wheel Slip}
+In order to characterize the \texttt{wheel\_slip\_plugin}, we set up a test harness to gather data on wheel slip behavior over multiple runs. We created a Gazebo world with ramps from 0 to 30 degrees at 2 degree increments (see figure \ref{fig:simulationramps}). A rostest script would spawn the rover at the base of each ramp and command it to drive 10 meters forward. Wheel slip was measured by comparing dead reckoning distance driven to ground truth and test runs covered sets of parameter values for longitudinal compliance, physics engine solver iterations, and drive speed. 
+\begin{figure}[h!]
+	\includegraphics[width=\columnwidth]{figures/world_lots_o_ramps.jpg}
+   	\caption{Gazebo simulation for the slip vs slope test with the RP rover.}
+    \label{fig:simulationramps}
+\end{figure}
 Overall, the \texttt{wheel\_slip\_plugin} demonstrated the expected behavior and compared favorably with physical testbed results as can be seen in figure \ref{fig:wheelsliptuningchart}, which compares wheel slip measured from MGRU with the  \texttt{wheel\_slip\_plugin}. 
 \begin{figure}[h!]
 	\includegraphics[width=\columnwidth]{figures/wheel_slip_roverslip.png}
