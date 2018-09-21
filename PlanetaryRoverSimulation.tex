@@ -101,7 +101,293 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
   && Use existing, similar robots to emulate (Furlong)
     &&& Husky
     &&& KRex2
-  && Flight software integration with Gazebo
+  && Flight software integration with Gazebo31
+
+\pagestyle{plain}
+
+32
+
+​
+
+33
+
+\begin{abstract}
+
+34
+
+​
+
+35
+
+When planning planetary rover missions it is useful to develop intuition and skills driving in, quite literally, alien environments before incurring the cost of reaching said locales. Simulators make it possible to operate in environments that have the physical characteristics of target locations without the expense and overhead of extensive physical tests. To that end, NASA Ames and Open Robotics collaborated on a lunar rover driving simulator based on the open source Gazebo simulation platform and leveraging ROS (Robotic Operating System) components. The simulator was integrated with research and mission software for rover driving, system monitoring, and science instrument simulation to constitute an end-to-end lunar mission simulation capability.
+
+36
+
+​
+
+37
+
+Although we expect our simulator to be applicable to arbitrary lunar regions, we designed to a reference mission of prospecting in polar regions. The harsh lighting and low illumination angles at the lunar poles combine with the unique reflectance properties of lunar regolith to present a challenging visual environment for both human and computer perception. Our simulator placed an emphasis on high fidelity visual simulation in order to produce synthetic imagery suitable for evaluating human rover drivers with navigation tasks, as well as providing test data for computer vision software development.
+
+38
+
+​
+
+39
+
+In this paper, we describe the software used to construct the simulated lunar environment and the components of the driving simulation. Our synthetic terrain generation software artificially increases the resolution of lunar digital elevation maps by fractal synthesis and inserts craters and rocks based on lunar size-frequency distribution models. We describe the necessary enhancements to import large scale, high resolution terrains into Gazebo, as well as our approach to modeling the visual environment of the lunar surface. An overview of the mission software system is provided, along with how ROS was used to emulate flight software components that had not been developed yet.
+
+40
+
+​
+
+41
+
+We summarize how the simulator has been used to refine the mission concept of operations and to evaluate the operations impact of rover engineering design decisions. We reduced uncertainty about mission operations tempo by simulating mission scenarios with representative drive speeds, telemetry rates and network delays. The operations team exploited the simulator’s flexibility to experiment with different rover configurations and compare the effect of things such as different camera placement options and mobility system steering constraints.
+
+42
+
+​
+
+43
+
+Finally, we discuss the effect of using the high-fidelity synthetic lunar images for visual odometry.  We also discuss the characterization of the shader model for lunar illumination relative to a ray-tracing with accurate reflectance models.  Further, we characterize the wheel slip model, and find some inconsistencies in the produced wheel slip behaviour.
+
+44
+
+​
+
+45
+
+\end{abstract}
+
+46
+
+​
+
+47
+
+\begin{figure*}[htp]
+
+48
+
+\begin{subfloat}[A lunar scene produced by the RP Simulator.]{
+
+49
+
+\includegraphics[width=0.5\linewidth]{figures/RPsim_glory_shot.png}
+
+50
+
+}
+
+51
+
+\end{subfloat}
+
+52
+
+\qquad
+
+53
+
+\begin{subfloat}[A lunar scene from the Apollo 12 mission.]{
+
+54
+
+\includegraphics[width=0.45\linewidth]{figures/apollo12.png}
+
+55
+
+}
+
+56
+
+\end{subfloat}
+
+57
+
+\caption{One of the goals of the simulator was to create a lunar environment that not only simulated the interaction of the vehicle with the lunar terrain, but was also visibly similar to the lunar terrain.\label{fig:sim-by-real}}
+
+58
+
+\end{figure*}
+
+59
+
+​
+
+60
+
+\tableofcontents
+
+61
+
+​
+
+62
+
+​
+
+63
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+64
+
+\section{Rough Outline (feel free to change)}
+
+65
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+66
+
+\begin{easylist}[checklist]
+
+67
+
+& Resource Prospector Background
+
+68
+
+&& High level overview of mission objectives (Fong/Deans)
+
+69
+
+&& Differences to Mars ops (Furlong/Deans)
+
+70
+
+&& High level concept of operations (Deans/Shirley/Allan/Furlong)
+
+71
+
+&& High level software architecture (Furlong/Allan)
+
+72
+
+&&& flight/ground software split (Furlong)
+
+73
+
+& Simulator goals / overview 
+
+74
+
+  && Development approach
+
+75
+
+    &&& create driving sim as fast as possible
+
+76
+
+    &&& development/refinement of conops
+
+77
+
+  && prototype mission software architecture with stubs and existing components with ROS (Gerkey)
+
+78
+
+  && use sim-generated data for flight software development
+
+79
+
+      &&& flight software --> Gazebo
+
+80
+
+      &&& Gazebo and ROS output --> nav and localization
+
+81
+
+    && incrementally replace stubs and emulated components with flight versions
+
+82
+
+    && use for training
+
+83
+
+& Synthetic Terrain Generation (Allan/Wong)
+
+84
+
+& Lunar Visual Environment (Allan/Wong)
+
+85
+
+  && Gazebo terrain enhancements (Chen)
+
+86
+
+    &&& LOD
+
+87
+
+    &&& background tiles (Allan)
+
+88
+
+  && GLSL shader (Allan/Wong/Welsh)
+
+89
+
+  && Wheel tracks
+
+90
+
+  && Shadows (Welsh/Chen)
+
+91
+
+    &&& real time shadow challenges 
+
+92
+
+    &&& baked shadows (Shirley)
+
+93
+
+    &&& Gazebo shadow improvements 
+
+94
+
+  && Ephemeris (McMichael)
+
+95
+
+  && Lighting / HDR
+
+96
+
+    &&& Earthshine, bounced light (Wong)
+
+97
+
+    &&& high bit depth rendering in Gazebo (Chen)
+
+98
+
+    &&& PBR indirect lighting experiment (Wong)
+
+99
+
+    &&& attempt to reproduce in GLSL (Allan)
+
+100
+
+& Vehicle simulation 
+
+101
+
+  && Use existing, similar robots to emulate (Furlong)
+
+102
+
+    &&& Husky
   && Wheel slip plugin (Rogg/Peters)
     &&& first order approximation
     &&& fault injection
@@ -146,7 +432,7 @@ Taking advantage of the high communications availability we designed our autonom
 
 \section{Simulator Approach}
 
-Early in mission development, there are many unknowns. As the various mission elements work to address their specific requirements within budget and technology constraints, the trade space is large and a design decision in one element may have ripple effects that impact overall system performance. One way to reduce uncertainty about design alternatives and to answer questions about system performance, particularly from an operational perspective, is through simulation. For example, it may be obvious that a skid steer mobility system would be simple, cheap, and robust from a mechanical perspective but odometry from an explicit steer platform would give superior localization results. But how would the driving behavior of those platforms impact solar charging rates over a traverse? 
+Early in mission development, there are many unknowns. As the various mission elements work to address their specific requirements within budget and technology constraints, the trade space is large and a design decision in one element may have ripple effects that impact overall system performance. One way to reduce uncertainty about design alternatives and to answer questions about system performance, particularly from an operational perspective, is through simulation. For example, it may be obvious that a skid steer mobility system would be simple, cheap, and robust from a mechanical perspective but odometry from an explicit steer platform would give superior localization results. But how would the driving behavior of these two platforms compare with respect to solar charging rates over a traverse? 
 
 Our goal was to create a simulation environment in which we could rapidly create approximate prototypes of lunar rover systems to estimate characteristics and performance. Due to the broad scope of the simulation and the desire to have a functional, end-to-end lunar driving simulation as quickly as possible, a simulation framework that offered a rich set of off-the-shelf capability was necessary. [ why ROS and Gazebo were a great choice - *Gerkey* ] 
 
@@ -254,9 +540,9 @@ some text
 Gazebo was extended to allow lights to be attached to articulated rover components, which greatly simplified code associated with light placement. Ogre3D material files were used to pass light parameters from Gazebo to our GLSL shader. The shader simulates up to four spotlights having brightness, cone angle, and distance falloff that can be specified as part of our Gazebo light description. We also added a texture projection feature for simulating the detailed pattern projected by a real-world light source. This infrastructure gives us the ability to simulate a variety of lighting hardware and placement before settling on a final solution. For the time being, we have specified lights that will cast 1/500 of sunlight intensity at a distance of ten meters, a reasonable approximation of our final hardware.
 
 \subsection{16bit Rendering and Image Post Processing}
-A standard bit depth of 8 is enough for viewing images on a nonspecialized monitor, but computer vision algorithms, such as our visual odometry, can make use of higher depths. The cameras under consideration have a bit depth of 12, so we need to render images of the same depth to accurately simulate our intended image pipeline. We extended Gazebo to capture 16-bit images. Internally, Gazebo already supports floating point textures as they are used to store data generated by depth and other image-based range sensors. So the task of simulating 16 bit grayscale and RGB camera sensors was relatively straightforward, essentially by rendering to textures in the these formats. Direct 12-bit image capture is not an option in OpenGL, but a 16-bit image can be downsampled to 12-bit as a post-render step.
+A standard bit depth of 8 is enough for viewing images on a nonspecialized monitor, but computer vision algorithms, such as our visual odometry, can make use of higher depths. The cameras under consideration have a bit depth of 12, so we need to render images of the same depth to accurately simulate our intended image pipeline. We extended Gazebo to capture 16-bit images. Internally, Gazebo already supports floating point textures as they are used to store data generated by depth and other image-based range sensors. So the task of simulating 16-bit grayscale and RGB camera sensors was relatively straightforward, essentially by rendering to textures in the these formats. Direct 12-bit image capture is not an option in OpenGL, but a 16-bit image can be downsampled to 12-bit as a post-render step.
 
-Resource Prospector is planned as a short mission with tight constraints based on processing power and transmission time. To support our concept of operations, visual odometry updates must be available within about a minute of image capture. We plan to apply 1-bit S-Log compression to our 12-bit camera images, transmit them to our mission control center, and there use them to perform visual odometry. Extracting stereo point clouds from S-Log compressed images has been shown to be nearly as accurate as using raw images (citation?).
+Resource Prospector is planned as a short mission with tight constraints based on processing power and transmission time. To support our concept of operations, visual odometry updates must be available within about a minute of image capture. We plan to apply 1-bit S-Log compression to our 12-bit camera images, transmit them to our mission control center, and there use them to perform visual odometry. Extracting stereo point clouds from S-Log compressed images has been shown to be nearly as accurate as using original images (citation?).
 
 \section{Vehicle Simulation}
 
@@ -275,11 +561,22 @@ It is also possible to raise and lower each of the wheels independently. Combini
 We developed the physical simulation of the robot in Gazebo in two stages. This was to aid the development of on-going concept of operations missions.  The first version of the robot was simulated using the Husky gazebo model \cite{gariepy2015husky}.  
 
 \begin{figure}[htp]
-\missingfigure{Picture of a husky robot}
+\missingfigure{Picture of a husky robot ?vs simulated husky?}
 \caption{The Husky robot is manufactured \label{fig:husky}}
 \end{figure}
 
-The Husky robot (\cref{fig:husky}) is only capable of skid-steering, which does not reflect the full capabilities of the RP vehicle.  However, since the RP vehicle is capable of skid steering, the Husky provided a platform to quickly 
+The Husky robot (\cref{fig:husky}) is only capable of skid-steering, which does not reflect the full capabilities of the RP vehicle.  However, since the RP vehicle is capable of skid steering, the Husky provided a platform to quickly mount the sensors needed for conducting missions operations tests and provide a reasonable approximation of vehicle motion.  
+
+The second emulation of the vehicle was a modified version of the NASA Ames Intelligent Robotics Group's KRex2 robot (\cref{fig:krex2}).  The KRex2 robot is, like RP, an explicit-steer vehicle.  However, where RP can independently lower and raise its wheels, KRex2 cannot, and relies on a differencing bar to maintain contact with the terrain, as shown in \cref{fig:krex2-differencing}.    
+
+\begin{figure}[htp]
+\missingfigure{Picture of krex2 ?vs simulated krex2?}
+\caption{KRex2 while on a field deployment \label{fig:krex2}}
+\end{figure}
+
+Using KRex2 as a proxy for the RP vehicle enabled the use of the explicit steering capacity for missions operations testing.  Using the URDF language to describe the robot, it was easy to modify the sensors that were added to the earlier Husky model to the modified KRex2 model.  
+
+To both of these vehicles we added a stereo camera pair that was mounted on a gimbal at the top of the mast, seen in \cref{fig:rp-houston}, as well as the solar-panel superstructure. We also added a simulated IMU and tracked wheel odometry for use in pose estimation.  
 
 \subsection{Wheel Slip}
 \textit{DRAFT ARNO}
