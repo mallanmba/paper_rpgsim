@@ -10,6 +10,8 @@
 \usepackage[]{graphicx}    % We use this package in this document
 \usepackage{url}
 \usepackage{todonotes}
+\usepackage[capitalize]{cleveref}
+\usepackage{subfig}
 \newcommand{\ignore}[1]{}  % {} empty inside = %% comment
 
 \begin{document}
@@ -42,8 +44,21 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
 
 \end{abstract}
 
+\begin{figure*}[htp]
+\begin{subfloat}[A lunar scene produced by the RP Simulator.]{
+\includegraphics[width=0.5\linewidth]{figures/RPsim_glory_shot.png}
+}
+\end{subfloat}
+\qquad
+\begin{subfloat}[A lunar scene from the Apollo 12 mission.]{
+\includegraphics[width=0.45\linewidth]{figures/apollo12.png}
+}
+\end{subfloat}
+\caption{One of the goals of the simulator was to create a lunar environment that not only simulated the interaction of the vehicle with the lunar terrain, but was also visibly similar to the lunar terrain.\label{fig:sim-by-real}}
+\end{figure*}
 
 \tableofcontents
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Rough Outline (feel free to change)}
@@ -125,7 +140,8 @@ Lunar regolith presents two challenges, both relating to the microbombardment pr
 The Moon is not without its operational advantages.  First, the relative closeness of the Moon means that the time-of-flight communications delay is only 2.5 seconds, and not on the order of minutes\todo[author=pmf]{get time of flight delay for Mars} for a Mars mission.  Second, through the use of the Deep Space Network, it is possible to be in constant communication with a lunar surface vehicle, barring shadows from terrain features.  Constant availability of a rover supports the high-tempo mission cadence missions like Resource Prospector.
 
 
-Taking advantage of the high communications availability we designed our autonomy system to be distributed between the rover on the surface of the moon and the remote operations team on Earth.  The architecture would place lower-level components of an autonomous system -- e.g., waypoint following, relative pose estimation, vehicle safeguarding \todo{Is safeguarding the word we use?} -- on-board the robot.  Higher-level algorithms 
+Taking advantage of the high communications availability we designed our autonomy system to be distributed between the rover on the surface of the moon and the remote operations team on Earth.  The architecture would place lower-level components of an autonomous system -- e.g., waypoint following, relative pose estimation, vehicle safeguarding \todo{Is safeguarding the word we use?} -- on-board the robot.  Higher-level algorithms, like absolute localization through terrain matching, are operated on the ground.  The division of software modules is given in \cref{fig:rp-software}
+
 
 
 \section{Simulator Approach}
@@ -139,9 +155,9 @@ Our goal was to create a simulation environment in which we could rapidly create
 
 To produce a viable lunar driving experience the simulated world must be representative of the target physical environment. Specifically, the morphology of the terrain should accurately represent terrain features that would be considered either positive or negative obstacles for the rover. Although DEMs are available for much of the lunar surface, the resolution of these models are not sufficient to represent rover-scale hazards. To make matters worse, the best resolution lunar DEMs are generated from stereo orbital imagery, yet the reference mission was targeting areas with permanently shadowed regions. 
 
-On the Moon, the principal obstacles of interest to rovers are rocks and craters. Getting the "density" right was one of the primary objectives of this work as the distributions of obstacles have significant impact on mission traverse paths and schedule. While mean values are published in literature [cite JPL report 1969] for Highlands/Mare/Polar regions, these size-frequency distributions vary widely according to locality. Parameters such as proximity to large or fresh craters, in particular, are significant modulating factors for rocks. We attempted to model these variations by procedural placement of craters and ejecta fields and simulating the processes of Lunar terrain formation with the most current orbital information. 
+On the Moon, the principal obstacles of interest to rovers are rocks and craters. Getting the "density" right was one of the primary objectives of this work as the distributions of obstacles have significant impact on mission traverse paths and schedule. While mean values are published in literature \cite{Surveyor1968} for Highlands/Mare/Polar regions, these size-frequency distributions vary widely according to locality. Parameters such as proximity to large or fresh craters, in particular, are significant modulating factors for rocks. We attempted to model these variations by procedural placement of craters and ejecta fields and simulating the processes of Lunar terrain formation with the most current orbital information. 
 
-In our process, crater distributions are first sampled to produce an estimate of size-frequency per unit area. For a scene of specific dimension, we can predict how many craters of a particular diameter are present. These distributions take an inverse-exponential form introduced in [jpl report 1969]. We have updated parameters for Polar regions based on manual identification in LRO images and curve fitting. Variation from uncertainty is allowed by estimating sigma from fitting residuals. In the case where the scene is based on a prior DEM, large craters are identified by hand and this is factored into the sampled distribution so that double counting does not occur. Next, an age is assigned pseudo-randomly to each crater, with the probability of a crater being old decreasing with size such that small craters are uniform. The sampled distribution is ordered sequentially in time and assigned a flag based on whether it is large enough to generate ejecta. Working forward in time, ejecta generating craters are "placed" by assigning a uniform random (x,y) location while their shape is stencilled onto a spatial probability map used to generate ejecta rocks. Shape consists of an interior, rim, and ejecta blanket which are all tunable physical parameters. Small craters do not generate ejecta and are thus only assigned spatial coordinates without contributing to the ejecta map.           
+In our process, crater distributions are first sampled to produce an estimate of size-frequency per unit area. For a scene of specific dimension, we can predict how many craters of a particular diameter are present. These distributions take an inverse-exponential form introduced in \cite{Surveyor1968}. We have updated parameters for Polar regions based on manual identification in LRO images and curve fitting. Variation from uncertainty is allowed by estimating sigma from fitting residuals. In the case where the scene is based on a prior DEM, large craters are identified by hand and this is factored into the sampled distribution so that double counting does not occur. Next, an age is assigned pseudo-randomly to each crater, with the probability of a crater being old decreasing with size such that small craters are uniform. The sampled distribution is ordered sequentially in time and assigned a flag based on whether it is large enough to generate ejecta. Working forward in time, ejecta generating craters are "placed" by assigning a uniform random (x,y) location while their shape is stencilled onto a spatial probability map used to generate ejecta rocks. Shape consists of an interior, rim, and ejecta blanket which are all tunable physical parameters. Small craters do not generate ejecta and are thus only assigned spatial coordinates without contributing to the ejecta map.           
 
 Unlike craters, it is difficult and time consuming to identify existing rocks from orbital imagery for each terrain. Moreover, small rocks are under image resolution limits and must be extrapolated from models. Thus, all rocks are generated by randomly sampling from distributions of size-frequency similar to craters. There are two populations associated with rocks, one for ejecta thrown during crater formation, and a second uniform background distribution for terrain between large craters. For the Polar regions, the background distribution is several orders of magnitude sparser than ejecta. During the process of sampling rocks and assigning spatial coordinates, the ejecta probability map is consulted in order to modulate local density. At each time step, old rocks have a probability of being covered by regolith, and a new crater forming will cover old rocks under its extent. When the number of generated rocks and craters equals the expected number plus some variation, the sizes, ages, and coordinates of the features are passed into fractal terrain generator.     
 
@@ -181,7 +197,7 @@ Enabling LOD helped resolved framerate issue but in some cases, especially when 
 [*Allan* to describe terrain dae meshes?]
 
 \subsection{GLSL Shader}
-Regolith is the layer of powdery dust which covers most of the moon except for the rare vertical rocky surface. As such, correctly simulating the appearance of regolith via the bidirectional reflectance distribution function (BRDF) is a major factor in achieving visual fidelity. The reflectance of Lunar regolith and regolith-like materials have been comprehensively studied and the Hapke functions remain the most accurate physically-based models \cite{hapke11}. However, the Hapke BRDF has several drawbacks when used for rover-scale rendering including mathematical complexity, non-invertibility, and edge artifacts\cite{wong2012}. We implement an approximation to the full BRDF suggested by Hapke, which combines coherent-backscatter and shadow hiding into a single term. Furthermore, our Hapke approximation shader is combined with a Lambertian BRDF with a nadir-dependent angle to reduce rendering artifacts. This is a similar strategy used by \cite{McEwen1996} in developing the Lunar-Lambertian model derived from Lommel-Seeliger reflectance. Our Hapke parameters are estimated from prior literature for Highlands regolith, which is a stand-in for Polar regions of the moon. Our model achieves the desired loss of contrast and opposition surge while behaving properly under direct illumination.           
+Regolith is the layer of powdery dust which covers most of the moon except for the rare vertical rocky surface. As such, correctly simulating the appearance of regolith via the bidirectional reflectance distribution function (BRDF) is a major factor in achieving visual fidelity. The reflectance of Lunar regolith and regolith-like materials have been comprehensively studied and the Hapke functions remain the most accurate physically-based models \cite{hapke11}. However, the Hapke BRDF has several drawbacks when used for rover-scale rendering including mathematical complexity, non-invertibility, and edge artifacts\cite{Wong2012}. We implement an approximation to the full BRDF suggested by Hapke, which combines coherent-backscatter and shadow hiding into a single term. Furthermore, our Hapke approximation shader is combined with a Lambertian BRDF with a nadir-dependent angle to reduce rendering artifacts. This is a similar strategy used by \cite{McEwen1996} in developing the Lunar-Lambertian model derived from Lommel-Seeliger reflectance. Our Hapke parameters are estimated from prior literature for Highlands regolith, which is a stand-in for Polar regions of the moon. Our model achieves the desired loss of contrast and opposition surge while behaving properly under direct illumination.           
 
 \subsection{Shadows}
 Shadow rendering provides countless challenges and has been under continuous development since the advent of computer graphics. Like most aspects of real-time computer graphics, a good solution involves finding a set of approximations that work well for you particular problem. Our problem was to render shadows that would appear as realistic as possible from the perspective of our rover's cameras. And, since one of our simulation goals was exploration of polar regions, we needed a shadow solution that would support low illumination angles (i.e. the sun close to the horizon).
@@ -224,22 +240,46 @@ Our shader already employs bump mapping to give the regolith its fine detail, so
 To draw the wheel tracks in the texture we use a Gazebo plugin. We use Gazebo's knowledge of the rover model and the terrain layout to compute what part of the texture each wheel position corresponds with. Everywhere each wheel travels, we draw an anti-aliased dot in the texture of a size in texels that appears to match the wheel size when the texture is projected on the terrain. These dots overlap to give the appearance of a continuous groove made by each wheel.
 
 \subsection{Ephemeris}
-
 The position of the Sun and Earth relative to the moon is computed using the SPICE C toolkit provided by the Navigation and Ancillary Information Facility (NAIF) \url{https://naif.jpl.nasa.gov/naif/toolkit.html}.  Using the timestamp maintained by the simulator, this toolkit generates the transformations between the Moon, the Sun, and the Earth at the current simulated time.  By chaining these transformations with the rover's current position on the surface of the moon we are able to compute the positions of the Sun and the Earth relative to our local coordinate system and position them accurately in the simulator.  We are not concerned about the locations of stars because they are not drawn in the simulator.
 
 \subsection {Photometry}
-The reference mission required training in use of photographic systems coupled with active illumination for driving. Developments were made to model complex illumination effects from natural sources, rover-based lighting, and finally sensor processes in order to produce an accurate camera image. To accomplish this in a real-time manner, we used physically-based raytracing to produce exemplar scenes which were then approximated with shader tricks. 
+The reference mission required training in use of photographic systems coupled with active illumination for driving. Developments were made to model complex illumination effects from natural sources, rover-based lighting, and sensor optics in order to produce an accurate camera image. To accomplish this in a real-time manner, we used physically-based raytracing to produce exemplar scenes which were then approximated with shader tricks. 
 
-The dynamic range of scenes on the Moon drives the performance of stereo safeguarding, human situational awareness, and the design of rover lighting. To accurately simulate dynamic range, global illumination must be modeled. If direct sunlight were the only source of illumination, shadows would be pitch black. However, we know this is not the case in images of the Lunar surface despite the high dynamic range. Light reaches shadowed areas from multiple natural sources including diffuse interreflection of the Lunar surface, Earthshine, and starlight. Using ray tracing, we simulated the contribution of indirect scattering in ideal surface craters given particular phase angle combinations. Our findings indicate that an average of 6\% of the direct illumination reflects into shadows in polar scenes. This effect was approximated in rendering by illuminating the scene with a low-intensity virtual source opposing the sun in azimuth \todo{is this true for the final version? -uland}. Analytically we also showed that light from the star field is insignificant and that Earthshine, while fractionally powerful compared to indirect scattering, is complexly dependent on the phase of Earth. Thus, these other sources were not implemented.       
+The dynamic range of scenes on the Moon drives the performance of stereo safeguarding, human situational awareness, and the design of rover lighting. To accurately simulate dynamic range, global illumination must be modeled. If direct sunlight were the only source of illumination, shadowed areas would be pitch black. However, we know this is not the case from images of the Lunar surface, despite the high dynamic range. Light reaches shadowed areas from multiple natural sources including diffuse interreflection of the Lunar surface, Earthshine, and starlight. Using ray tracing, we simulated the contribution of indirect scattering in ideal surface craters given particular phase angle combinations. Our findings indicate that an average of 3\% of the direct illumination reflects into shadows in polar scenes. This effect was approximated in rendering by illuminating the scene with a low-intensity virtual source opposing the sun in azimuth \todo{is this true for the final version? -uland}. Analytically we also showed that light from the star field is insignificant and that Earthshine, while potentially a fraction of indirect scattering, is complexly dependent on the phase of Earth. Thus, neither these other sources were implemented.       
 
-lens flares\\
-rover lights\\
-16bit rendering image post processing\\
+\subsection{Lens Flares}
+some text
 
+\subsection{Rover Lights}
+Gazebo was extended to allow lights to be attached to articulated rover components, which greatly simplified code associated with light placement. Ogre3D material files were used to pass light parameters from Gazebo to our GLSL shader. The shader simulates up to four spotlights having brightness, cone angle, and distance falloff that can be specified as part of our Gazebo light description. We also added a texture projection feature for simulating the detailed pattern projected by a real-world light source. This infrastructure gives us the ability to simulate a variety of lighting hardware and placement before settling on a final solution. For the time being, we have specified lights that will cast 1/500 of sunlight intensity at a distance of ten meters, a reasonable approximation of our final hardware.
 
+\subsection{16bit Rendering and Image Post Processing}
+A standard bit depth of 8 is enough for viewing images on a nonspecialized monitor, but computer vision algorithms, such as our visual odometry, can make use of higher depths. The cameras under consideration have a bit depth of 12, so we need to render images of the same depth to accurately simulate our intended image pipeline. We extended Gazebo to capture 16-bit images. Internally, Gazebo already supports floating point textures as they are used to store data generated by depth and other image-based range sensors. So the task of simulating 16 bit grayscale and RGB camera sensors was relatively straightforward, essentially by rendering to textures in the these formats. Direct 12-bit image capture is not an option in OpenGL, but a 16-bit image can be downsampled to 12-bit as a post-render step.
+
+Resource Prospector is planned as a short mission with tight constraints based on processing power and transmission time. To support our concept of operations, visual odometry updates must be available within about a minute of image capture. We plan to apply 1-bit S-Log compression to our 12-bit camera images, transmit them to our mission control center, and there use them to perform visual odometry. Extracting stereo point clouds from S-Log compressed images has been shown to be nearly as accurate as using raw images (citation?).
 
 \section{Vehicle Simulation}
 
+The Resource Prospector robot is an explicit steered vehicle, which is capable of being skid-steered. The steering configuration of the robot permits it to drive in any direction and maintain the orientation of the solar panels to maximize the insolation of the solar panels.  
+
+\begin{figure}[htp!]
+\centering
+\includegraphics[scale=0.35]{figures/rp-houston.jpg}
+\caption{The Resource Prospector robot is capable of independently steering each of its wheels.  Additionally, each wheel can be raised and lowered independently, permitting the robot to ``walk'' out of sand traps.  \label{fig:rp-houston}}
+\end{figure}
+
+It is also possible to raise and lower each of the wheels independently. Combining that with the steering capabilities of the wheels, the robot is able to navigate out of sand traps by taking steps, instead of rotating the wheels and possibly further worsening the vehicle's embedding.
+
+\subsection{Simulating Vehicle Mobility}
+
+We developed the physical simulation of the robot in Gazebo in two stages. This was to aid the development of on-going concept of operations missions.  The first version of the robot was simulated using the Husky gazebo model \cite{gariepy2015husky}.  
+
+\begin{figure}[htp]
+\missingfigure{Picture of a husky robot}
+\caption{The Husky robot is manufactured \label{fig:husky}}
+\end{figure}
+
+The Husky robot (\cref{fig:husky}) is only capable of skid-steering, which does not reflect the full capabilities of the RP vehicle.  However, since the RP vehicle is capable of skid steering, the Husky provided a platform to quickly 
 
 \subsection{Wheel Slip}
 \textit{DRAFT ARNO}
@@ -261,19 +301,28 @@ Although not perfect at simulating the wheel/soil interaction, this plug-in enab
 
 \textit{END OF DRAFT ARNO}
 
+\section{Flight Software Simulation}
+
+\begin{figure*}
+\centering
+\missingfigure{Incorporate RP software diagram, pending approval.}
+\caption{On the left hand side we include the software modules that would operate on-board the robot.  These include low-level components, including waypoint following and simple pose estimation fusing wheel odometry and the vehicle's IMU.  On the right hand side of the diagram are the more computationally intensive algorithms, which are proposed to run on the Earth.  Exploiting greater computing resources on the ground lets the robot access algorithms which would not be feasible on on-board radiation-hardened computers. \label{fig:rp-software}}
+\end{figure*}
 
 \section{Results}
 
 \subsection{Stereo Visual Odometry}
 One of the goals of the visual simulation was to provide data for computer vision work, and an example of such work is the stereo visual odometry we implemented for Resource Prospector's ground software. It generates 3D point clouds from successive stereo camera images, aligns them using the Point Cloud Library's implementation of the Iterative Closest Point algorithm, and uses the transforms between point clouds to track changes in the rover's movements. This stereo visual odometry interacts with other software and sensors to estimate the rover's absolute pose.
 
-To refine the mission's concept of operations, we wanted to know how much overlap is required between camera images for stereo visual odometry to be effective. The easiest way to lose overlap between successive images is by yawing the camera or rover, so that is the first test we ran. We learned that with camera rotations of 50-degrees or less, stereo visual odometry yields more accurate results than the wheel odometry we had been using (shown in the following graph).
+To refine the mission's concept of operations, we wanted to know how much overlap is required between camera images for stereo visual odometry to be effective. The easiest way to lose overlap between successive images is by yawing the camera or rover, so that is the first test we ran. We learned that with camera rotations of 50-degrees or less, stereo visual odometry yields more accurate results than the fused wheel and star tracker odometry we had been using (shown in the following graph).
 \begin{figure}[h!]
 	\includegraphics[width=\columnwidth]{figures/rotating_clouds_with_odom_error.png}
-    \caption{TBD}
+    \caption{Position error vs. camera rotation angle for stereo visual odometry and wheel-and-star-tracker odometry}
 \end{figure}
 
-We also learned that there are occasionally incorrect point cloud alignments, telling us we need to improve our alignment algorithm or find a way to detect the quality of each alignment. It is important to note the results we found for stereo visual odometry are preliminary. There are further tests to run and improvements to be made to both our visual simulation and visual odometry. For example, after a specific camera is chosen for the mission we will be able to refine our camera simulation. This will affect point cloud generation and require us to run these tests again.
+There are occasionally incorrect point cloud alignments, telling us we need to improve our alignment algorithm or find a way to detect the quality of each alignment. It is important to note the results we found for stereo visual odometry are preliminary. There are further tests to run and improvements to be made to both our visual simulation and visual odometry. For example, after a specific camera is chosen for the mission we will be able to refine our camera simulation. This will affect point cloud generation and require us to run these tests again.
+
+We also learned that using rover lights in shadowed areas hurts our visual odometry results. As expected the quality of our stereo point clouds is greatly reduced when the light sources are near the cameras because the Hapke reflectance model simulates strong, contrast-reducing backscatter. We have not attempted to quantify results in this area as it is still considered ripe for refinement.
 
 \subsection{Wheel Slip}
 In order to characterize the \texttt{wheel\_slip\_plugin}, we set up a test harness to gather data on wheel slip behavior over multiple runs. We created a Gazebo world with ramps from 0 to 30 degrees at 2 degree increments (see figure \ref{fig:simulationramps}). A rostest script would spawn the rover at the base of each ramp and command it to drive 10 meters forward. Wheel slip was measured by comparing dead reckoning distance driven to ground truth and test runs covered sets of parameter values for longitudinal compliance, physics engine solver iterations, and drive speed. 
@@ -298,11 +347,8 @@ However, our test results show that at certain angles and compliance values, the
 
 \textit{END OF DRAFT ARNO}
 
-
-
-
-
-
+\bibliographystyle{plain}
+\bibliography{refs}
 
 
 \end{document}
