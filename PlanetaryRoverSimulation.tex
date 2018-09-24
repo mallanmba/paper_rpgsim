@@ -238,6 +238,11 @@ Any rover will leave wheel tracks in the powdery lunar regolith. We wanted to in
 Our shader already employs bump mapping to give the regolith its fine detail, so we expand on this to add wheel tracks. We apply a 1-channel texture to the drivable area of the terrain. It starts out with every texel set to the maximum value, 255. Wherever a rover wheel travels we draw a groove in the texture, setting texels to 0 or some medium value. Wherever this texture is less than 255, the shader mixes a surface normal into the bump mapping. To approximate a surface normal it compares neighboring texels in the wheel tracks texture to find the slope in the x- and y-directions. Assuming a z-value of 1.0, the three values are normalized to produce a final surface normal.
 
 To draw the wheel tracks in the texture we use a Gazebo plugin. We use Gazebo's knowledge of the rover model and the terrain layout to compute what part of the texture each wheel position corresponds with. Everywhere each wheel travels, we draw an anti-aliased dot in the texture of a size in texels that appears to match the wheel size when the texture is projected on the terrain. These dots overlap to give the appearance of a continuous groove made by each wheel.
+\begin{figure}[h!]
+	\includegraphics[width=\columnwidth]{rpgsim_wheel_tracks.jpg}
+   	\caption{Rover wheel tracks}
+    \label{fig:wheeltracks}
+\end{figure}
 
 \subsection{Ephemeris}
 The position of the Sun and Earth relative to the moon is computed using the SPICE C toolkit provided by the Navigation and Ancillary Information Facility (NAIF) \url{https://naif.jpl.nasa.gov/naif/toolkit.html}.  Using the timestamp maintained by the simulator, this toolkit generates the transformations between the Moon, the Sun, and the Earth at the current simulated time.  By chaining these transformations with the rover's current position on the surface of the moon we are able to compute the positions of the Sun and the Earth relative to our local coordinate system and position them accurately in the simulator.  We are not concerned about the locations of stars because they are not drawn in the simulator.
@@ -246,6 +251,12 @@ The position of the Sun and Earth relative to the moon is computed using the SPI
 The reference mission required training in use of photographic systems coupled with active illumination for driving. Developments were made to model complex illumination effects from natural sources, rover-based lighting, and sensor optics in order to produce an accurate camera image. To accomplish this in a real-time manner, we used physically-based raytracing to produce exemplar scenes which were then approximated with shader tricks. 
 
 The dynamic range of scenes on the Moon drives the performance of stereo safeguarding, human situational awareness, and the design of rover lighting. To accurately simulate dynamic range, global illumination must be modeled. If direct sunlight were the only source of illumination, shadowed areas would be pitch black. However, we know this is not the case from images of the Lunar surface, despite the high dynamic range. Light reaches shadowed areas from multiple natural sources including diffuse interreflection of the Lunar surface, Earthshine, and starlight. Using ray tracing, we simulated the contribution of indirect scattering in ideal surface craters given particular phase angle combinations. Our findings indicate that an average of 3\% of the direct illumination reflects into shadows in polar scenes. This effect was approximated in rendering by illuminating the scene with a low-intensity virtual source opposing the sun in azimuth \todo{is this true for the final version? -uland}. Analytically we also showed that light from the star field is insignificant and that Earthshine, while potentially a fraction of indirect scattering, is complexly dependent on the phase of Earth. Thus, neither these other sources were implemented.       
+
+\begin{figure}[h!]
+	\includegraphics[width=\columnwidth]{rpgsim_camera_exposure.jpg}
+   	\caption{TODO: CAMERA EXPOSURE}
+    \label{fig:cameraexposure}
+\end{figure}
 
 \subsection{Lens Flares}
 some text
