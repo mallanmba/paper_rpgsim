@@ -581,7 +581,26 @@ To both of these vehicles we added a stereo camera pair that was mounted on a gi
 \subsection{Wheel Slip}
 \textit{DRAFT ARNO}
 
-The wheel/terrain interaction plays an important role in the fidelity of the simulation. In the real world, an input drive command will result in a non-zero slip of the rover wheel on loose terrain which will generate drift in localization algorithms. In order for this drift to be plausible in simulation, a wheel slip plug-in was developed and implemented for Gazebo based on a test results from two tests: RP single wheel drawbar pull test and RP lunar mass equivalent unit test (see figure \ref{fig:mgru}) in the SLOPElab facility at NASA Glenn Research Center (GRC) (ref: \url{https://www.nasa.gov/centers/glenn/events/tour_erb_slope.html}). The simulant for these test was GRC-1 (ref: \url{https://etd.ohiolink.edu/!etd.send_file?accession=case1269272964&disposition=inline}), which has similar mechanical characteristics as the lunar regolith. 
+Localization algorithms that employ wheel odometry use measurements of wheel rotation to estimate robot motion.
+These algorithms work best when the wheel/terrain relative shear velocity (also known as wheel slip) is small.
+In most cases, wheel slip can occur when an sufficient torque is applied to a wheel,
+though it can be complex to model the behavior \cite{yoshida1013712}.
+To reduce the computational burden, the Open Dynamics Engine (OpenDE) physics solver is used with the Gazebo simulator.
+This solver treats the 3d terrain as a rigid surface and discretizes contact as a wrench
+acting at contact points with a specified normal direction.
+At each contact point, a Coulomb friction model limits the maximum tangential force
+to the product of the normal force and a surface-dependent friction coefficient.
+To further reduce the computation burden, the "friction cone" is approximated
+as a "friction pyramid" \cite{hsuPeters2014}.
+The axes of the friction pyramid are aligned with the longitudinal and lateral axes of each wheel
+so that anisotropic parameters can be specified for the wheel axes.
+
+The OpenDE friction model has parameters for the friction coefficient and slip compliance.
+The slip compliance has units of the inverse of a damping coefficient,
+such that the value of 0 leads to infinite damping and no slip,
+while positive values allow for some slip.
+In the real world, an input drive command will result in a non-zero slip of the rover wheel on loose terrain which will generate drift in localization algorithms.
+In order for this drift to be plausible in simulation, a wheel slip plug-in was developed and implemented for Gazebo based on a test results from two tests: RP single wheel drawbar pull test and RP lunar mass equivalent unit test (see figure \ref{fig:mgru}) in the SLOPElab facility at NASA Glenn Research Center (GRC) (ref: \url{https://www.nasa.gov/centers/glenn/events/tour_erb_slope.html}). The simulant for these test was GRC-1 (ref: \url{https://etd.ohiolink.edu/!etd.send_file?accession=case1269272964&disposition=inline}), which has similar mechanical characteristics as the lunar regolith. 
 \begin{figure}[h!]
 	\includegraphics[width=\columnwidth]{figures/wheel_slip_MGRU.JPG}
    	\caption{A picture of the RP lunar mass equivalent rover at the SLOPElab in NASA GRC.}
