@@ -315,8 +315,6 @@ Using KRex2 as a proxy for the RP vehicle enabled the use of the explicit steeri
 To both of these vehicles we added a stereo camera pair that was mounted on a gimbal at the top of the mast, seen in \cref{fig:rp-houston}, as well as the solar-panel superstructure. We also added a simulated IMU and tracked wheel odometry for use in pose estimation.  
 
 \subsection{Wheel Slip}
-\textit{DRAFT ARNO}
-
 Localization algorithms that employ wheel odometry use measurements of wheel rotation to estimate robot motion.
 These algorithms work best when the wheel/terrain relative shear velocity (also known as wheel slip) is small.
 In most cases, wheel slip can occur when an sufficient torque is applied to a wheel,
@@ -344,14 +342,12 @@ In order for this drift to be plausible in simulation, a wheel slip plug-in was 
 \end{figure}
 The Gazebo simulator physics engine provide the following framework to deal with wheel/terrain interaction (see figure \ref{fig:wheelsoilmodel}). The is based on the Coulomb-Mohr friction theory. With a compliance tuning parameter that enables to simulate loose material generating slip greater than zero on shallow angle slopes.
 \begin{figure}[h!]
-	\includegraphics[width=\columnwidth]{figures/wheel_slip_MGRU.JPG}
-   	\caption{Wheel/soil interaction model}
+	\includegraphics[width=\columnwidth]{figures/2018_09_IEEE_aero_paper_M_Allan-Slip_model_in_Gazebo-3.png}
+   	\caption{Wheel/soil interaction model used in the simulator}
     \label{fig:wheelsoilmodel}
 \end{figure}
 
 Although not perfect at simulating the wheel/soil interaction, this plug-in enables the simulated rover to have a high level slip behavior relatively close to what will be expected on a lunar terrain. In order to increase the fidelity and give more realism for wheel sinkage and rover embedding, this simple model would need to be replaced by a discrete element method (DEM) model which is very costly in terms of computational power and existing system are unproven due to the complexity of the particle interaction.
-
-\textit{END OF DRAFT ARNO}
 
 \section{Flight Software Simulation}
 
@@ -396,8 +392,6 @@ However, our test results show that at certain angles and compliance values, the
    	\caption{Graph of the slip of the RP rover in Gazebo showing the disparities in the amount of slip.}
     \label{fig:slipdisparities}
 \end{figure}
-
-\textit{END OF DRAFT ARNO}
 
 \bibliographystyle{plain}
 \bibliography{refs}
