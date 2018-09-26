@@ -324,7 +324,7 @@ To both of these vehicles we added a stereo camera pair that was mounted on a gi
 \subsection{Wheel Slip}
 Localization algorithms that employ wheel odometry use measurements of wheel rotation to estimate robot motion.
 These algorithms work best when the wheel/terrain relative shear velocity (also known as wheel slip) is small.
-In most cases, wheel slip can occur when an sufficient torque is applied to a wheel,
+In most cases, wheel slip can occur when a sufficient torque is applied to a wheel,
 though it can be complex to model the behavior \cite{yoshida1013712}.
 To reduce the computational burden, the Open Dynamics Engine (OpenDE) physics solver is used with the Gazebo simulator.
 This solver treats the 3d terrain as a rigid surface and discretizes contact as a wrench
@@ -336,23 +336,29 @@ as a "friction pyramid" \cite{hsuPeters2014}.
 The axes of the friction pyramid are aligned with the longitudinal and lateral axes of each wheel
 so that anisotropic parameters can be specified for the wheel axes.
 
-The OpenDE friction model has parameters for the friction coefficient and slip compliance.
+The OpenDE friction model has parameters for the friction coefficient and slip compliance
+and are illustrated in figure \ref{fig:wheelsoilmodel}.
+The ratio of tangential friction force to normal force is limited by the wheel/soil friction coefficient,
+and its behavior for small amounts of slip is governed by the slip compliance.
 The slip compliance has units of the inverse of a damping coefficient,
 such that the value of 0 leads to infinite damping and no slip,
 while positive values allow for some slip.
+The slip compliance corresponds to the inverse slope of the curve near the origin.
+
+\begin{figure}[h!]
+    \includegraphics[width=\columnwidth]{figures/2018_09_IEEE_aero_paper_M_Allan-Slip_model_in_Gazebo-3.png}
+    \caption{Wheel/soil interaction model used in the simulator}
+    \label{fig:wheelsoilmodel}
+\end{figure}
+
 In the real world, an input drive command will result in a non-zero slip of the rover wheel on loose terrain which will generate drift in localization algorithms.
-In order for this drift to be plausible in simulation, a wheel slip plug-in was developed and implemented for Gazebo based on a test results from two tests: RP single wheel drawbar pull test and RP lunar mass equivalent unit test (see figure \ref{fig:mgru}) in the SLOPElab facility at NASA Glenn Research Center (GRC) (ref: \url{https://www.nasa.gov/centers/glenn/events/tour_erb_slope.html}). The simulant for these test was GRC-1 (ref: \url{https://etd.ohiolink.edu/!etd.send_file?accession=case1269272964&disposition=inline}), which has similar mechanical characteristics as the lunar regolith. 
+In order for this drift to be plausible in simulation, a wheel slip plug-in was developed and implemented for Gazebo that adjusts the slip compliance parameter based on a test results from two tests: RP single wheel drawbar pull test and RP lunar mass equivalent unit test (see figure \ref{fig:mgru}) in the SLOPElab facility at NASA Glenn Research Center (GRC) (ref: \url{https://www.nasa.gov/centers/glenn/events/tour_erb_slope.html}). The simulant for these test was GRC-1 (ref: \url{https://etd.ohiolink.edu/!etd.send_file?accession=case1269272964&disposition=inline}), which has similar mechanical characteristics as the lunar regolith.
 \begin{figure}[h!]
 	\includegraphics[width=\columnwidth]{figures/wheel_slip_MGRU.JPG}
    	\caption{A picture of the RP lunar mass equivalent rover at the SLOPElab in NASA GRC.}
     \label{fig:mgru}
 \end{figure}
-The Gazebo simulator physics engine provide the following framework to deal with wheel/terrain interaction (see figure \ref{fig:wheelsoilmodel}). The is based on the Coulomb-Mohr friction theory. With a compliance tuning parameter that enables to simulate loose material generating slip greater than zero on shallow angle slopes.
-\begin{figure}[h!]
-	\includegraphics[width=\columnwidth]{figures/2018_09_IEEE_aero_paper_M_Allan-Slip_model_in_Gazebo-3.png}
-   	\caption{Wheel/soil interaction model used in the simulator}
-    \label{fig:wheelsoilmodel}
-\end{figure}
+The slip compliance tuning parameter enables simulation of loose material generating slip greater than zero on shallow angle slopes.
 
 Although not perfect at simulating the wheel/soil interaction, this plug-in enables the simulated rover to have a high level slip behavior relatively close to what will be expected on a lunar terrain. In order to increase the fidelity and give more realism for wheel sinkage and rover embedding, this simple model would need to be replaced by a discrete element method (DEM) model which is very costly in terms of computational power and existing system are unproven due to the complexity of the particle interaction.
 
