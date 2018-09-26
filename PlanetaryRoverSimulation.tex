@@ -101,7 +101,7 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
   && Use existing, similar robots to emulate (Furlong)
     &&& Husky
     &&& KRex2
-  && Flight software integration with Gazebo
+  && \todo{Does this belong in the Flight Software Prototype?} Flight software integration with Gazebo 
   && Wheel slip plugin (Rogg/Peters)
     &&& first order approximation
     &&& fault injection
@@ -119,9 +119,11 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
   && wheel slip results (Allan/Rogg/Peters)
  \end{easylist} 
 
+\listoftodos
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
+\label{sec:intro}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -129,26 +131,27 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
 Lunar polar environment different to prior extra-terrestrial rover missions. Mars has long time delays that make interactive commanding impossible, lunar comm delays enable semi-interactive commanding. Science involved in operations. Operations needed to develop and mature concept of operations.  
 
 \section{Background}
+\label{sec:background}
 
 \subsection{Reference Mission}
-The Resource Prospector (RP) is a lunar rover mission concept developed by NASA [Andrews 2015]. RP is intended to characterize the nature and distribution of subsurface volatiles in permanently shadowed regions (PSR) located in one of the Moon's polar regions. RP is also intended to demonstrate the feasibility of in-situ resource utilization by extracting and processing of volatiles (e.g., hydrogen) that could prove valuable for future exploration missions. RP directly addresses several of NASA's "Strategic Knowledge Gaps" for lunar exploration as well as the Global Exploration Roadmap's strategic goal of using local resources for human spaceflight.
+The Resource Prospector (RP) is a lunar rover mission concept developed by NASA \cite{andrews2015resource,colaprete2015resource}. RP is intended to characterize the nature and distribution of subsurface volatiles in permanently shadowed regions (PSR) located in one of the Moon's polar regions. RP is also intended to demonstrate the feasibility of in-situ resource utilization by extracting and processing of volatiles (e.g., hydrogen) that could prove valuable for future exploration missions. RP directly addresses several of NASA's "Strategic Knowledge Gaps" for lunar exploration as well as the Global Exploration Roadmap's strategic goal of using local resources for human spaceflight.
 
-During the past twenty years, new observations of the Moon made by orbital and surface missions have provided evidence of a lunar water system that is dramatically more complex and rich than was previously believed [Colaprete 2016]. Hydrogen and other volatiles have the potential to be an enabling resource for human missions to the Moon and beyond. The distribution of lunar subsurface volatiles drives the RP mission requirement for mobility. In particular, the spatial distribution of cold-trapped volatiles is hypothesized to be governed by impact cratering with the top 0.5 m being patchy at scales of 100 m. The mixing time scale increases with depth (less frequent larger impacts). Consequently, increased mobility (greater range) reduces the depth requirement for sampling (i.e., drilling or excavation depth).
+During the past twenty years, new observations of the Moon made by orbital and surface missions have provided evidence of a lunar water system that is dramatically more complex and rich than was previously believed [Colaprete 2016]\todo{citation needed}. Hydrogen and other volatiles have the potential to be an enabling resource for human missions to the Moon and beyond. The distribution of lunar subsurface volatiles drives the RP mission requirement for mobility. In particular, the spatial distribution of cold-trapped volatiles is hypothesized to be governed by impact cratering with the top 0.5 m being patchy at scales of 100 m. The mixing time scale increases with depth (less frequent larger impacts). Consequently, increased mobility (greater range) reduces the depth requirement for sampling (i.e., drilling or excavation depth).
 
 For the RP mission, a solar-powered, lunar rover equipped with a drill and a science payload would be used to: (1) locate surface and near-subsurface volatiles; (2) excavate and analyze samples of the volatile-bearing regolith; and (3) demonstrate the form, extractability and usefulness of the materials. The payload contains two prospecting instruments, the Neutron Spectrometer System (NSS) and the NIR Volatile Spectrometer System (NIRVSS), which can sense hydrogen at concentrations as low as 0.5 WT\% to a depth of 1 m and can capture signatures of bound H2O/OH. The payload also contains a processing system that can heat regolith samples to 450 C and analyze evolved gases using a gas chromatograph / mass spectrometer.
 
-RP would operate on the Moon for 7 to 10 days during a single lunar day at a location where both continuous solar illumination and direct-to-earth (DTE) communication conditions are present [Trimble 2016]. The rover is designed to be capable of operating in shadowed regions for up to 6 h before needing to return to sunlight for recharge. The rover is not designed to survive the cold of the lunar night, thus mission plans focus on traversing sufficient distance to determine the lateral and vertical distribution of volatiles in a target region.
+RP would operate on the Moon for 7 to 10 days during a single lunar day at a location where both continuous solar illumination and direct-to-earth (DTE) communication conditions are present [Trimble 2016]\todo{citation needed}. The rover is designed to be capable of operating in shadowed regions for up to 6 h before needing to return to sunlight for recharge. The rover is not designed to survive the cold of the lunar night, thus mission plans focus on traversing sufficient distance to determine the lateral and vertical distribution of volatiles in a target region.
 
-The short duration of the RP mission, combined with limited knowledge about the surface environment and operational constraints (e.g., high-tempo, interactive rover commanding and real-time science operations) create unique challenges for mission operations [Hooey 2017]. These challenges have the potential to contribute to significant levels of operator workload for the team responsible for maneuvering the rover on the lunar surface. These challenges may also impact the ease of acquiring and maintaining situation awareness, the ability to identify and handle contingencies, and ground control performance (rover driving, system monitoring, etc.)
+The short duration of the RP mission, combined with limited knowledge about the surface environment and operational constraints (e.g., high-tempo, interactive rover commanding and real-time science operations) create unique challenges for mission operations [Hooey 2017]\todo{citation needed}. These challenges have the potential to contribute to significant levels of operator workload for the team responsible for maneuvering the rover on the lunar surface. These challenges may also impact the ease of acquiring and maintaining situation awareness, the ability to identify and handle contingencies, and ground control performance (rover driving, system monitoring, etc.)
 
 \subsection{Reference Mission Operations}
-Lunar surface operations provide for qualitatively different mission operation scenarios than what is possible in the Martian surface.  The most important aspect is the broad swings in temperature on the Moon.  From lunar day to lunar night there can be swings in temperature of over three hundred degrees.  Building a robot to survive lunar night comes with additional costs and reliance on heat sources, like the radioactive materials used in the Lunokhod missions \cite{XXX}.  This can increase mission complexity substantially.  
+Lunar surface operations provide for qualitatively different mission operation scenarios than what is possible in the Martian surface.  The most important aspect is the broad swings in temperature on the Moon.  From lunar day to lunar night there can be swings in temperature of over three hundred degrees.  Building a robot to survive lunar night comes with additional costs and reliance on heat sources, like the radioisotope heating used in the Lunokhod missions \cite{ulamec2010survive}.  This can increase mission complexity substantially.  
 
 If the rover is not designed to survive lunar night then the mission either has the time pressure to complete in fourteen days, or the operational pressure to chase sunlight to peaks of eternal light, as proposed in \cite{otten2018strategic}.  The Resource Prospector mission planned to operate within the constraints of the lunar solar day, creating a need for high-tempo mission operations. 
 
 Lunar regolith presents two challenges, both relating to the microbombardment processes which produce the soil \cite{XXX}.  Because the lunar soil is not produced by the erosion processes we are accustomed to on Earth the particular matter is sharp, which is a hazard to the vehicle, and it has reflectance properties very much unlike the Earth\todo{cite Hapke models}, which poses a challenge to both human and automated perception systems. \todo{I think this is too much information about regolith up front. Especially since we have to explain how we implement the reflective properties in the shader below. -uland}
 
-The Moon is not without its operational advantages.  First, the relative closeness of the Moon means that the time-of-flight communications delay is only 2.5 seconds, and not on the order of minutes\todo[author=pmf]{get time of flight delay for Mars} for a Mars mission.  Second, through the use of the Deep Space Network, it is possible to be in constant communication with a lunar surface vehicle, barring shadows from terrain features.  Constant availability of a rover supports the high-tempo mission cadence missions like Resource Prospector.
+The Moon is not without its operational advantages.  First, the relative closeness of the Moon means that the time-of-flight communications delay is only 2.5 seconds, and not on the order of minutes\todo{get time of flight delay for Mars} for a Mars mission.  Second, through the use of the Deep Space Network, it is possible to be in constant communication with a lunar surface vehicle, barring shadows from terrain features.  Constant availability of a rover supports the high-tempo mission cadence missions like Resource Prospector.
 
 
 Taking advantage of the high communications availability we designed our autonomy system to be distributed between the rover on the surface of the moon and the remote operations team on Earth.  The architecture would place lower-level components of an autonomous system -- e.g., waypoint following, relative pose estimation, vehicle safeguarding \todo{Is safeguarding the word we use?} -- on-board the robot.  Higher-level algorithms, like absolute localization through terrain matching, are operated on the ground.  The division of software modules is given in \cref{fig:rp-software}
@@ -208,6 +211,8 @@ Enabling LOD helped resolved framerate issue but in some cases, especially when 
 [*Allan* to describe terrain dae meshes?]
 
 \subsection{GLSL Shader}
+A shader is a programmable replacement for parts of the real-time rendering pipeline on a graphics processing unit (GPU). Using the OpenGL Shading Language (GLSL), we have built a shader that simulates lighting, shadows, material properties for regolith and rock, and camera exposure. This effort ultimately produces a final color value for every pixel in our camera images. Much of the shader combines standard computer graphics techniques or slight variations on them. However, our material simulation of regolith is not commonly found in shaders.
+
 Regolith is the layer of powdery dust which covers most of the moon except for the rare vertical rocky surface. As such, correctly simulating the appearance of regolith via the bidirectional reflectance distribution function (BRDF) is a major factor in achieving visual fidelity. The reflectance of Lunar regolith and regolith-like materials have been comprehensively studied and the Hapke functions remain the most accurate physically-based models \cite{hapke11}. However, the Hapke BRDF has several drawbacks when used for rover-scale rendering including mathematical complexity, non-invertibility, and edge artifacts\cite{Wong2012}. We implement an approximation to the full BRDF suggested by Hapke, which combines coherent-backscatter and shadow hiding into a single term. Furthermore, our Hapke approximation shader is combined with a Lambertian BRDF with a nadir-dependent angle to reduce rendering artifacts. This is a similar strategy used by \cite{McEwen1996} in developing the Lunar-Lambertian model derived from Lommel-Seeliger reflectance. Our Hapke parameters are estimated from prior literature for Highlands regolith, which is a stand-in for Polar regions of the moon. Our model achieves the desired loss of contrast and opposition surge while behaving properly under direct illumination.           
 
 \subsection{Shadows}
@@ -293,17 +298,18 @@ The Resource Prospector robot is an explicit steered vehicle, which is capable o
 It is also possible to raise and lower each of the wheels independently. Combining that with the steering capabilities of the wheels, the robot is able to navigate out of sand traps by taking steps, instead of rotating the wheels and possibly further worsening the vehicle's embedding.
 
 \subsection{Simulating Vehicle Mobility}
+\label{sec:simulated-rover}
 
 We developed the physical simulation of the robot in Gazebo in two stages. This was to aid the development of on-going concept of operations missions.  The first version of the robot was simulated using the Husky gazebo model \cite{gariepy2015husky}.  
 
 \begin{figure}[htp]
 \missingfigure{Picture of a husky robot ?vs simulated husky?}
-\caption{The Husky robot is manufactured \label{fig:husky}}
+\caption{The Husky robot is manufactured by Clearpath Robotics.  We used the Husky model to carry the RP instrument suite. \label{fig:husky}}
 \end{figure}
 
 The Husky robot (\cref{fig:husky}) is only capable of skid-steering, which does not reflect the full capabilities of the RP vehicle.  However, since the RP vehicle is capable of skid steering, the Husky provided a platform to quickly mount the sensors needed for conducting missions operations tests and provide a reasonable approximation of vehicle motion.  
 
-The second emulation of the vehicle was a modified version of the NASA Ames Intelligent Robotics Group's KRex2 robot (\cref{fig:krex2}).  The KRex2 robot is, like RP, an explicit-steer vehicle.  However, where RP can independently lower and raise its wheels, KRex2 cannot, and relies on a differencing bar to maintain contact with the terrain, as shown in \cref{fig:krex2-differencing}.    
+The second emulation of the vehicle was a modified version of the NASA Ames Intelligent Robotics Group's KRex2 robot (\cref{fig:krex2}).  The KRex2 robot is, like RP, an explicit-steer vehicle.  We modified the KRex2 model to reflect the offset steering which is present on the RP rover, but not on the actual KRex2 model.  However, where RP can independently lower and raise its wheels, KRex2 cannot, and relies on a differencing bar to maintain contact with the terrain, as shown in \cref{fig:krex2-differencing}.    
 
 \begin{figure}[htp]
 \missingfigure{Picture of krex2 ?vs simulated krex2?}
@@ -311,6 +317,7 @@ The second emulation of the vehicle was a modified version of the NASA Ames Inte
 \end{figure}
 
 Using KRex2 as a proxy for the RP vehicle enabled the use of the explicit steering capacity for missions operations testing.  Using the URDF language to describe the robot, it was easy to modify the sensors that were added to the earlier Husky model to the modified KRex2 model.  
+
 
 To both of these vehicles we added a stereo camera pair that was mounted on a gimbal at the top of the mast, seen in \cref{fig:rp-houston}, as well as the solar-panel superstructure. We also added a simulated IMU and tracked wheel odometry for use in pose estimation.  
 
@@ -349,13 +356,100 @@ The Gazebo simulator physics engine provide the following framework to deal with
 
 Although not perfect at simulating the wheel/soil interaction, this plug-in enables the simulated rover to have a high level slip behavior relatively close to what will be expected on a lunar terrain. In order to increase the fidelity and give more realism for wheel sinkage and rover embedding, this simple model would need to be replaced by a discrete element method (DEM) model which is very costly in terms of computational power and existing system are unproven due to the complexity of the particle interaction.
 
-\section{Flight Software Simulation}
+\section{Flight Software Prototype}
 
 \begin{figure*}
 \centering
 \missingfigure{Incorporate RP software diagram, pending approval.}
 \caption{On the left hand side we include the software modules that would operate on-board the robot.  These include low-level components, including waypoint following and simple pose estimation fusing wheel odometry and the vehicle's IMU.  On the right hand side of the diagram are the more computationally intensive algorithms, which are proposed to run on the Earth.  Exploiting greater computing resources on the ground lets the robot access algorithms which would not be feasible on on-board radiation-hardened computers. \label{fig:rp-software}}
 \end{figure*}
+
+
+\subsection{Flight/Ground Software split}
+
+As discussed in \cref{sec:background} we divided the rover software into low-level control and safeguarding components, which were deployed on-board the rover (``flight software''), and higher-level autonomy or assistive tools which operated on Earth (``ground software'').  The division of those software components are given in \cref{fig:rp-software}.   
+
+The role of the rover was played by the modified simulated RP rover, as described in \cref{sec:simulated-rover}.  The flight software consisted of the components that were designated the minimum viable components to complete the mission.  The flight software components include:
+
+\begin{description}
+\item[\textbf{Rover Kinematics}] The software that translates vehicle body motion commands into motor commands.
+\item[\textbf{Mobility}] The mobility module is responsible for closed-loop control on waypoint navigation.
+\item[\textbf{Localization}]  The pose estimation solution which integrated wheel odometry, a star tracker, and the IMU.  
+\item[\textbf{Camera/Gimbal Pointing}] The RP navigation cameras and the high-gain antenna are mounted on gimbals on the mast. This module is responsible for closed-loop control of those gimbals.  In our simulation we primarily concerned ourselves with camera pointing and not the effects of antenna pointing\todo[inline]{Is this true?}.  
+\item[\textbf{Wheel, IMU, Gimbal, and Camera I/O}]  These modules responsible for low-level hardware interfaces.  
+\item[\textbf{Rover Mode Manager}] This software component is responsible for preventing the robot from executing illegal or unsafe actions, and ensuring that all on-board modules are in the appropriate operating mode.  While this module did exist on the prototype RP rover, we did not implemented it for the simulated rover operations, and as such we did not seek a ROS equivalent.
+\item[\textbf{Virtual Bumper}]  The virtual bumper is designed to keep the rover safe from navigation obstacles, as per \cite{matthies1997fast}. This module as not implemented in the simulated rover operations. The prototype virtual bumper implemented for the RP project is described in \cite{nefian2017structured}, with a simple safeguarding scheme described in \cite{furlong2016safeguarding}.
+\end{description}
+
+\todo[inline]{Confirm statements about virtual bumper are true.}
+
+The ground software components represented higher-level software, which integrated data to improve the situational awareness of the rover drivers.  The particular modules included in the ground software are:
+
+\begin{description}
+\item[\textbf{Advanced Localization}]  The advanced localization module integrated the on-board pose estimates with terrain relative navigation, mono- and stereo-scopic visual odometry, 
+\item[\textbf{Stereo Reconstruction}]
+\item[\textbf{Mapping}]
+\item[\textbf{Hazard Detection}]
+\item[\textbf{Planning}]
+\item[\textbf{Simulator}]  The simulator acted as an assistive tool for the operators, to ensure that the commands being sent to the rover were the commands that were intended.  
+\item[\textbf{Operator Interface}]  The operations interface was provided through two modules.  Direct and immediate control of the rover was accomplished through NASA Ames Intelligent Robotics Group's VERVE software.  Overall missions operations, and plan-level contextual information was provided through the WARP system.  Both of these modules are described in greater detail below, and communicated to the ROS system using a software bridge developed for these simulated experiments.
+\end{description}
+
+\subsection{Emulation of Software with ROS Components}
+
+\begin{table}[htp]
+\caption{Flight software components and the corresponding ROS modules that were used as stand-ins.  As mentioned above, the Rover Mode Manager and Virtual Bumper were not implemented for simulated operations.\label{tbl:flight-software-components}}
+\begin{tabular}{l|l}
+\textbf{Software Component} & \textbf{ROS Stand-in} \\
+\hline
+Rover Kinematics &  Custom additions to move\_base\\
+Waypoint Following & move\_base \footnote{\url{http://wiki.ros.org/move_base}}\\
+Localization & robot\_localization\footnote{\url{http://wiki.ros.org/robot_localization}}\\
+Camera Pointing & Custom module \\
+Wheel Module I/O & ros\_control\footnote{\url{http://wiki.ros.org/ros_control}}\\
+IMU I/O & ros\_control\\
+Gimbal I/O & ros\_control\\
+Camera I/O & Camera sensor from gazebo\_plugins\footnote{\url{http://wiki.ros.org/gazebo_plugins}}\\
+\hline
+\end{tabular}
+\end{table}
+\todo[inline]{Should gazebo\_plugins be a hector gazebo plugin for the camera?}
+
+\begin{table}[htp]
+\caption{Ground software components and the corresponding ROS modules that were used as stand-ins.\label{tbl:ground-software-components}}
+\begin{tabular}{l|p{4cm}}
+\textbf{Software Component} & \textbf{ROS Stand-in} \\
+\hline 
+Advanced Localization & robot\_localization\\
+Stereo Reconstruction & OpenCV\footnote{\url{http://wiki.ros.org/vision_opencv}}\\
+Mapping & \\
+Planning & move\_base\\
+Hazard Detection & costmap\_2d\footnote{\url{http://wiki.ros.org/costmap_2d}}\\
+Simulator & Gazebo Simulator with modifications described in this paper.\\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+\subsection{Operations Software}
+
+\subsubsection{WARP}
+
+\cite{trimble2016open} \todo[inline]{Someone needs to write about Warp.  Preferably someone who is not me.  - pmf}
+
+\subsubsection{VERVE}
+
+\cite{lee2013reusable} \todo[inline]{See previous comments about warp.  Although I can speak more intelligently about VERVE. - pmf}
+
+\begin{figure*}[htp]
+\centering
+\includegraphics[width=\textwidth]{figures/verve_mvp.png}
+\caption{VERVE was used as the robot control interface for the Mojave Volatiles Prospector (MVP) project.  MVP tested high-tempo prospecting operations which would be applicable to missions like Resource Prospector.\label{fig:verve-mvp}}
+\end{figure*}
+
+\subsection{Science Simulation and Software}
+\todo[inline]{What is Science simulation and software, exactly?}
 
 \section{Results}
 
