@@ -205,8 +205,7 @@ Specifically, the morphology of the terrain should accurately represent terrain 
 Although Digital Elevation Models (DEMs) are available for much of the lunar surface, the resolution of these models are not sufficient to represent rover-scale hazards. 
 To make matters worse, the best resolution lunar DEMs are generated from stereo orbital imagery, yet the reference mission was targeting areas with permanently shadowed regions. 
 Existing terrain models of the lunar surface are on the order of meters, yet a resolution on the order of centimeters is required to adequately represent rover-scale hazards. 
-We addressed this disparity by developing tools to synthesize high resolution terrain for the driving simulator. 
-
+We addressed this disparity by developing tools to synthesize high resolution terrain suitable for rover driving. 
 
 On the Moon, the principal obstacles of interest to rovers are rocks and craters. 
 Getting the "density" right was one of the primary objectives of this work as the distributions of obstacles have significant impact on mission traverse paths and schedule. 
@@ -235,10 +234,14 @@ During the process of sampling rocks and assigning spatial coordinates, the ejec
 At each time step, old rocks have a probability of being covered by regolith, and a new crater forming will cover old rocks under its extent. 
 When the number of generated rocks and craters equals the expected number plus some variation, the sizes, ages, and coordinates of the features are passed into fractal terrain generator.     
 
-\todo{transition from feature placement to DEM generation}
+Our fratal terrain generation process synthetically increases resolution of DEMs and inserts craters utilizing techniques established by \cite{parkes2004planet}. 
+With this approach, the process starts with a low resolution DEM of the area of interest.
+A fractal expansion of the region is performed by iteratively applying the diamond-and-square algorithm to reach the desired resolution. 
+Craters are inserted by fitting a plane to a patch of terrain 
+\todo{complete PANGU summary}
 
 The diamond-and-square method of fractal terrain generation is straightforward to implement and a reasonable choice for adding higher frequency details. 
-However, the method is known to create interpolation artifacts when constrained {miller1986definition}, particularly on low frequency features like aged crater rims. 
+However, the method is known to create interpolation artifacts when constrained \cite{miller1986definition}, particularly on low frequency features like aged crater rims. 
 We employed two approaches to mitigate these artifacts. 
 First, we replace linear interpolation with Catmull-Rom splines in the diamond-and-square algorithm which reduces the severity of the artifacts. 
 Second, prior to scaling up we split the terrain into high and low frequency components by running a low pass filter on the DEM, and subtracting it from the original. 
