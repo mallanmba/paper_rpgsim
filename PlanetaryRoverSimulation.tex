@@ -200,14 +200,16 @@ Due to the broad scope of the simulation and the desire to have a functional, en
 
 \section{Synthetic Terrain Generation}
 
-To produce a viable lunar driving experience the simulated world must be representative of the target physical environment. Specifically, the morphology of the terrain should accurately represent terrain features that would be considered either positive or negative obstacles for the rover. 
+To produce a viable lunar driving experience the simulated world must be representative of the target physical environment. 
+Specifically, the morphology of the terrain should accurately represent terrain features that would be considered either positive or negative obstacles for the rover. 
 Although DEMs are available for much of the lunar surface, the resolution of these models are not sufficient to represent rover-scale hazards. 
 To make matters worse, the best resolution lunar DEMs are generated from stereo orbital imagery, yet the reference mission was targeting areas with permanently shadowed regions. 
 
 On the Moon, the principal obstacles of interest to rovers are rocks and craters. 
 Getting the "density" right was one of the primary objectives of this work as the distributions of obstacles have significant impact on mission traverse paths and schedule. 
 While mean values are published in literature \cite{Surveyor1968} for Highlands/Mare/Polar regions, these size-frequency distributions vary widely according to locality. 
-Parameters such as proximity to large or fresh craters, in particular, are significant modulating factors for rocks. We attempted to model these variations by procedural placement of craters and ejecta fields and simulating the processes of Lunar terrain formation with the most current orbital information. 
+Parameters such as proximity to large or fresh craters, in particular, are significant modulating factors for rocks. 
+We attempted to model these variations by procedural placement of craters and ejecta fields and simulating the processes of Lunar terrain formation with the most current orbital information. 
 
 In our process, crater distributions are first sampled to produce an estimate of size-frequency per unit area. 
 For a scene of specific dimension, we can predict how many craters of a particular diameter are present. 
@@ -236,7 +238,8 @@ Given that 5cm resolution is well beyond available lunar DEMs, we developed tool
 The diamond-and-square method of fractal terrain generation is straightforward to implement and a reasonable choice for adding higher frequency details. 
 However, the method is known to create interpolation artifacts when constrained {miller1986definition}, particularly on low frequency features like aged crater rims. 
 We employed two approaches to mitigate these artifacts. 
-First, we replace linear interpolation with Catmull-Rom splines in the diamond-and-square algorithm which reduces the severity of the artifacts. Second, prior to scaling up we split the terrain into high and low frequency components by running a low pass filter on the DEM, and subtracting it from the original. 
+First, we replace linear interpolation with Catmull-Rom splines in the diamond-and-square algorithm which reduces the severity of the artifacts. 
+Second, prior to scaling up we split the terrain into high and low frequency components by running a low pass filter on the DEM, and subtracting it from the original. 
 The high frequency component is scaled up with the diamond-and-square algorithm whereas the low frequency component is scaled up with bilinear interpolation. 
 Craters are inserted into the low frequency component before adding the high and low frequency components back together to reconstitute the DEM. 
 This process is repeated until the desired resolution is reached. 
@@ -299,7 +302,8 @@ However, our material simulation of regolith is not commonly found in shaders.
 Regolith is the layer of powdery dust which covers most of the moon except for the rare vertical rocky surface. 
 As such, correctly simulating the appearance of regolith via the bidirectional reflectance distribution function (BRDF) is a major factor in achieving visual fidelity. 
 The reflectance of Lunar regolith and regolith-like materials have been comprehensively studied and the Hapke functions remain the most accurate physically-based models \cite{hapke11}. 
-However, the Hapke BRDF has several drawbacks when used for rover-scale rendering including mathematical complexity, non-invertibility, and edge artifacts\cite{Wong2012}. We implement an approximation to the full BRDF suggested by Hapke, which combines coherent-backscatter and shadow hiding into a single term. 
+However, the Hapke BRDF has several drawbacks when used for rover-scale rendering including mathematical complexity, non-invertibility, and edge artifacts\cite{Wong2012}. 
+We implement an approximation to the full BRDF suggested by Hapke, which combines coherent-backscatter and shadow hiding into a single term. 
 Furthermore, our Hapke approximation shader is combined with a Lambertian BRDF with a nadir-dependent angle to reduce rendering artifacts. 
 This is a similar strategy used by \cite{McEwen1996} in developing the Lunar-Lambertian model derived from Lommel-Seeliger reflectance. 
 Our Hapke parameters are estimated from prior literature for Highlands regolith, which is a stand-in for Polar regions of the moon. 
@@ -322,37 +326,73 @@ There are other shadow techniques, but shadow mapping provides a popular combina
 \subsubsection{Real-time Shadow Challenges}
 One common challenge related to shadow mapping is providing an appropriate amount of shadow map resolution in every part of a scene. 
 Ideally, shadow detail decreases with distance from the user's point of view such that there is a unique shadow map texel for every pixel in the final image. 
-In a small scene (e.g. indoors) a uniform distribution of shadow resolution can work well enough. However, when rendering a landscape out to the horizon, a uniform distribution of shadow resolution is impractical from the standpoint of memory consumption.
+In a small scene (e.g. indoors) a uniform distribution of shadow resolution can work well enough. 
+However, when rendering a landscape out to the horizon, a uniform distribution of shadow resolution is impractical from the standpoint of memory consumption.
 
-A related challenge stems from the relationship of the light ray direction compared to the user's view direction. When these directions are close to parallel, as is often the case in our simulation because the sun is close to the horizon, it becomes difficult to make a good distribution of shadow resolution. This is known as the dueling frusta problem. There are refinements of shadow mapping that exaggerate this problem and others that minimize it.
+A related challenge stems from the relationship of the light ray direction compared to the user's view direction. 
+When these directions are close to parallel, as is often the case in our simulation because the sun is close to the horizon, it becomes difficult to make a good distribution of shadow resolution. 
+This is known as the dueling frusta problem. There are refinements of shadow mapping that exaggerate this problem and others that minimize it.
 
-It is possible to improve shadow quality if you know, for a given scene, which shadows are static and which are dynamic. If the light source moves then all the shadows it casts are dynamic. The orientation of the sun relative to the moon changes so slowly that we can assume it is effectively stationary in our simulation. The only moving object is the rover itself. Therefore, we can pre-compute shadows cast by the terrain (often referred to as baked shadows), and we only need to compute real-time shadows for the rover.
+It is possible to improve shadow quality if you know, for a given scene, which shadows are static and which are dynamic. 
+If the light source moves then all the shadows it casts are dynamic. 
+The orientation of the sun relative to the moon changes so slowly that we can assume it is effectively stationary in our simulation. 
+The only moving object is the rover itself. 
+Therefore, we can pre-compute shadows cast by the terrain (often referred to as baked shadows), and we only need to compute real-time shadows for the rover.
 
 \subsubsection{Baked Shadows}
 
 Because the sun moves slowly (~0.5 deg/hour), we elected to pre-render the shadows generated by the terrain shadowing itself, capturing the result in a lightmap that was used by the shader to render static shadows with very little runtime overhead.
 
-To generate the lightmap, a 2-dimensional form of ray-tracing called ray-casting was used because the terrain was modeled as a height field with no overhangs.  (Our approach is very similar to the technique used in Wolfenstein 3D on the PC.)  The lightmap was calculated at the same 4 cm resolution as the terrain, and the sun was modeled as an extended source with rays cast from 280 points within the sun's disk.
+To generate the lightmap, a 2-dimensional form of ray-tracing called ray-casting was used because the terrain was modeled as a height field with no overhangs.  
+The lightmap was calculated at the same 4 cm resolution as the terrain, and the sun was modeled as an extended source with rays cast from 280 points within the sun's disk.
 
-This approach produces high-quality shadows over the whole terrain, with smoothly varying penumbras cast by distant features and tiny shadows cast by one pixel bumps.  For any given rover camera image, most of these shadows are too distant to see; the most important shadows are close to the rover, particularly those cast by the rover itself and are rendered using the real-time techniques described above, but the static shadows are very visible in the gazebo camera used for debugging and their soft edges add to the images' realism.
+This approach produces high-quality shadows over the whole terrain, with smoothly varying penumbras cast by distant features and tiny shadows cast by one pixel bumps.  
+For any given rover camera image, most of these shadows are too distant to see; the most important shadows are close to the rover, particularly those cast by the rover itself and are rendered using the real-time techniques described above, but the static shadows are very visible in the gazebo camera used for debugging and their soft edges add to the images' realism.
 
-While the sun moves slowly, it's not fixed.  The sun moves its apparent width in one hour, so any terrain pixel can potentially go from fully lit to fully unlit or vice versa within that hour.  This only happens at the edges of shadows, however, and is rarely important to rover operations because the rover's path is planned to avoid these areas.  Our approach to this slow movement is to generate one lightmap for every hour and to linearly interpolate linearly between adjacent lightmaps in the shader, however, this enhancement has not been implemented yet.
+While the sun moves slowly, it's not fixed.  
+The sun moves its apparent width in one hour, so any terrain pixel can potentially go from fully lit to fully unlit or vice versa within that hour.  
+This only happens at the edges of shadows, however, and is rarely important to rover operations because the rover's path is planned to avoid these areas.  
+Our approach to this slow movement is to generate one lightmap for every hour and to linearly interpolate linearly between adjacent lightmaps in the shader, however, this enhancement has not been implemented yet.
 
 \subsubsection{Gazebo Real-Time Shadow Improvements}
-Gazebo originally used a shadow mapping technique called Parallel Split Shadow Maps (PSSM) to render real-time shadows. On the surface, this was a good choice because PSSM uses multiple shadow maps to provide a quality distribution of shadow resolution, even in the dueling frusta case. However, there were several problems with the implementation that conspired to ruin the shadows in our simulation, often leaving us with low-resolution shadows or no shadow on parts of the screen.
+Gazebo originally used a shadow mapping technique called Parallel Split Shadow Maps (PSSM) to render real-time shadows. 
+On the surface, this was a good choice because PSSM uses multiple shadow maps to provide a quality distribution of shadow resolution, even in the dueling frusta case. 
+However, there were several problems with the implementation that conspired to ruin the shadows in our simulation, often leaving us with low-resolution shadows or no shadow on parts of the screen.
 
-Gazebo uses Ogre3D for rendering, and so it was using Ogre3D's PSSM implementation for rendering shadows. Each shadow map in that implementation was also being processed by a Light-Space Perspective Shadow Map (LiSPSM) technique, which performs poorly in the dueling frusta case and also exhibited some mysterious bugs. Additionally, Ogre3D assumes all scenes are oriented with the y-axis pointing up while gazebo assumes the z-axis points up. This decreased the usable region of each shadow map and often caused shadow edges to be more jagged than necessary. We corrected both problems by adding code to Gazebo that bypasses these troublesome parts of Ogre3D.
+Gazebo uses Ogre3D for rendering, and so it was using Ogre3D's PSSM implementation for rendering shadows. 
+Each shadow map in that implementation was also being processed by a Light-Space Perspective Shadow Map (LiSPSM) technique, which performs poorly in the dueling frusta case and also exhibited some mysterious bugs. 
+Additionally, Ogre3D assumes all scenes are oriented with the y-axis pointing up while gazebo assumes the z-axis points up. 
+This decreased the usable region of each shadow map and often caused shadow edges to be more jagged than necessary. 
+We corrected both problems by adding code to Gazebo that bypasses these troublesome parts of Ogre3D.
 
-To further refine the PSSM implementation, we added hooks to the Gazebo API that allow aspects of the shadows to be tuned through Gazebo plugins. We were then able to affect the relative size of the shadow maps and the distance from the observer within which shadows would be applied.
+To further refine the PSSM implementation, we added hooks to the Gazebo API that allow aspects of the shadows to be tuned through Gazebo plugins. 
+We were then able to affect the relative size of the shadow maps and the distance from the observer within which shadows would be applied.
 
-With the resolution distribution problems mitigated, we turned to the overall lack of shadow resolution. The easiest first step was to increase Gazebo's default shadow map resolution from 1024 to 2048. This double our resolution everywhere, but there were still small features on the rover, such as the mast, that were not casting shadows consistently. The shader that Gazebo was using to apply shadows was smoothing shadow edges using Percentage Closest Filtering (PCF) with a 3x3 grid of sample positions. This worked well for smoothing jagged shadow edges, but, due to the filter's uniformity, sometimes small features would fall through the cracks and not affect the final shadow intensity. We replaced PCF with something known as hardware PCF, a common graphics driver hack that accomplishes the same type of smoothing with little performance impact. Then we applied a 9-sample Poisson filter (not a uniform grid like before), which smoothed the shadows even more and does a much better job of preserving small features.
+With the resolution distribution problems mitigated, we turned to the overall lack of shadow resolution. 
+The easiest first step was to increase Gazebo's default shadow map resolution from 1024 to 2048. 
+This double our resolution everywhere, but there were still small features on the rover, such as the mast, that were not casting shadows consistently. 
+The shader that Gazebo was using to apply shadows was smoothing shadow edges using Percentage Closest Filtering (PCF) with a 3x3 grid of sample positions. 
+This worked well for smoothing jagged shadow edges, but, due to the filter's uniformity, sometimes small features would fall through the cracks and not affect the final shadow intensity. 
+We replaced PCF with something known as hardware PCF, a common graphics driver hack that accomplishes the same type of smoothing with little performance impact. 
+Then we applied a 9-sample Poisson filter (not a uniform grid like before), which smoothed the shadows even more and does a much better job of preserving small features.
 
 \subsection{Wheel Tracks}
-Any rover will leave wheel tracks in the powdery lunar regolith. We wanted to include these tracks in our visual simulation for realism and as an orientation aid for operators. It would be possible to reshape the terrain geometry to represent wheel tracks, but this method is difficult to implement and would provide more fidelity than we needed. A much simpler alternative is to use a technique called bump mapping to give the illusion of wheel tracks on flat geometry.
+Any rover will leave wheel tracks in the powdery lunar regolith. We wanted to include these tracks in our visual simulation for realism and as an orientation aid for operators. 
+It would be possible to reshape the terrain geometry to represent wheel tracks, but this method is difficult to implement and would provide more fidelity than we needed.
+A much simpler alternative is to use a technique called bump mapping to give the illusion of wheel tracks on flat geometry.
 
-Our shader already employs bump mapping to give the regolith its fine detail, so we expand on this to add wheel tracks. We apply a 1-channel texture to the drivable area of the terrain. It starts out with every texel set to the maximum value, 255. Wherever a rover wheel travels we draw a groove in the texture, setting texels to 0 or some medium value. Wherever this texture is less than 255, the shader mixes a surface normal into the bump mapping. To approximate a surface normal it compares neighboring texels in the wheel tracks texture to find the slope in the x- and y-directions. Assuming a z-value of 1.0, the three values are normalized to produce a final surface normal.
+Our shader already employs bump mapping to give the regolith its fine detail, so we expand on this to add wheel tracks. 
+We apply a 1-channel texture to the drivable area of the terrain.
+It starts out with every texel set to the maximum value, 255. 
+Wherever a rover wheel travels we draw a groove in the texture, setting texels to 0 or some medium value.
+Wherever this texture is less than 255, the shader mixes a surface normal into the bump mapping. 
+To approximate a surface normal it compares neighboring texels in the wheel tracks texture to find the slope in the x- and y-directions. 
+Assuming a z-value of 1.0, the three values are normalized to produce a final surface normal.
 
-To draw the wheel tracks in the texture we use a Gazebo plugin. We use Gazebo's knowledge of the rover model and the terrain layout to compute what part of the texture each wheel position corresponds with. Everywhere each wheel travels, we draw an anti-aliased dot in the texture of a size in texels that appears to match the wheel size when the texture is projected on the terrain. These dots overlap to give the appearance of a continuous groove made by each wheel.
+To draw the wheel tracks in the texture we use a Gazebo plugin. 
+We use Gazebo's knowledge of the rover model and the terrain layout to compute what part of the texture each wheel position corresponds with. 
+Everywhere each wheel travels, we draw an anti-aliased dot in the texture of a size in texels that appears to match the wheel size when the texture is projected on the terrain. 
+These dots overlap to give the appearance of a continuous groove made by each wheel.
 \begin{figure}[h!]
 	\includegraphics[width=\columnwidth]{figures/rpgsim_wheel_tracks.jpg}
    	\caption{Rover wheel tracks}
@@ -360,12 +400,26 @@ To draw the wheel tracks in the texture we use a Gazebo plugin. We use Gazebo's 
 \end{figure}
 
 \subsection{Ephemeris}
-The position of the Sun and Earth relative to the moon is computed using the SPICE C toolkit provided by the Navigation and Ancillary Information Facility (NAIF) \url{https://naif.jpl.nasa.gov/naif/toolkit.html}.  Using the timestamp maintained by the simulator, this toolkit generates the transformations between the Moon, the Sun, and the Earth at the current simulated time.  By chaining these transformations with the rover's current position on the surface of the moon we are able to compute the positions of the Sun and the Earth relative to our local coordinate system and position them accurately in the simulator.  We are not concerned about the locations of stars because they are not drawn in the simulator.
+The position of the Sun and Earth relative to the moon is computed using the SPICE C toolkit provided by the Navigation and Ancillary Information Facility (NAIF) \url{https://naif.jpl.nasa.gov/naif/toolkit.html}.  
+Using the timestamp maintained by the simulator, this toolkit generates the transformations between the Moon, the Sun, and the Earth at the current simulated time.  
+By chaining these transformations with the rover's current position on the surface of the moon we are able to compute the positions of the Sun and the Earth relative to our local coordinate system and position them accurately in the simulator.  
+We are not concerned about the locations of stars because they are not drawn in the simulator.
 
 \subsection {Photometry}
-The reference mission required training in use of photographic systems coupled with active illumination for driving. Developments were made to model complex illumination effects from natural sources, rover-based lighting, and sensor optics in order to produce an accurate camera image. To accomplish this in a real-time manner, we used physically-based raytracing to produce exemplar scenes which were then approximated with shader tricks. 
+The reference mission required training in use of photographic systems coupled with active illumination for driving. 
+Developments were made to model complex illumination effects from natural sources, rover-based lighting, and sensor optics in order to produce an accurate camera image. 
+To accomplish this in a real-time manner, we used physically-based raytracing to produce exemplar scenes which were then approximated with shader tricks. 
 
-The dynamic range of scenes on the Moon drives the performance of stereo safeguarding, human situational awareness, and the design of rover lighting. To accurately simulate dynamic range, global illumination must be modeled. If direct sunlight were the only source of illumination, shadowed areas would be pitch black. However, we know this is not the case from images of the Lunar surface, despite the high dynamic range. Light reaches shadowed areas from multiple natural sources including diffuse interreflection of the Lunar surface, Earthshine, and starlight. Using ray tracing, we simulated the contribution of indirect scattering in ideal surface craters given particular phase angle combinations. Our findings indicate that an average of 3\% of the direct illumination reflects into shadows in polar scenes. This effect was approximated in rendering by illuminating the scene with a low-intensity virtual source opposing the sun in azimuth \todo{is this true for the final version? -uland}. Analytically we also showed that light from the star field is insignificant and that Earthshine, while potentially a fraction of indirect scattering, is complexly dependent on the phase of Earth. Thus, neither these other sources were implemented.       
+The dynamic range of scenes on the Moon drives the performance of stereo safeguarding, human situational awareness, and the design of rover lighting. 
+To accurately simulate dynamic range, global illumination must be modeled. 
+If direct sunlight were the only source of illumination, shadowed areas would be pitch black. 
+However, we know this is not the case from images of the Lunar surface, despite the high dynamic range. 
+Light reaches shadowed areas from multiple natural sources including diffuse interreflection of the Lunar surface, Earthshine, and starlight. 
+Using ray tracing, we simulated the contribution of indirect scattering in ideal surface craters given particular phase angle combinations. 
+Our findings indicate that an average of 3\% of the direct illumination reflects into shadows in polar scenes. 
+This effect was approximated in rendering by illuminating the scene with a low-intensity virtual source opposing the sun in azimuth \todo{is this true for the final version? -uland}. 
+Analytically we also showed that light from the star field is insignificant and that Earthshine, while potentially a fraction of indirect scattering, is complexly dependent on the phase of Earth. 
+Thus, neither these other sources were implemented.       
 
 \begin{figure}[h!]
 	\includegraphics[width=\columnwidth]{figures/rpgsim_camera_exposure.png}
@@ -377,48 +431,72 @@ The dynamic range of scenes on the Moon drives the performance of stereo safegua
 some text
 
 \subsection{Rover Lights}
-Gazebo was extended to allow lights to be attached to articulated rover components, which greatly simplified code associated with light placement. Ogre3D material files were used to pass light parameters from Gazebo to our GLSL shader. The shader simulates up to four spotlights having brightness, cone angle, and distance falloff that can be specified as part of our Gazebo light description. We also added a texture projection feature for simulating the detailed pattern projected by a real-world light source. This infrastructure gives us the ability to simulate a variety of lighting hardware and placement before settling on a final solution. For the time being, we have specified lights that will cast 1/500 of sunlight intensity at a distance of ten meters, a reasonable approximation of our final hardware.
+Gazebo was extended to allow lights to be attached to articulated rover components, which greatly simplified code associated with light placement. 
+Ogre3D material files were used to pass light parameters from Gazebo to our GLSL shader. 
+The shader simulates up to four spotlights having brightness, cone angle, and distance falloff that can be specified as part of our Gazebo light description.
+We also added a texture projection feature for simulating the detailed pattern projected by a real-world light source. 
+This infrastructure gives us the ability to simulate a variety of lighting hardware and placement before settling on a final solution. 
+For the time being, we have specified lights that will cast 1/500 of sunlight intensity at a distance of ten meters, a reasonable approximation of our final hardware.
 
 \subsection{16bit Rendering and Image Post Processing}
-A standard bit depth of 8 is enough for viewing images on a nonspecialized monitor, but computer vision algorithms, such as our visual odometry, can make use of higher depths. The cameras under consideration have a bit depth of 12, so we need to render images of the same depth to accurately simulate our intended image pipeline. We extended Gazebo to capture 16-bit images. Internally, Gazebo already supports floating point textures as they are used to store data generated by depth and other image-based range sensors. So the task of simulating 16-bit grayscale and RGB camera sensors was relatively straightforward, essentially by rendering to textures in the these formats. Direct 12-bit image capture is not an option in OpenGL, but a 16-bit image can be downsampled to 12-bit as a post-render step.
+A standard bit depth of 8 is enough for viewing images on a nonspecialized monitor, but computer vision algorithms, such as our visual odometry, can make use of higher depths. 
+The cameras under consideration have a bit depth of 12, so we need to render images of the same depth to accurately simulate our intended image pipeline. 
+We extended Gazebo to capture 16-bit images. 
+Internally, Gazebo already supports floating point textures as they are used to store data generated by depth and other image-based range sensors. So the task of simulating 16-bit grayscale and RGB camera sensors was relatively straightforward, essentially by rendering to textures in the these formats. 
+Direct 12-bit image capture is not an option in OpenGL, but a 16-bit image can be downsampled to 12-bit as a post-render step.
 
-Resource Prospector is planned as a short mission with tight constraints based on processing power and transmission time. To support our concept of operations, visual odometry updates must be available within about a minute of image capture. We plan to apply 1-bit S-Log compression to our 12-bit camera images, transmit them to our mission control center, and there use them to perform visual odometry. Extracting stereo point clouds from S-Log compressed images has been shown to be nearly as accurate as using original images (citation?).
+Resource Prospector is planned as a short mission with tight constraints based on processing power and transmission time. 
+To support our concept of operations, visual odometry updates must be available within about a minute of image capture. 
+We plan to apply 1-bit S-Log compression to our 12-bit camera images, transmit them to our mission control center, and there use them to perform visual odometry. 
+Extracting stereo point clouds from S-Log compressed images has been shown to be nearly as accurate as using original images (citation?).
 
 \section{Vehicle Simulation}
 
-The Resource Prospector robot is an explicit steered vehicle, which is capable of being skid-steered. The steering configuration of the robot permits it to drive in any direction and maintain the orientation of the solar panels to maximize the insolation of the solar panels.  
+The Resource Prospector robot is an explicit steered vehicle, which is capable of being skid-steered. 
+The steering configuration of the robot permits it to drive in any direction and maintain the orientation of the solar panels to maximize the insolation of the solar panels.  
 
 \begin{figure}[htp!]
 \centering
 \includegraphics[scale=0.35]{figures/rp-houston.jpg}
-\caption{The Resource Prospector robot is capable of independently steering each of its wheels.  Additionally, each wheel can be raised and lowered independently, permitting the robot to ``walk'' out of sand traps.  \label{fig:rp-houston}}
+\caption{The Resource Prospector robot is capable of independently steering each of its wheels.  
+Additionally, each wheel can be raised and lowered independently, permitting the robot to ``walk'' out of sand traps.  \label{fig:rp-houston}}
 \end{figure}
 
-It is also possible to raise and lower each of the wheels independently. Combining that with the steering capabilities of the wheels, the robot is able to navigate out of sand traps by taking steps, instead of rotating the wheels and possibly further worsening the vehicle's embedding.
+It is also possible to raise and lower each of the wheels independently. 
+Combining that with the steering capabilities of the wheels, the robot is able to navigate out of sand traps by taking steps, instead of rotating the wheels and possibly further worsening the vehicle's embedding.
 
 \subsection{Simulating Vehicle Mobility}
 \label{sec:simulated-rover}
 
-We developed the physical simulation of the robot in Gazebo in two stages. This was to aid the development of on-going concept of operations missions.  The first version of the robot was simulated using the Husky gazebo model \cite{gariepy2015husky}.  
+We developed the physical simulation of the robot in Gazebo in two stages. 
+This was to aid the development of on-going concept of operations missions.  
+The first version of the robot was simulated using the Husky gazebo model \cite{gariepy2015husky}.  
 
 \begin{figure}[htp]
 \missingfigure{Picture of a husky robot ?vs simulated husky?}
-\caption{The Husky robot is manufactured by Clearpath Robotics.  We used the Husky model to carry the RP instrument suite. \label{fig:husky}}
+\caption{The Husky robot is manufactured by Clearpath Robotics.  
+We used the Husky model to carry the RP instrument suite. \label{fig:husky}}
 \end{figure}
 
-The Husky robot (\cref{fig:husky}) is only capable of skid-steering, which does not reflect the full capabilities of the RP vehicle.  However, since the RP vehicle is capable of skid steering, the Husky provided a platform to quickly mount the sensors needed for conducting missions operations tests and provide a reasonable approximation of vehicle motion.  
+The Husky robot (\cref{fig:husky}) is only capable of skid-steering, which does not reflect the full capabilities of the RP vehicle.  
+However, since the RP vehicle is capable of skid steering, the Husky provided a platform to quickly mount the sensors needed for conducting missions operations tests and provide a reasonable approximation of vehicle motion.  
 
-The second emulation of the vehicle was a modified version of the NASA Ames Intelligent Robotics Group's KRex2 robot (\cref{fig:krex2}).  The KRex2 robot is, like RP, an explicit-steer vehicle.  We modified the KRex2 model to reflect the offset steering which is present on the RP rover, but not on the actual KRex2 model.  However, where RP can independently lower and raise its wheels, KRex2 cannot, and relies on a differencing bar to maintain contact with the terrain, as shown in \cref{fig:krex2-differencing}.    
+The second emulation of the vehicle was a modified version of the NASA Ames Intelligent Robotics Group's KRex2 robot (\cref{fig:krex2}).  
+The KRex2 robot is, like RP, an explicit-steer vehicle.  
+We modified the KRex2 model to reflect the offset steering which is present on the RP rover, but not on the actual KRex2 model.  
+However, where RP can independently lower and raise its wheels, KRex2 cannot, and relies on a differencing bar to maintain contact with the terrain, as shown in \cref{fig:krex2-differencing}.    
 
 \begin{figure}[htp]
 \missingfigure{Picture of krex2 ?vs simulated krex2?}
 \caption{KRex2 while on a field deployment \label{fig:krex2}}
 \end{figure}
 
-Using KRex2 as a proxy for the RP vehicle enabled the use of the explicit steering capacity for missions operations testing.  Using the URDF language to describe the robot, it was easy to modify the sensors that were added to the earlier Husky model to the modified KRex2 model.  
+Using KRex2 as a proxy for the RP vehicle enabled the use of the explicit steering capacity for missions operations testing.  
+Using the URDF language to describe the robot, it was easy to modify the sensors that were added to the earlier Husky model to the modified KRex2 model.  
 
 
-To both of these vehicles we added a stereo camera pair that was mounted on a gimbal at the top of the mast, seen in \cref{fig:rp-houston}, as well as the solar-panel superstructure. We also added a simulated IMU and tracked wheel odometry for use in pose estimation.  
+To both of these vehicles we added a stereo camera pair that was mounted on a gimbal at the top of the mast, seen in \cref{fig:rp-houston}, as well as the solar-panel superstructure. 
+We also added a simulated IMU and tracked wheel odometry for use in pose estimation.  
 
 \subsection{Wheel Slip}
 Localization algorithms that employ wheel odometry use measurements of wheel rotation to estimate robot motion.
@@ -451,7 +529,8 @@ The slip compliance corresponds to the inverse slope of the curve near the origi
 \end{figure}
 
 In the real world, an input drive command will result in a non-zero slip of the rover wheel on loose terrain which will generate drift in localization algorithms.
-In order for this drift to be plausible in simulation, a wheel slip plug-in was developed and implemented for Gazebo that adjusts the slip compliance parameter based on a test results from two tests: RP single wheel drawbar pull test and RP lunar mass equivalent unit test (see figure \ref{fig:mgru}) in the SLOPElab facility at NASA Glenn Research Center (GRC) (ref: \url{https://www.nasa.gov/centers/glenn/events/tour_erb_slope.html}). The simulant for these test was GRC-1 (ref: \url{https://etd.ohiolink.edu/!etd.send_file?accession=case1269272964&disposition=inline}), which has similar mechanical characteristics as the lunar regolith.
+In order for this drift to be plausible in simulation, a wheel slip plug-in was developed and implemented for Gazebo that adjusts the slip compliance parameter based on a test results from two tests: RP single wheel drawbar pull test and RP lunar mass equivalent unit test (see figure \ref{fig:mgru}) in the SLOPElab facility at NASA Glenn Research Center (GRC) (ref: \url{https://www.nasa.gov/centers/glenn/events/tour_erb_slope.html}). 
+The simulant for these test was GRC-1 (ref: \url{https://etd.ohiolink.edu/!etd.send_file?accession=case1269272964&disposition=inline}), which has similar mechanical characteristics as the lunar regolith.
 \begin{figure}[h!]
 	\includegraphics[width=\columnwidth]{figures/wheel_slip_MGRU.JPG}
    	\caption{A picture of the RP lunar mass equivalent rover at the SLOPElab in NASA GRC.}
@@ -459,20 +538,25 @@ In order for this drift to be plausible in simulation, a wheel slip plug-in was 
 \end{figure}
 The slip compliance tuning parameter enables simulation of loose material generating slip greater than zero on shallow angle slopes.
 
-Although not perfect at simulating the wheel/soil interaction, this plug-in enables the simulated rover to have a high level slip behavior relatively close to what will be expected on a lunar terrain. In order to increase the fidelity and give more realism for wheel sinkage and rover embedding, this simple model would need to be replaced by a discrete element method (DEM) model which is very costly in terms of computational power and existing system are unproven due to the complexity of the particle interaction.
+Although not perfect at simulating the wheel/soil interaction, this plug-in enables the simulated rover to have a high level slip behavior relatively close to what will be expected on a lunar terrain. 
+In order to increase the fidelity and give more realism for wheel sinkage and rover embedding, this simple model would need to be replaced by a discrete element method (DEM) model which is very costly in terms of computational power and existing system are unproven due to the complexity of the particle interaction.
 
 \section{Flight Software Prototype}
 
 \begin{figure*}
 \centering
 \missingfigure{Incorporate RP software diagram, pending approval.}
-\caption{On the left hand side we include the software modules that would operate on-board the robot.  These include low-level components, including waypoint following and simple pose estimation fusing wheel odometry and the vehicle's IMU.  On the right hand side of the diagram are the more computationally intensive algorithms, which are proposed to run on the Earth.  Exploiting greater computing resources on the ground lets the robot access algorithms which would not be feasible on on-board radiation-hardened computers. \label{fig:rp-software}}
+\caption{On the left hand side we include the software modules that would operate on-board the robot.  
+These include low-level components, including waypoint following and simple pose estimation fusing wheel odometry and the vehicle's IMU.  
+On the right hand side of the diagram are the more computationally intensive algorithms, which are proposed to run on the Earth.  
+Exploiting greater computing resources on the ground lets the robot access algorithms which would not be feasible on on-board radiation-hardened computers. \label{fig:rp-software}}
 \end{figure*}
 
 
 \subsection{Flight/Ground Software split}
 
-As discussed in \cref{sec:background} we divided the rover software into low-level control and safeguarding components, which were deployed on-board the rover (``flight software''), and higher-level autonomy or assistive tools which operated on Earth (``ground software'').  The division of those software components are given in \cref{fig:rp-software}.   
+As discussed in \cref{sec:background} we divided the rover software into low-level control and safeguarding components, which were deployed on-board the rover (``flight software''), and higher-level autonomy or assistive tools which operated on Earth (``ground software'').  
+The division of those software components are given in \cref{fig:rp-software}.   
 
 The role of the rover was played by the modified simulated RP rover, as described in \cref{sec:simulated-rover}.  The flight software consisted of the components that were designated the minimum viable components to complete the mission.  The flight software components include:
 
@@ -480,15 +564,21 @@ The role of the rover was played by the modified simulated RP rover, as describe
 \item[\textbf{Rover Kinematics}] The software that translates vehicle body motion commands into motor commands.
 \item[\textbf{Mobility}] The mobility module is responsible for closed-loop control on waypoint navigation.
 \item[\textbf{Localization}]  The pose estimation solution which integrated wheel odometry, a star tracker, and the IMU.  
-\item[\textbf{Camera/Gimbal Pointing}] The RP navigation cameras and the high-gain antenna are mounted on gimbals on the mast. This module is responsible for closed-loop control of those gimbals.  In our simulation we primarily concerned ourselves with camera pointing and not the effects of antenna pointing\todo[inline]{Is this true?}.  
+\item[\textbf{Camera/Gimbal Pointing}] The RP navigation cameras and the high-gain antenna are mounted on gimbals on the mast.
+This module is responsible for closed-loop control of those gimbals.  
+In our simulation we primarily concerned ourselves with camera pointing and not the effects of antenna pointing\todo[inline]{Is this true?}.  
 \item[\textbf{Wheel, IMU, Gimbal, and Camera I/O}]  These modules responsible for low-level hardware interfaces.  
-\item[\textbf{Rover Mode Manager}] This software component is responsible for preventing the robot from executing illegal or unsafe actions, and ensuring that all on-board modules are in the appropriate operating mode.  While this module did exist on the prototype RP rover, we did not implemented it for the simulated rover operations, and as such we did not seek a ROS equivalent.
-\item[\textbf{Virtual Bumper}]  The virtual bumper is designed to keep the rover safe from navigation obstacles, as per \cite{matthies1997fast}. This module as not implemented in the simulated rover operations. The prototype virtual bumper implemented for the RP project is described in \cite{nefian2017structured}, with a simple safeguarding scheme described in \cite{furlong2016safeguarding}.
+\item[\textbf{Rover Mode Manager}] This software component is responsible for preventing the robot from executing illegal or unsafe actions, and ensuring that all on-board modules are in the appropriate operating mode.  
+While this module did exist on the prototype RP rover, we did not implemented it for the simulated rover operations, and as such we did not seek a ROS equivalent.
+\item[\textbf{Virtual Bumper}]  The virtual bumper is designed to keep the rover safe from navigation obstacles, as per \cite{matthies1997fast}. 
+This module as not implemented in the simulated rover operations. 
+The prototype virtual bumper implemented for the RP project is described in \cite{nefian2017structured}, with a simple safeguarding scheme described in \cite{furlong2016safeguarding}.
 \end{description}
 
 \todo[inline]{Confirm statements about virtual bumper are true.}
 
-The ground software components represented higher-level software, which integrated data to improve the situational awareness of the rover drivers.  The particular modules included in the ground software are:
+The ground software components represented higher-level software, which integrated data to improve the situational awareness of the rover drivers.  
+The particular modules included in the ground software are:
 
 \begin{description}
 \item[\textbf{Advanced Localization}]  The advanced localization module integrated the on-board pose estimates with terrain relative navigation, mono- and stereo-scopic visual odometry, 
@@ -497,13 +587,17 @@ The ground software components represented higher-level software, which integrat
 \item[\textbf{Hazard Detection}]
 \item[\textbf{Planning}]
 \item[\textbf{Simulator}]  The simulator acted as an assistive tool for the operators, to ensure that the commands being sent to the rover were the commands that were intended.  
-\item[\textbf{Operator Interface}]  The operations interface was provided through two modules.  Direct and immediate control of the rover was accomplished through NASA Ames Intelligent Robotics Group's VERVE software.  Overall missions operations, and plan-level contextual information was provided through the WARP system.  Both of these modules are described in greater detail below, and communicated to the ROS system using a software bridge developed for these simulated experiments.
+\item[\textbf{Operator Interface}]  The operations interface was provided through two modules.  
+Direct and immediate control of the rover was accomplished through NASA Ames Intelligent Robotics Group's VERVE software.  
+Overall missions operations, and plan-level contextual information was provided through the WARP system.  
+Both of these modules are described in greater detail below, and communicated to the ROS system using a software bridge developed for these simulated experiments.
 \end{description}
 
 \subsection{Emulation of Software with ROS Components}
 
 \begin{table}[htp]
-\caption{Flight software components and the corresponding ROS modules that were used as stand-ins.  As mentioned above, the Rover Mode Manager and Virtual Bumper were not implemented for simulated operations.\label{tbl:flight-software-components}}
+\caption{Flight software components and the corresponding ROS modules that were used as stand-ins.  
+As mentioned above, the Rover Mode Manager and Virtual Bumper were not implemented for simulated operations.\label{tbl:flight-software-components}}
 \begin{tabular}{l|l}
 \textbf{Software Component} & \textbf{ROS Stand-in} \\
 \hline
@@ -559,20 +653,33 @@ Simulator & Gazebo Simulator with modifications described in this paper.\\
 \section{Results}
 
 \subsection{Stereo Visual Odometry}
-One of the goals of the visual simulation was to provide data for computer vision work, and an example of such work is the stereo visual odometry we implemented for Resource Prospector's ground software. It generates 3D point clouds from successive stereo camera images, aligns them using the Point Cloud Library's implementation of the Iterative Closest Point algorithm, and uses the transforms between point clouds to track changes in the rover's movements. This stereo visual odometry interacts with other software and sensors to estimate the rover's absolute pose.
+One of the goals of the visual simulation was to provide data for computer vision work, and an example of such work is the stereo visual odometry we implemented for Resource Prospector's ground software.
+It generates 3D point clouds from successive stereo camera images, aligns them using the Point Cloud Library's implementation of the Iterative Closest Point algorithm, and uses the transforms between point clouds to track changes in the rover's movements.
+This stereo visual odometry interacts with other software and sensors to estimate the rover's absolute pose.
 
-To refine the mission's concept of operations, we wanted to know how much overlap is required between camera images for stereo visual odometry to be effective. The easiest way to lose overlap between successive images is by yawing the camera or rover, so that is the first test we ran. We learned that with camera rotations of 50-degrees or less, stereo visual odometry yields more accurate results than the fused wheel and star tracker odometry we had been using (shown in the following graph).
+To refine the mission's concept of operations, we wanted to know how much overlap is required between camera images for stereo visual odometry to be effective. 
+The easiest way to lose overlap between successive images is by yawing the camera or rover, so that is the first test we ran. 
+We learned that with camera rotations of 50-degrees or less, stereo visual odometry yields more accurate results than the fused wheel and star tracker odometry we had been using (shown in the following graph).
 \begin{figure}[h!]
 	\includegraphics[width=\columnwidth]{figures/rotating_clouds_with_odom_error.png}
     \caption{Position error vs. camera rotation angle for stereo visual odometry and wheel-and-star-tracker odometry}
 \end{figure}
 
-There are occasionally incorrect point cloud alignments, telling us we need to improve our alignment algorithm or find a way to detect the quality of each alignment. It is important to note the results we found for stereo visual odometry are preliminary. There are further tests to run and improvements to be made to both our visual simulation and visual odometry. For example, after a specific camera is chosen for the mission we will be able to refine our camera simulation. This will affect point cloud generation and require us to run these tests again.
+There are occasionally incorrect point cloud alignments, telling us we need to improve our alignment algorithm or find a way to detect the quality of each alignment.
+It is important to note the results we found for stereo visual odometry are preliminary. 
+There are further tests to run and improvements to be made to both our visual simulation and visual odometry. 
+For example, after a specific camera is chosen for the mission we will be able to refine our camera simulation. 
+This will affect point cloud generation and require us to run these tests again.
 
-We also learned that using rover lights in shadowed areas hurts our visual odometry results. As expected the quality of our stereo point clouds is greatly reduced when the light sources are near the cameras because the Hapke reflectance model simulates strong, contrast-reducing backscatter. We have not attempted to quantify results in this area as it is still considered ripe for refinement.
+We also learned that using rover lights in shadowed areas hurts our visual odometry results. 
+As expected the quality of our stereo point clouds is greatly reduced when the light sources are near the cameras because the Hapke reflectance model simulates strong, contrast-reducing backscatter. 
+We have not attempted to quantify results in this area as it is still considered ripe for refinement.
 
 \subsection{Wheel Slip}
-In order to characterize the \texttt{wheel\_slip\_plugin}, we set up a test harness to gather data on wheel slip behavior over multiple runs. We created a Gazebo world with ramps from 0 to 30 degrees at 2 degree increments (see figure \ref{fig:simulationramps}). A rostest script would spawn the rover at the base of each ramp and command it to drive 10 meters forward. Wheel slip was measured by comparing dead reckoning distance driven to ground truth and test runs covered sets of parameter values for longitudinal compliance, physics engine solver iterations, and drive speed. 
+In order to characterize the \texttt{wheel\_slip\_plugin}, we set up a test harness to gather data on wheel slip behavior over multiple runs. 
+We created a Gazebo world with ramps from 0 to 30 degrees at 2 degree increments (see figure \ref{fig:simulationramps}). 
+A rostest script would spawn the rover at the base of each ramp and command it to drive 10 meters forward.
+Wheel slip was measured by comparing dead reckoning distance driven to ground truth and test runs covered sets of parameter values for longitudinal compliance, physics engine solver iterations, and drive speed. 
 \begin{figure}[h!]
 	\includegraphics[width=\columnwidth]{figures/world_lots_o_ramps.jpg}
    	\caption{Gazebo simulation for the slip vs slope test with the RP rover.}
