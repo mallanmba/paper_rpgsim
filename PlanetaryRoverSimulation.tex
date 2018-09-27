@@ -566,12 +566,12 @@ The role of the rover was played by the modified simulated RP rover, as describe
 \item[\textbf{Localization}]  The pose estimation solution which integrated wheel odometry, a star tracker, and the IMU.  
 \item[\textbf{Camera/Gimbal Pointing}] The RP navigation cameras and the high-gain antenna are mounted on gimbals on the mast.
 This module is responsible for closed-loop control of those gimbals.  
-In our simulation we primarily concerned ourselves with camera pointing and not the effects of antenna pointing\todo[inline]{Is this true?}.  
+In our simulation we have primarily concerned ourselves with camera pointing and not the effects of antenna pointing, although planned improvements to communications system simulation fidelity would take antenna pointing into account.  
 \item[\textbf{Wheel, IMU, Gimbal, and Camera I/O}]  These modules responsible for low-level hardware interfaces.  
 \item[\textbf{Rover Mode Manager}] This software component is responsible for preventing the robot from executing illegal or unsafe actions, and ensuring that all on-board modules are in the appropriate operating mode.  
-While this module did exist on the prototype RP rover, we did not implemented it for the simulated rover operations, and as such we did not seek a ROS equivalent.
+While this module did exist on the prototype RP rover, we did not implement it for the simulated rover operations, and as such we did not seek a ROS equivalent.
 \item[\textbf{Virtual Bumper}]  The virtual bumper is designed to keep the rover safe from navigation obstacles, as per \cite{matthies1997fast}. 
-This module as not implemented in the simulated rover operations. 
+This module was not implemented in the simulated rover operations. 
 The prototype virtual bumper implemented for the RP project is described in \cite{nefian2017structured}, with a simple safeguarding scheme described in \cite{furlong2016safeguarding}.
 \end{description}
 
@@ -639,7 +639,7 @@ Simulator & Gazebo Simulator with modifications described in this paper.\\
 
 \subsubsection{VERVE}
 
-\cite{lee2013reusable} \todo[inline]{See previous comments about warp.  Although I can speak more intelligently about VERVE. - pmf}
+The rover driving software is based on the NASA Visual Environment for Robotic Virtual Exploration (VERVE) \cite{lee2013reusable}. VERVE provides an interactive 3D user interface for remote monitoring and commanding of robotic systems and has been used for several Lunar analog field tests \cite{deans2009robotic} \cite{fong2010robotic} as well as commanding robotic assets from the International Space Station \cite{bualat2013surface}.
 
 \begin{figure*}[htp]
 \centering
