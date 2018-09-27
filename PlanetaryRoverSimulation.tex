@@ -202,8 +202,10 @@ Due to the broad scope of the simulation and the desire to have a functional, en
 
 To produce a viable lunar driving experience the simulated world must be representative of the target physical environment. 
 Specifically, the morphology of the terrain should accurately represent terrain features that would be considered either positive or negative obstacles for the rover. 
-Although DEMs are available for much of the lunar surface, the resolution of these models are not sufficient to represent rover-scale hazards. 
+Although Digital Elevation Models (DEMs) are available for much of the lunar surface, the resolution of these models are not sufficient to represent rover-scale hazards. 
 To make matters worse, the best resolution lunar DEMs are generated from stereo orbital imagery, yet the reference mission was targeting areas with permanently shadowed regions. 
+Existing terrain models of the lunar surface are on the order of meters, yet a resolution on the order of centimeters is required to adequately represent rover-scale hazards. 
+We addressed this disparity by developing tools to synthesize high resolution terrain for the driving simulator. 
 
 On the Moon, the principal obstacles of interest to rovers are rocks and craters. 
 Getting the "density" right was one of the primary objectives of this work as the distributions of obstacles have significant impact on mission traverse paths and schedule. 
@@ -232,8 +234,7 @@ During the process of sampling rocks and assigning spatial coordinates, the ejec
 At each time step, old rocks have a probability of being covered by regolith, and a new crater forming will cover old rocks under its extent. 
 When the number of generated rocks and craters equals the expected number plus some variation, the sizes, ages, and coordinates of the features are passed into fractal terrain generator.     
 
-Because the reference mission defined rocks larger than 10-25cm as positive obstacles, we desired a terrain resolution of 5cm or greater. 
-Given that 5cm resolution is well beyond available lunar DEMs, we developed tools to artificially increase resolution using established techniques {parkes2004planet}. ** insert summary of PANGU paper **
+\todo{transition from feature placement to DEM generation}
 
 The diamond-and-square method of fractal terrain generation is straightforward to implement and a reasonable choice for adding higher frequency details. 
 However, the method is known to create interpolation artifacts when constrained {miller1986definition}, particularly on low frequency features like aged crater rims. 
@@ -250,7 +251,6 @@ The excavated regolith from a fresh crater impact is lighter in shade due to lac
 An exponential function applied to the freshness parameter determines ejecta ray lightness. 
 Next, a rock mask maps which cells in the DEM correspond to regolith and which cells correspond to rocks. 
 Finally, we generate a normal map which captures the surface normal at each DEM posting. 
-
 
 
 \section{Lunar Visual Environment}
