@@ -639,7 +639,7 @@ Simulator & Gazebo Simulator with modifications described in this paper.\\
 
 \subsubsection{VERVE}
 
-The rover driving software is based on the NASA Visual Environment for Robotic Virtual Exploration (VERVE) \cite{lee2013reusable}. VERVE provides an interactive 3D user interface for remote monitoring and commanding of robotic systems and has been used for several Lunar analog field tests \cite{deans2009robotic} \cite{fong2010robotic} as well as commanding robotic assets from the International Space Station \cite{bualat2013surface}.
+The rover driving software is based on the NASA Visual Environment for Robotic Virtual Exploration (VERVE) \cite{lee2013reusable}. VERVE provides an interactive 3D user interface for remote monitoring and commanding of robotic systems \cref{fig:verve-mvp} and has been used for several Lunar analog field tests \cite{deans2009robotic} \cite{fong2010robotic} as well as commanding robotic assets from the International Space Station \cite{bualat2013surface}.
 
 \begin{figure*}[htp]
 \centering
@@ -701,6 +701,9 @@ However, our test results show that at certain angles and compliance values, the
 
 \section{Summary}
 
+This project represents a fusion of COTS, open-source software, with domain specific knowledge that resulted in the production of a high-fidelity lunar rover driving simulation. It presents an approach to rapidly developing visual and physical simulations that enable the holistic evaluation of a mission, from concept of operations to algorithm and mechanism design.
+
+The simulator permitted us to develop and test three major areas for the mission operations.  First, we were able to simulate the physical environment the robot would be operating in.  This includes medium fidelity wheel/terrain interactions and high fidelity visual simulation of the moon.  Second, due to the increased physical verisimilitude, we were able to test rover navigation and perception algorithms on the simulation data with increased confidence in the accuracy of the results.  Third, by virtue of being a high-fidelity simulation of rover mechanism and software behaviour, we were able to close the loop for the communications and operations infrastructure for the mission.  Then we were able to test different concepts of operations, and even rover configurations rapidly, and build confidence in the mission design.
 
 
 \bibliographystyle{plain}
