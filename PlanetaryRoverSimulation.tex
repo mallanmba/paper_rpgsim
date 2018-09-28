@@ -246,7 +246,7 @@ We employed two approaches to mitigate these artifacts.
 First, we replace linear interpolation with Catmull-Rom splines in the diamond-and-square algorithm which markedly reduces the severity of the artifacts but does not eliminate them.
 Second, we use an approach similar to that used in \cite{shankar2008lunar} whereby the terrain is split into high and low frequency components.
 The high frequency component is scaled up with the diamond-and-square algorithm whereas the low frequency component is scaled up with bilinear interpolation. 
-Craters are inserted into the low frequency component before adding the high and low frequency components back together to reconstitute the DEM. \cref{fig:split_upscale_join}
+Craters are inserted into the low frequency component before adding the high and low frequency components back together to reconstitute the DEM. (\cref{fig:split_upscale_join})
 
 \begin{figure}[h!]
   \includegraphics[width=\columnwidth]{figures/split_upscale_join.png}
@@ -490,14 +490,19 @@ We used the Husky model to carry the RP instrument suite. \label{fig:husky}}
 The Husky robot (\cref{fig:husky}) is only capable of skid-steering, which does not reflect the full capabilities of the RP vehicle.  
 However, since the RP vehicle is capable of skid steering, the Husky provided a platform to quickly mount the sensors needed for conducting missions operations tests and provide a reasonable approximation of vehicle motion.  
 
+\begin{figure}[htp]
+\missingfigure{Picture of krex2 ?vs simulated krex2?}
+\caption{KRex2 while on a field deployment \label{fig:krex2}}
+\end{figure}
+
 The second emulation of the vehicle was a modified version of the NASA Ames Intelligent Robotics Group's KRex2 robot (\cref{fig:krex2}).  
 The KRex2 robot is, like RP, an explicit-steer vehicle.  
 We modified the KRex2 model to reflect the offset steering which is present on the RP rover, but not on the actual KRex2 model.  
 However, where RP can independently lower and raise its wheels, KRex2 cannot, and relies on a differencing bar to maintain contact with the terrain, as shown in \cref{fig:krex2-differencing}.    
 
 \begin{figure}[htp]
-\missingfigure{Picture of krex2 ?vs simulated krex2?}
-\caption{KRex2 while on a field deployment \label{fig:krex2}}
+\includegraphics[width=\linewidth]{figures/krex2-shakedown.jpg}
+\caption{KRex2 exercising the differencing bar to maintain terrain contact for all wheels. \label{fig:krex2-differencing}}
 \end{figure}
 
 Using KRex2 as a proxy for the RP vehicle enabled the use of the explicit steering capacity for missions operations testing.  
@@ -532,7 +537,7 @@ while positive values allow for some slip.
 The slip compliance corresponds to the inverse slope of the curve near the origin.
 
 \begin{figure}[h!]
-    \includegraphics[width=\columnwidth]{figures/2018_09_IEEE_aero_paper_M_Allan-Slip_model_in_Gazebo-3.png}
+    \includegraphics[width=\columnwidth]{figures/2018_09_IEEE_aero_paper_M_Allan-Slip_model_in_Gazebo-4.png}
     \caption{Wheel/soil interaction model used in the simulator}
     \label{fig:wheelsoilmodel}
 \end{figure}
