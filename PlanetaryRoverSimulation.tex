@@ -11,6 +11,9 @@
 \usepackage{url}
 \usepackage{todonotes}
 \usepackage[capitalize]{cleveref}
+\usepackage{footnote}
+\makesavenoteenv{tabular}
+\makesavenoteenv{table}
 \usepackage{subfig}
 \newcommand{\ignore}[1]{}  % {} empty inside = %% comment
 
@@ -413,8 +416,8 @@ These dots overlap to give the appearance of a continuous groove made by each wh
 \subsection{Ephemeris}
 The position of the Sun and Earth relative to the moon is computed using the SPICE C toolkit provided by the Navigation and Ancillary Information Facility (NAIF) \url{https://naif.jpl.nasa.gov/naif/toolkit.html}.  
 Using the timestamp maintained by the simulator, this toolkit generates the transformations between the Moon, the Sun, and the Earth at the current simulated time.  
-By chaining these transformations with the rover's current position on the surface of the moon we are able to compute the positions of the Sun and the Earth relative to our local coordinate system and position them accurately in the simulator.  
 We are not concerned about the locations of stars because they are not drawn in the simulator.
+By chaining these transformations with the rover's current position on the surface of the moon we are able to compute the positions of the Sun and the Earth relative to our local coordinate system and position them accurately in the simulator.  
 
 \subsection {Photometry}
 The reference mission required training in use of photographic systems coupled with active illumination for driving. 
@@ -428,7 +431,7 @@ However, we know this is not the case from images of the Lunar surface, despite 
 Light reaches shadowed areas from multiple natural sources including diffuse interreflection of the Lunar surface, Earthshine, and starlight. 
 Using ray tracing, we simulated the contribution of indirect scattering in ideal surface craters given particular phase angle combinations. 
 Our findings indicate that an average of 3\% of the direct illumination reflects into shadows in polar scenes. 
-This effect was approximated in rendering by illuminating the scene with a low-intensity virtual source opposing the sun in azimuth \todo{is this true for the final version? -uland}. 
+This effect was approximated in rendering by illuminating the scene with a low-intensity virtual source opposing the sun in azimuth. 
 Analytically we also showed that light from the star field is insignificant and that Earthshine, while potentially a fraction of indirect scattering, is complexly dependent on the phase of Earth. 
 Thus, neither these other sources were implemented.       
 
@@ -447,7 +450,6 @@ Ogre3D material files were used to pass light parameters from Gazebo to our GLSL
 The shader simulates up to four spotlights having brightness, cone angle, and distance falloff that can be specified as part of our Gazebo light description.
 We also added a texture projection feature for simulating the detailed pattern projected by a real-world light source. 
 This infrastructure gives us the ability to simulate a variety of lighting hardware and placement before settling on a final solution. 
-For the time being, we have specified lights that will cast 1/500 of sunlight intensity at a distance of ten meters, a reasonable approximation of our final hardware.
 
 \subsection{16bit Rendering and Image Post Processing}
 A standard bit depth of 8 is enough for viewing images on a nonspecialized monitor, but computer vision algorithms, such as our visual odometry, can make use of higher depths. 
@@ -559,6 +561,8 @@ In order to increase the fidelity and give more realism for wheel sinkage and ro
 
 \section{Flight Software Prototype}
 
+In order to test 
+
 \begin{figure*}
 \centering
 \missingfigure{Incorporate RP software diagram, pending approval.}
@@ -598,15 +602,12 @@ The particular modules included in the ground software are:
 
 \begin{description}
 \item[\textbf{Advanced Localization}]  The advanced localization module integrated the on-board pose estimates with terrain relative navigation, mono- and stereo-scopic visual odometry, 
-\item[\textbf{Stereo Reconstruction}]
-\item[\textbf{Mapping}]
-\item[\textbf{Hazard Detection}]
-\item[\textbf{Planning}]
+\item[\textbf{Stereo Reconstruction}] Produces a metric reconstruction of the scene from the rover's stereo cameras.
+\item[\textbf{Mapping}] Uses the estimated pose and reconstructed scenes to build DEMs of the lunar surface.  
+\item[\textbf{Hazard Detection}] Provides two forms of hazard detection.  The module processes elevation maps to identify geometric hazards to the rover, producing a cost map.  It also would process images to visually identify potential vehicle hazards that may not appear in the terrain geometry.
+\item[\textbf{Planning}]  The planning module takes goals issued by the drivers and determines a sequence of waypoints which safely navigate the cost map produced by the Hazard Detection model.  
 \item[\textbf{Simulator}]  The simulator acted as an assistive tool for the operators, to ensure that the commands being sent to the rover were the commands that were intended.  
-\item[\textbf{Operator Interface}]  The operations interface was provided through two modules.  
-Direct and immediate control of the rover was accomplished through NASA Ames Intelligent Robotics Group's VERVE software.  
-Overall missions operations, and plan-level contextual information was provided through the WARP system.  
-Both of these modules are described in greater detail below, and communicated to the ROS system using a software bridge developed for these simulated experiments.
+\item[\textbf{Operator Interface}]  The operations interface was provided through two modules.  Direct and immediate control of the rover was accomplished through NASA Ames Intelligent Robotics Group's VERVE software.  Overall missions operations, and plan-level contextual information was provided through the WARP system.  Both of these modules are described in greater detail below, and communicated to the ROS system using a software bridge developed for mission simulation experiments.
 \end{description}
 
 \subsection{Emulation of Software with ROS Components}
@@ -614,7 +615,7 @@ Both of these modules are described in greater detail below, and communicated to
 \begin{table}[htp]
 \caption{Flight software components and the corresponding ROS modules that were used as stand-ins.  
 As mentioned above, the Rover Mode Manager and Virtual Bumper were not implemented for simulated operations.\label{tbl:flight-software-components}}
-\begin{tabular}{l|l}
+\begin{tabular}{l|p{4cm}}
 \textbf{Software Component} & \textbf{ROS Stand-in} \\
 \hline
 Rover Kinematics &  Custom additions to move\_base\\
