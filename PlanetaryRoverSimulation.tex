@@ -62,67 +62,66 @@ Finally, we discuss the effect of using the high-fidelity synthetic lunar images
 
 \tableofcontents
 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Rough Outline (feel free to change)}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{easylist}[checklist]
+% & Resource Prospector Background
+% && High level overview of mission objectives (Fong/Deans)
+% && Differences to Mars ops (Furlong/Deans)
+% && High level concept of operations (Deans/Shirley/Allan/Furlong)
+% && High level software architecture (Furlong/Allan)
+% &&& flight/ground software split (Furlong)
+% & Simulator goals / overview 
+%   && Development approach
+%     &&& create driving sim as fast as possible
+%     &&& development/refinement of conops
+%   && prototype mission software architecture with stubs and existing components with ROS (Gerkey)
+%   && use sim-generated data for flight software development
+%       &&& flight software --> Gazebo
+%       &&& Gazebo and ROS output --> nav and localization
+%     && incrementally replace stubs and emulated components with flight versions
+%     && use for training
+% & Synthetic Terrain Generation (Allan/Wong)
+% & Lunar Visual Environment (Allan/Wong)
+%   && Gazebo terrain enhancements (Chen)
+%     &&& LOD
+%     &&& background tiles (Allan)
+%   && GLSL shader (Allan/Wong/Welsh)
+%   && Wheel tracks
+%   && Shadows (Welsh/Chen)
+%     &&& real time shadow challenges 
+%     &&& baked shadows (Shirley)
+%     &&& Gazebo shadow improvements 
+%   && Ephemeris (McMichael)
+%   && Lighting / HDR
+%     &&& Earthshine, bounced light (Wong)
+%     &&& high bit depth rendering in Gazebo (Chen)
+%     &&& PBR indirect lighting experiment (Wong)
+%     &&& attempt to reproduce in GLSL (Allan)
+% & Vehicle simulation 
+%   && Use existing, similar robots to emulate (Furlong)
+%     &&& Husky
+%     &&& KRex2
+%   && \todo{Does this belong in the Flight Software Prototype?} Flight software integration with Gazebo 
+%   && Wheel slip plugin (Rogg/Peters)
+%     &&& first order approximation
+%     &&& fault injection
+% & Flight Software Prototype (Furlong)
+%   && flight/ground split
+%   && emulation with ROS components
+%   && Ops software
+%     &&& WARP
+%     &&& VERVE
+%   && Science sim and software
+% & Driving ConOps Experiments (Deans)
+% & Results
+%   && stereo visual odometry (Welsh)
+%   && lunar illumination comparison (Wong)
+%   && wheel slip results (Allan/Rogg/Peters)
+%  \end{easylist} 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Rough Outline (feel free to change)}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{easylist}[checklist]
-& Resource Prospector Background
-&& High level overview of mission objectives (Fong/Deans)
-&& Differences to Mars ops (Furlong/Deans)
-&& High level concept of operations (Deans/Shirley/Allan/Furlong)
-&& High level software architecture (Furlong/Allan)
-&&& flight/ground software split (Furlong)
-& Simulator goals / overview 
-  && Development approach
-    &&& create driving sim as fast as possible
-    &&& development/refinement of conops
-  && prototype mission software architecture with stubs and existing components with ROS (Gerkey)
-  && use sim-generated data for flight software development
-      &&& flight software --> Gazebo
-      &&& Gazebo and ROS output --> nav and localization
-    && incrementally replace stubs and emulated components with flight versions
-    && use for training
-& Synthetic Terrain Generation (Allan/Wong)
-& Lunar Visual Environment (Allan/Wong)
-  && Gazebo terrain enhancements (Chen)
-    &&& LOD
-    &&& background tiles (Allan)
-  && GLSL shader (Allan/Wong/Welsh)
-  && Wheel tracks
-  && Shadows (Welsh/Chen)
-    &&& real time shadow challenges 
-    &&& baked shadows (Shirley)
-    &&& Gazebo shadow improvements 
-  && Ephemeris (McMichael)
-  && Lighting / HDR
-    &&& Earthshine, bounced light (Wong)
-    &&& high bit depth rendering in Gazebo (Chen)
-    &&& PBR indirect lighting experiment (Wong)
-    &&& attempt to reproduce in GLSL (Allan)
-& Vehicle simulation 
-  && Use existing, similar robots to emulate (Furlong)
-    &&& Husky
-    &&& KRex2
-  && \todo{Does this belong in the Flight Software Prototype?} Flight software integration with Gazebo 
-  && Wheel slip plugin (Rogg/Peters)
-    &&& first order approximation
-    &&& fault injection
-& Flight Software Prototype (Furlong)
-  && flight/ground split
-  && emulation with ROS components
-  && Ops software
-    &&& WARP
-    &&& VERVE
-  && Science sim and software
-& Driving ConOps Experiments (Deans)
-& Results
-  && stereo visual odometry (Welsh)
-  && lunar illumination comparison (Wong)
-  && wheel slip results (Allan/Rogg/Peters)
- \end{easylist} 
-
-\listoftodos
+% \listoftodos
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
