@@ -35,15 +35,26 @@
 
 \begin{abstract}
 
-When planning planetary rover missions it is useful to develop intuition and skills driving in, quite literally, alien environments before incurring the cost of reaching said locales. Simulators make it possible to operate in environments that have the physical characteristics of target locations without the expense and overhead of extensive physical tests. To that end, NASA Ames and Open Robotics collaborated on a lunar rover driving simulator based on the open source Gazebo simulation platform and leveraging ROS (Robotic Operating System) components. The simulator was integrated with research and mission software for rover driving, system monitoring, and science instrument simulation to constitute an end-to-end lunar mission simulation capability.
+When planning planetary rover missions it is useful to develop intuition and skills driving in, quite literally, alien environments before incurring the cost of reaching said locales. 
+Simulators make it possible to operate in environments that have the physical characteristics of target locations without the expense and overhead of extensive physical tests. 
+To that end, NASA Ames and Open Robotics collaborated on a lunar rover driving simulator based on the open source Gazebo simulation platform and leveraging ROS (Robotic Operating System) components. 
+The simulator was integrated with research and mission software for rover driving, system monitoring, and science instrument simulation to constitute an end-to-end lunar mission simulation capability.
 
-Although we expect our simulator to be applicable to arbitrary lunar regions, we designed to a reference mission of prospecting in polar regions. The harsh lighting and low illumination angles at the lunar poles combine with the unique reflectance properties of lunar regolith to present a challenging visual environment for both human and computer perception. Our simulator placed an emphasis on high fidelity visual simulation in order to produce synthetic imagery suitable for evaluating human rover drivers with navigation tasks, as well as providing test data for computer vision software development.
+Although we expect our simulator to be applicable to arbitrary lunar regions, we designed to a reference mission of prospecting in polar regions. 
+The harsh lighting and low illumination angles at the lunar poles combine with the unique reflectance properties of lunar regolith to present a challenging visual environment for both human and computer perception. 
+Our simulator placed an emphasis on high fidelity visual simulation in order to produce synthetic imagery suitable for evaluating human rover drivers with navigation tasks, as well as providing test data for computer vision software development.
 
-In this paper, we describe the software used to construct the simulated lunar environment and the components of the driving simulation. Our synthetic terrain generation software artificially increases the resolution of lunar digital elevation maps by fractal synthesis and inserts craters and rocks based on lunar size-frequency distribution models. We describe the necessary enhancements to import large scale, high resolution terrains into Gazebo, as well as our approach to modeling the visual environment of the lunar surface. An overview of the mission software system is provided, along with how ROS was used to emulate flight software components that had not been developed yet.
+In this paper, we describe the software used to construct the simulated lunar environment and the components of the driving simulation. 
+Our synthetic terrain generation software artificially increases the resolution of lunar digital elevation maps by fractal synthesis and inserts craters and rocks based on lunar size-frequency distribution models. 
+We describe the necessary enhancements to import large scale, high resolution terrains into Gazebo, as well as our approach to modeling the visual environment of the lunar surface. 
+An overview of the mission software system is provided, along with how ROS was used to emulate flight software components that had not been developed yet.
 
-We summarize how the simulator has been used to refine the mission concept of operations and to evaluate the operations impact of rover engineering design decisions. We reduced uncertainty about mission operations tempo by simulating mission scenarios with representative drive speeds, telemetry rates and network delays. The operations team exploited the simulator’s flexibility to experiment with different rover configurations and compare the effect of things such as different camera placement options and mobility system steering constraints.
+We summarize how the simulator has been used to refine the mission concept of operations and to evaluate the operations impact of rover engineering design decisions. 
+We reduced uncertainty about mission operations tempo by simulating mission scenarios with representative drive speeds, telemetry rates and network delays. 
+The operations team exploited the simulator’s flexibility to experiment with different rover configurations and compare the effect of things such as different camera placement options and mobility system steering constraints.
 
-Finally, we discuss the effect of using the high-fidelity synthetic lunar images for visual odometry.  We also discuss the characterization of the shader model for lunar illumination relative to a ray-tracing with accurate reflectance models.  Further, we characterize the wheel slip model, and find some inconsistencies in the produced wheel slip behaviour.
+Finally, we discuss the effect of using the high-fidelity synthetic lunar images for visual odometry.
+We also characterize the wheel slip model, and find some inconsistencies in the produced wheel slip behaviour.
 
 \end{abstract}
 
@@ -687,12 +698,21 @@ The rover driving software is based on the NASA Visual Environment for Robotic V
 \todo{Merge this first para in science section into the intro (using one or two sentences of this)}
 Although applicable to a broad range of scenarios, this lunar rover simulation was built initially to exercise and evaluate Resource Prospector's approach to lunar surface operations.  The key aspects of that approach were (a) teleoperation of the rover by a pair of drivers on Earth and (b) continuous, real-time interpretation of instrument data by a small science team that is tightly integrated within mission operations followed by limited adjustment of the mission plan.  This paper focuses on the development and capabilities of the simulator itself and how it enabled evaluation of the driving task, but we touch on the science data interpretation task in a later section.
 
-The goal of Resource Prospector was to take measurements to estimate the water content at and under the lunar surface over a 2500 square meter area and to repeat this data collection in several areas that differ by temperature profile.  This is the scale over which water would be mined to support a potential, future lunar base.  The real-time monitoring of instrument data had two purposes.  The first was to ensure the quality of the data collection and to adjust or correct instrument settings quickly to that end.  The second was to make tactical decisions about where data collection time was best spent, because the total mission duration available to a solar powered rover at polar sites does not allow a completely methodical data collection pattern.
+The goal of Resource Prospector was to take measurements to estimate the water content at and under the lunar surface over a 2500 square meter area and to repeat this data collection in several areas that differ by temperature profile.  
+This is the scale over which water would be mined to support a potential, future lunar base.  
+The real-time monitoring of instrument data had two purposes.  
+The first was to ensure the quality of the data collection and to adjust or correct instrument settings quickly to that end.  
+The second was to make tactical decisions about where data collection time was best spent, because the total mission duration available to a solar powered rover at polar sites does not allow a completely methodical data collection pattern.
 
 \subsubsection{World Model}
-The science simulation consists of a world model and several instrument models.  The world model describes the 'truth' that RP was intended to estimate in the form of several interrelated physical quantities that are measured by RP's instruments.  Two of the instruments, NSS and NIRVSS, were introduced above.  NSS measured hydrogen concentration in the regolith immediately in front of the rover, and NIRVSS measured surface frost, minerology, and the concentration of ices in regolith brought up by the drill.  NIRVSS also contained a Longwave Calibration Sensor (LCS) that measured surface temperature.
+The science simulation consists of a world model and several instrument models.  
+The world model describes the 'truth' that RP was intended to estimate in the form of several interrelated physical quantities that are measured by RP's instruments.  
+Two of the instruments, NSS and NIRVSS, were introduced above.  
+NSS measured hydrogen concentration in the regolith immediately in front of the rover, and NIRVSS measured surface frost, minerology, and the concentration of ices in regolith brought up by the drill.  
+NIRVSS also contained a Longwave Calibration Sensor (LCS) that measured surface temperature.
 
-The world model provides data for these instruments that varies as the rover moves in ways that must be consistent with physics and with theories about how ices have been emplanted or removed.  It did this by modeling the distribution of several physical quantities, some as 2D functions (variation over the surface) and others as 3D functions (variation within the top meter of regolith).
+The world model provides data for these instruments that varies as the rover moves in ways that must be consistent with physics and with theories about how ices have been emplanted or removed.  
+It did this by modeling the distribution of several physical quantities, some as 2D functions (variation over the surface) and others as 3D functions (variation within the top meter of regolith).
 
 The quantities modeled are: (a) the surface temperature, (b) the area concentration of water ice as a surface frost, (c) the area concentration of OH adhered to the surface, (d) the thickness of the upper layer of regolith that must be dry based on its known thermal history, (e) the water ice concentration in the layer below that as a weight percentage, (f) the volumetric concentration of hydrogen in hydrogen-bearing minerals, and (g) the surface distribution of several minerals.  The most important of these were the water ice surface and volumetric concentrations.  The others were included to present a consistent picture and to provide realistic sources of noise and other variations that could make interpreting the data more difficult.
 
