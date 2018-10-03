@@ -49,9 +49,9 @@ Our synthetic terrain generation software artificially increases the resolution 
 We describe the necessary enhancements to import large scale, high resolution terrains into Gazebo, as well as our approach to modeling the visual environment of the lunar surface. 
 An overview of the mission software system is provided, along with how ROS was used to emulate flight software components that had not been developed yet.
 
-We summarize how the simulator has been used to refine the mission concept of operations and to evaluate the operations impact of rover engineering design decisions. 
-We reduced uncertainty about mission operations tempo by simulating mission scenarios with representative drive speeds, telemetry rates and network delays. 
-The operations team exploited the simulator’s flexibility to experiment with different rover configurations and compare the effect of things such as different camera placement options and mobility system steering constraints.
+%We summarize how the simulator has been used to refine the mission concept of operations and to evaluate the operations impact of rover engineering design decisions. 
+%We reduced uncertainty about mission operations tempo by simulating mission scenarios with representative drive speeds, telemetry rates and network delays. 
+%The operations team exploited the simulator’s flexibility to experiment with different rover configurations and compare the effect of things such as different camera placement options and mobility system steering constraints.
 
 Finally, we discuss the effect of using the high-fidelity synthetic lunar images for visual odometry.
 We also characterize the wheel slip model, and find some inconsistencies in the produced wheel slip behaviour.
@@ -283,7 +283,8 @@ Finally, we generate a normal map which captures the surface normal at each DEM 
 
 
 \section{Lunar Visual Environment}
-Our simulator 
+Our simulator placed an emphasis on high fidelity visual simulation because visual cues are fundamental to driving and localization tasks. Human operators must be able to perceive hazards and maintain adequate situational awareness in order to safely drive a rover, and 
+
 
 \subsection{Gazebo Terrain Improvements}
 
