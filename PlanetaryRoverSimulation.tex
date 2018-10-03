@@ -198,8 +198,13 @@ But how would the driving behavior of these two platforms compare with respect t
 
 Our goal was to create a simulation environment in which we could rapidly create approximate prototypes of complete lunar rover systems to estimate characteristics and performance. 
 Due to the broad scope of the simulation and the desire to have a functional, end-to-end lunar driving simulation as quickly as possible, a simulation framework that offered a rich set of off-the-shelf capability was necessary. 
-[ why ROS and Gazebo were a great choice - *Gerkey* ] 
 
+After examining the options available in the industry, we chose to base our work on the robot simulator Gazebo~\cite{koenig2004design}.\footnote{\url{http://gazebosim.org}}
+We based this decision on three key characteristics of Gazebo: maturity, breadth, and openness.
+With work beginning in 2002, Gazebo is among the oldest robot simulators that is still actively developed and widely used today.
+In that time, Gazebo has been used to simulate a wide variety of robotic systems in myriad types of indoor and outdoor environments~\cite{paepcke2016gazebo}, with notable examples including the DARPA Robotics Challenge~\cite{aguero2015inside} and the NASA Space Robotics Challenge~\cite{hambuchen2017nasa}.
+Finally, Gazebo is an open source platform released under the permissive Apache 2.0 License, which means that we can freely use it for our work and modify it to fit our specific needs.
+For similar reasons, we chose the widely used and also open source ROS (Robot Operating System) platform\footnote{\url{http://www.ros.org}} as the basis for our efforts in prototyping the vehicle control software~\cite{quigley2009ros}.
 
 \section{Synthetic Terrain Generation}
 
