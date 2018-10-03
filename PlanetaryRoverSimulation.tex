@@ -313,7 +313,7 @@ Having terrain that extends to the horizon is critical because human drivers oft
 Consequently, we split the terrain into two regions, a high resolution "drivable region" and lower resolution "backround tile" meshes. 
 The drivable region uses a high resolution DEM, typically in the range of 3-5cm per posting, and employs a detailed shader. 
 The background tiles begin at the boundary of the drivable region and fall off at progressively lower resolution toward the horizon. 
-Because of the distance between the eyepoint and background tiles, there is no distinguishable transition despite the significantly lower resolution and simplified shader (\ref{fig:background_tiles}). 
+Because of the distance between the eyepoint and background tiles, there is no distinguishable transition despite the significantly lower resolution and simplified shader (\cref{fig:background_tiles}). 
 
 \begin{figure}[h!]
   \includegraphics[width=\columnwidth]{figures/background_tiles.jpg}
@@ -322,6 +322,7 @@ Because of the distance between the eyepoint and background tiles, there is no d
 \end{figure}
 
 \subsection{GLSL Shader}
+
 A shader is a programmable replacement for parts of the real-time rendering pipeline on a graphics processing unit (GPU). 
 Using the OpenGL Shading Language (GLSL), we have built a shader that simulates lighting, shadows, material properties for regolith and rock, and camera exposure. 
 This effort ultimately produces a final color value for every pixel in our camera images. 
