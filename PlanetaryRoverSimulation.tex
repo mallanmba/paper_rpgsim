@@ -37,38 +37,38 @@
 
 When planning planetary rover missions it is useful to develop intuition and skills driving in, quite literally, alien environments before incurring the cost of reaching said locales. 
 Simulators make it possible to operate in environments that have the physical characteristics of target locations without the expense and overhead of extensive physical tests. 
-To that end, NASA Ames and Open Robotics collaborated on a lunar rover driving simulator based on the open source Gazebo simulation platform and leveraging ROS (Robotic Operating System) components. 
-The simulator was integrated with research and mission software for rover driving, system monitoring, and science instrument simulation to constitute an end-to-end lunar mission simulation capability.
+To that end, NASA Ames and Open Robotics collaborated on a Lunar rover driving simulator based on the open source Gazebo simulation platform and leveraging ROS (Robotic Operating System) components. 
+The simulator was integrated with research and mission software for rover driving, system monitoring, and science instrument simulation to constitute an end-to-end Lunar mission simulation capability.
 
-Although we expect our simulator to be applicable to arbitrary lunar regions, we designed to a reference mission of prospecting in polar regions. 
-The harsh lighting and low illumination angles at the lunar poles combine with the unique reflectance properties of lunar regolith to present a challenging visual environment for both human and computer perception. 
+Although we expect our simulator to be applicable to arbitrary Lunar regions, we designed to a reference mission of prospecting in polar regions. 
+The harsh lighting and low illumination angles at the Lunar poles combine with the unique reflectance properties of Lunar regolith to present a challenging visual environment for both human and computer perception. 
 Our simulator placed an emphasis on high fidelity visual simulation in order to produce synthetic imagery suitable for evaluating human rover drivers with navigation tasks, as well as providing test data for computer vision software development.
 
-In this paper, we describe the software used to construct the simulated lunar environment and the components of the driving simulation. 
-Our synthetic terrain generation software artificially increases the resolution of lunar digital elevation maps by fractal synthesis and inserts craters and rocks based on lunar size-frequency distribution models. 
-We describe the necessary enhancements to import large scale, high resolution terrains into Gazebo, as well as our approach to modeling the visual environment of the lunar surface. 
+In this paper, we describe the software used to construct the simulated Lunar environment and the components of the driving simulation. 
+Our synthetic terrain generation software artificially increases the resolution of Lunar digital elevation maps by fractal synthesis and inserts craters and rocks based on Lunar size-frequency distribution models. 
+We describe the necessary enhancements to import large scale, high resolution terrains into Gazebo, as well as our approach to modeling the visual environment of the Lunar surface. 
 An overview of the mission software system is provided, along with how ROS was used to emulate flight software components that had not been developed yet.
 
 %We summarize how the simulator has been used to refine the mission concept of operations and to evaluate the operations impact of rover engineering design decisions. 
 %We reduced uncertainty about mission operations tempo by simulating mission scenarios with representative drive speeds, telemetry rates and network delays. 
 %The operations team exploited the simulator’s flexibility to experiment with different rover configurations and compare the effect of things such as different camera placement options and mobility system steering constraints.
 
-Finally, we discuss the effect of using the high-fidelity synthetic lunar images for visual odometry.
+Finally, we discuss the effect of using the high-fidelity synthetic Lunar images for visual odometry.
 We also characterize the wheel slip model, and find some inconsistencies in the produced wheel slip behaviour.
 
 \end{abstract}
 
 \begin{figure*}[htp]
-\begin{subfloat}[A lunar scene produced by the RP Simulator.]{
+\begin{subfloat}[A Lunar scene produced by the RP Simulator.]{
 \includegraphics[width=0.5\linewidth]{figures/RPsim_glory_shot.png}
 }
 \end{subfloat}
 \qquad
-\begin{subfloat}[A lunar scene from the Apollo 12 mission.]{
+\begin{subfloat}[A Lunar scene from the Apollo 12 mission.]{
 \includegraphics[width=0.45\linewidth]{figures/apollo12.png}
 }
 \end{subfloat}
-\caption{One of the goals of the simulator was to create a lunar environment that not only simulated the interaction of the vehicle with the lunar terrain, but was also visibly similar to the lunar terrain.\label{fig:sim-by-real}}
+\caption{One of the goals of the simulator was to create a Lunar environment that not only simulated the interaction of the vehicle with the Lunar terrain, but was also visibly similar to the Lunar terrain.\label{fig:sim-by-real}}
 \end{figure*}
 
 \tableofcontents
@@ -128,7 +128,7 @@ We also characterize the wheel slip model, and find some inconsistencies in the 
 % & Driving ConOps Experiments (Deans)
 % & Results
 %   && stereo visual odometry (Welsh)
-%   && lunar illumination comparison (Wong)
+%   && Lunar illumination comparison (Wong)
 %   && wheel slip results (Allan/Rogg/Peters)
 %  \end{easylist} 
 
@@ -141,62 +141,55 @@ We also characterize the wheel slip model, and find some inconsistencies in the 
 
 
 
-Lunar polar environment different to prior extra-terrestrial rover missions. Mars has long time delays that make interactive commanding impossible, lunar comm delays enable semi-interactive commanding. Science involved in operations. Operations needed to develop and mature concept of operations.  
+Lunar polar environment different to prior extra-terrestrial rover missions. Mars has long time delays that make interactive commanding impossible, Lunar comm delays enable semi-interactive commanding. Science involved in operations. Operations needed to develop and mature concept of operations.  
 
 \section{Background}
 \label{sec:background}
 
 \subsection{Reference Mission}
-The Resource Prospector (RP) is a lunar rover mission concept developed by NASA \cite{andrews2015resource,colaprete2015resource}. 
+The Resource Prospector (RP) is a Lunar rover mission concept developed by NASA \cite{andrews2015resource,colaprete2015resource}. 
 RP is intended to characterize the nature and distribution of subsurface volatiles in permanently shadowed regions (PSR) located in one of the Moon's polar regions. 
 RP is also intended to demonstrate the feasibility of in-situ resource utilization by extracting and processing of volatiles (e.g., hydrogen) that could prove valuable for future exploration missions. 
-RP directly addresses several of NASA's "Strategic Knowledge Gaps" for lunar exploration as well as the Global Exploration Roadmap's strategic goal of using local resources for human spaceflight.
+RP directly addresses several of NASA's "Strategic Knowledge Gaps" for Lunar exploration as well as the Global Exploration Roadmap's strategic goal of using local resources for human spaceflight.
 
-During the past twenty years, new observations of the Moon made by orbital and surface missions have provided evidence of a lunar water system that is dramatically more complex and rich than was previously believed \cite{colaprete2017resource}. 
+During the past twenty years, new observations of the Moon made by orbital and surface missions have provided evidence of a Lunar water system that is dramatically more complex and rich than was previously believed \cite{colaprete2017resource}. 
 Hydrogen and other volatiles have the potential to be an enabling resource for human missions to the Moon and beyond. 
-The distribution of lunar subsurface volatiles drives the RP mission requirement for mobility. 
+The distribution of Lunar subsurface volatiles drives the RP mission requirement for mobility. 
 In particular, the spatial distribution of cold-trapped volatiles is hypothesized to be governed by impact cratering with the top 0.5 m being patchy at scales of 100 m. 
 The mixing time scale increases with depth (less frequent larger impacts). 
 Consequently, increased mobility (greater range) reduces the depth requirement for sampling (i.e., drilling or excavation depth).
 
-For the RP mission, a solar-powered, lunar rover equipped with a drill and a science payload would be used to: (1) locate surface and near-subsurface volatiles; (2) excavate and analyze samples of the volatile-bearing regolith; and (3) demonstrate the form, extractability and usefulness of the materials. 
+For the RP mission, a solar-powered, Lunar rover equipped with a drill and a science payload would be used to: (1) locate surface and near-subsurface volatiles; (2) excavate and analyze samples of the volatile-bearing regolith; and (3) demonstrate the form, extractability and usefulness of the materials. 
 The payload contains two prospecting instruments, the Neutron Spectrometer System (NSS) and the NIR Volatile Spectrometer System (NIRVSS), which can sense hydrogen at concentrations as low as 0.5 WT\% to a depth of 1 m and can capture signatures of bound H2O/OH. 
 The payload also contains a processing system that can heat regolith samples to 450 C and analyze evolved gases using a gas chromatograph / mass spectrometer.
 
-RP would operate on the Moon for 7 to 10 days during a single lunar day at a location where both continuous solar illumination and direct-to-earth (DTE) communication conditions are present \cite{trimble2016lunar}. 
+RP would operate on the Moon for 7 to 10 days during a single Lunar day at a location where both continuous solar illumination and direct-to-earth (DTE) communication conditions are present \cite{trimble2016lunar}. 
 The rover is designed to be capable of operating in shadowed regions for up to 6 h before needing to return to sunlight for recharge. 
-The rover is not designed to survive the cold of the lunar night, thus mission plans focus on traversing sufficient distance to determine the lateral and vertical distribution of volatiles in a target region.
+The rover is not designed to survive the cold of the Lunar night, thus mission plans focus on traversing sufficient distance to determine the lateral and vertical distribution of volatiles in a target region.
 
 The short duration of the RP mission, combined with limited knowledge about the surface environment and operational constraints (e.g., high-tempo, interactive rover commanding and real-time science operations) create unique challenges for mission operations \cite{hooey2017modeling}. 
-These challenges have the potential to contribute to significant levels of operator workload for the team responsible for maneuvering the rover on the lunar surface. 
+These challenges have the potential to contribute to significant levels of operator workload for the team responsible for maneuvering the rover on the Lunar surface. 
 These challenges may also impact the ease of acquiring and maintaining situation awareness, the ability to identify and handle contingencies, and ground control performance (rover driving, system monitoring, etc.)
 
 \subsection{Reference Mission Operations}
 Lunar surface operations provide for qualitatively different mission operation scenarios than what is possible in the Martian surface.  
 An important aspect is the broad swings in temperature on the Moon.  
-From lunar day to lunar night there can be swings in temperature of over three hundred degrees.  
-Building a robot to survive lunar night comes with additional costs and reliance on heat sources, like the radioisotope heating used in the Lunokhod missions \cite{ulamec2010survive}.  
+From Lunar day to Lunar night there can be swings in temperature of over three hundred degrees.  
+Building a robot to survive Lunar night comes with additional costs and reliance on heat sources, like the radioisotope heating used in the Lunokhod missions \cite{ulamec2010survive}.  
 This can increase mission complexity substantially.  
 
-If the rover is not designed to survive lunar night then the mission either has the time pressure to complete within a lunar day, or the operational pressure to chase sunlight to peaks of eternal light, as proposed in \cite{otten2018strategic}.  
-The Resource Prospector mission planned to operate within the constraints of the lunar solar day, creating a need for high-tempo mission operations. 
-
-Lunar regolith presents two challenges, both relating to the microbombardment processes which produce the soil \cite{XXX}.  
-Because the lunar soil is not produced by the erosion processes we are accustomed to on Earth the particular matter is sharp, which is a hazard to the vehicle, and it has reflectance properties very much unlike the Earth\todo{cite Hapke models}, which poses a challenge to both human and automated perception systems. 
-\todo{I think this is too much information about regolith up front. Especially since we have to explain how we implement the reflective properties in the shader below. -uland}
+If the rover is not designed to survive Lunar night then the mission either has the time pressure to complete within a Lunar day, or the operational pressure to chase sunlight to peaks of eternal light, as proposed in \cite{otten2018strategic}.  
+The Resource Prospector mission planned to operate within the constraints of the Lunar solar day, creating a need for high-tempo mission operations. 
 
 The Moon is not without its operational advantages.  
 First, the relative closeness of the Moon means that the time-of-flight communications delay is only 2.5 seconds, and not on the order of minutes\todo{get time of flight delay for Mars} for a Mars mission.  
-Second, through the use of the Deep Space Network, it is possible to be in constant communication with a lunar surface vehicle, barring shadows from terrain features.  
+Second, through the use of the Deep Space Network, it is possible to be in constant communication with a Lunar surface vehicle, barring shadows from terrain features.  
 Constant availability of a rover supports the high-tempo mission cadence missions like Resource Prospector.
-
 
 Taking advantage of the high communications availability we designed our autonomy system to be distributed between the rover on the surface of the moon and the remote operations team on Earth.  
 The architecture would place lower-level components of an autonomous system -- e.g., waypoint following, relative pose estimation, vehicle safeguarding \todo{Is safeguarding the word we use?} -- on-board the robot.  
 Higher-level algorithms, like absolute localization through terrain matching, are operated on the ground.  
 The division of software modules is given in \cref{fig:rp-software}
-
-
 
 \section{Simulator Approach}
 
@@ -206,8 +199,8 @@ One way to reduce uncertainty about design alternatives and to answer questions 
 For example, it may be obvious that a skid steer mobility system would be simple, cheap, and robust from a mechanical perspective but odometry from an explicit steer platform would give superior localization results. 
 But how would the driving behavior of these two platforms compare with respect to solar charging rates over a traverse? 
 
-Our goal was to create a simulation environment in which we could rapidly create approximate prototypes of complete lunar rover systems to estimate characteristics and performance. 
-Due to the broad scope of the simulation and the desire to have a functional, end-to-end lunar driving simulation as quickly as possible, a simulation framework that offered a rich set of off-the-shelf capability was necessary. 
+Our goal was to create a simulation environment in which we could rapidly create approximate prototypes of complete Lunar rover systems to estimate characteristics and performance. 
+Due to the broad scope of the simulation and the desire to have a functional, end-to-end Lunar driving simulation as quickly as possible, a simulation framework that offered a rich set of off-the-shelf capability was necessary. 
 
 After examining the options available in the industry, we chose to base our work on the robot simulator Gazebo~\cite{koenig2004design}.\footnote{\url{http://gazebosim.org}}
 We based this decision on three key characteristics of Gazebo: maturity, breadth, and openness.
@@ -218,11 +211,11 @@ For similar reasons, we chose the widely used and also open source ROS (Robot Op
 
 \section{Synthetic Terrain Generation}
 
-To produce a viable lunar driving experience the simulated world must be representative of the target physical environment. 
+To produce a viable Lunar driving experience the simulated world must be representative of the target physical environment. 
 Specifically, the morphology of the terrain should accurately represent terrain features that would be considered either positive or negative obstacles for the rover. 
-Although Digital Elevation Models (DEMs) are available for much of the lunar surface, the resolution of these models are not sufficient to represent rover-scale hazards. 
-To make matters worse, the best resolution lunar DEMs are generated from stereo orbital imagery, yet the reference mission was targeting areas with permanently shadowed regions. 
-Existing terrain models of the lunar surface are on the order of meters, yet a resolution on the order of centimeters is required to adequately represent rover-scale hazards. 
+Although Digital Elevation Models (DEMs) are available for much of the Lunar surface, the resolution of these models are not sufficient to represent rover-scale hazards. 
+To make matters worse, the best resolution Lunar DEMs are generated from stereo orbital imagery, yet the reference mission was targeting areas with permanently shadowed regions. 
+Existing terrain models of the Lunar surface are on the order of meters, yet a resolution on the order of centimeters is required to adequately represent rover-scale hazards. 
 We addressed this disparity by developing tools to synthesize high resolution terrain suitable for rover driving. 
 
 On the Moon, the principal obstacles of interest to rovers are rocks and craters. 
@@ -281,10 +274,26 @@ The excavated regolith from a fresh crater impact is lighter in shade due to lac
 An exponential function applied to the freshness parameter determines ejecta ray lightness. 
 Finally, we generate a normal map which captures the surface normal at each DEM posting. 
 
-
 \section{Lunar Visual Environment}
-Our simulator placed an emphasis on high fidelity visual simulation because visual cues are fundamental to driving and localization tasks. Human operators must be able to perceive hazards and maintain adequate situational awareness in order to safely drive a rover, and 
+Our simulator placed an emphasis on high fidelity visual simulation because visual cues are fundamental to driving and localization tasks. 
+Human operators must be able to perceive hazards and maintain adequate situational awareness in order to safely drive a rover, and the development of robust computer vision software requires images representative of those that would be received during them mission. 
 
+The visual environment at the Lunar poles is unlike anything found on Earth. 
+The sun is very low on the horizon (5 to 10 degrees elevation in our scenarios) which causes extremely long shadows in one direction and blinding sunlight in the opposite direction. 
+There is no atmospheric scattering which, on Earth, can provide important depth queues \cite{fry1949effects} and leads to Lunar shadows appearing sharper and darker.  
+Finally, the Lunar regolith that covers the surface of the Moon has unique reflective properties. 
+
+Lunar regolith is formed through a microbombardment processes which pulvarizes rock into soil \cite{XXX}.  
+Because the Lunar soil is not produced by the erosion processes we are accustomed to on Earth the particulate matter is sharp and has reflectance properties unlike soils on Earth\todo{cite Hapke models}, which can pose a challenge to both human and automated perception systems. 
+Notably, there is a significant opposition effect \cite{hapke1986bidirectional} in which the surface brightens and loses contrast when the view angle and illumination angle approach coincidence. \todo{Find an image reference for opposition effect}
+
+By accurately modeling (within the technical limitations of real time computer graphics and our budget) the appearance of the Lunar surface, we desired to build a grounded intuition about what it would be like to drive a rover at the Lunar poles. 
+To do this, we enhanced Gazebo to be capable of rendering high resolution, large scale terrains. 
+We developed a surface shader that models the reflective properties of Lunar regolith, and we draw the rover wheel tracks into the terrain. 
+We improved Gazebo's real-time shadow rendering for our use case, and developed tools to prerender large scale static shadows with accurate penumbras. 
+We use ephemeris models to accurately place the Sun and Earth in the sky for proposed mission landing dates. 
+We model expected [radiance/irradiance]\todo{Uland, fix this please} and attempt to approximate global illumination effects.   
+Finally, we extend Gazebo's camera modeling capabilities by adding dynamic exposure and high bit depth rendering. 
 
 \subsection{Gazebo Terrain Improvements}
 
@@ -350,6 +359,29 @@ Furthermore, our Hapke approximation shader is combined with a Lambertian BRDF w
 This is a similar strategy used by \cite{McEwen1996} in developing the Lunar-Lambertian model derived from Lommel-Seeliger reflectance. 
 Our Hapke parameters are estimated from prior literature for Highlands regolith, which is a stand-in for Polar regions of the moon. 
 Our model achieves the desired loss of contrast and opposition surge while behaving properly under direct illumination.           
+
+\subsection{Wheel Tracks}
+Any rover will leave wheel tracks in the powdery Lunar regolith. We wanted to include these tracks in our visual simulation for realism and as an orientation aid for operators. 
+It would be possible to reshape the terrain geometry to represent wheel tracks, but this method is difficult to implement and would provide more fidelity than we needed.
+A much simpler alternative is to use a technique called bump mapping to give the illusion of wheel tracks on flat geometry.
+
+Our shader already employs bump mapping to give the regolith its fine detail, so we expand on this to add wheel tracks. 
+We apply a 1-channel texture to the drivable area of the terrain.
+It starts out with every texel set to the maximum value, 255. 
+Wherever a rover wheel travels we draw a groove in the texture, setting texels to 0 or some medium value.
+Wherever this texture is less than 255, the shader mixes a surface normal into the bump mapping. 
+To approximate a surface normal it compares neighboring texels in the wheel tracks texture to find the slope in the x- and y-directions. 
+Assuming a z-value of 1.0, the three values are normalized to produce a final surface normal.
+
+To draw the wheel tracks in the texture we use a Gazebo plugin. 
+We use Gazebo's knowledge of the rover model and the terrain layout to compute what part of the texture each wheel position corresponds with. 
+Everywhere each wheel travels, we draw an anti-aliased dot in the texture of a size in texels that appears to match the wheel size when the texture is projected on the terrain. 
+These dots overlap to give the appearance of a continuous groove made by each wheel.
+\begin{figure}[h!]
+  \includegraphics[width=\columnwidth]{figures/rpgsim_wheel_tracks.jpg}
+  \caption{Rover wheel tracks}
+  \label{fig:wheeltracks}
+\end{figure}
 
 \subsection{Shadows}
 Shadow rendering provides countless challenges and has been under continuous development since the advent of computer graphics. 
@@ -418,34 +450,18 @@ This worked well for smoothing jagged shadow edges, but, due to the filter's uni
 We replaced PCF with something known as hardware PCF, a common graphics driver hack that accomplishes the same type of smoothing with little performance impact. 
 Then we applied a 9-sample Poisson filter (not a uniform grid like before), which smoothed the shadows even more and does a much better job of preserving small features.
 
-\subsection{Wheel Tracks}
-Any rover will leave wheel tracks in the powdery lunar regolith. We wanted to include these tracks in our visual simulation for realism and as an orientation aid for operators. 
-It would be possible to reshape the terrain geometry to represent wheel tracks, but this method is difficult to implement and would provide more fidelity than we needed.
-A much simpler alternative is to use a technique called bump mapping to give the illusion of wheel tracks on flat geometry.
-
-Our shader already employs bump mapping to give the regolith its fine detail, so we expand on this to add wheel tracks. 
-We apply a 1-channel texture to the drivable area of the terrain.
-It starts out with every texel set to the maximum value, 255. 
-Wherever a rover wheel travels we draw a groove in the texture, setting texels to 0 or some medium value.
-Wherever this texture is less than 255, the shader mixes a surface normal into the bump mapping. 
-To approximate a surface normal it compares neighboring texels in the wheel tracks texture to find the slope in the x- and y-directions. 
-Assuming a z-value of 1.0, the three values are normalized to produce a final surface normal.
-
-To draw the wheel tracks in the texture we use a Gazebo plugin. 
-We use Gazebo's knowledge of the rover model and the terrain layout to compute what part of the texture each wheel position corresponds with. 
-Everywhere each wheel travels, we draw an anti-aliased dot in the texture of a size in texels that appears to match the wheel size when the texture is projected on the terrain. 
-These dots overlap to give the appearance of a continuous groove made by each wheel.
-\begin{figure}[h!]
-  \includegraphics[width=\columnwidth]{figures/rpgsim_wheel_tracks.jpg}
-  \caption{Rover wheel tracks}
-  \label{fig:wheeltracks}
-\end{figure}
-
 \subsection{Ephemeris}
 The position of the Sun and Earth relative to the moon is computed using the SPICE C toolkit provided by the Navigation and Ancillary Information Facility (NAIF) \url{https://naif.jpl.nasa.gov/naif/toolkit.html}.  
 Using the timestamp maintained by the simulator, this toolkit generates the transformations between the Moon, the Sun, and the Earth at the current simulated time.  
 We are not concerned about the locations of stars because they are not drawn in the simulator.
 By chaining these transformations with the rover's current position on the surface of the moon we are able to compute the positions of the Sun and the Earth relative to our local coordinate system and position them accurately in the simulator.  
+
+\subsection{Rover Lights}
+Gazebo was extended to allow lights to be attached to articulated rover components, which greatly simplified code associated with light placement. 
+Ogre3D material files were used to pass light parameters from Gazebo to our GLSL shader. 
+The shader simulates up to four spotlights having brightness, cone angle, and distance falloff that can be specified as part of our Gazebo light description.
+We also added a texture projection feature for simulating the detailed pattern projected by a real-world light source. 
+This infrastructure gives us the ability to simulate a variety of lighting hardware and placement before settling on a final solution. 
 
 \subsection {Photometry}
 The reference mission required training in use of photographic systems coupled with active illumination for driving. 
@@ -481,15 +497,8 @@ We extended Gazebo to capture 16-bit integer images.
 Internally, Gazebo already supports floating point textures as they are used to store data generated by depth and other image-based range sensors. So the task of simulating 16-bit grayscale and RGB camera sensors was relatively straightforward, essentially by rendering to textures in the these formats. 
 Direct 12-bit image capture is not an option in OpenGL, but a 16-bit image can be downsampled to 12-bit as a post-render step.
 
-\subsection{Lens Flares}
+%\subsection{Lens Flares}
 
-
-\subsection{Rover Lights}
-Gazebo was extended to allow lights to be attached to articulated rover components, which greatly simplified code associated with light placement. 
-Ogre3D material files were used to pass light parameters from Gazebo to our GLSL shader. 
-The shader simulates up to four spotlights having brightness, cone angle, and distance falloff that can be specified as part of our Gazebo light description.
-We also added a texture projection feature for simulating the detailed pattern projected by a real-world light source. 
-This infrastructure gives us the ability to simulate a variety of lighting hardware and placement before settling on a final solution. 
 
 \section{Vehicle Simulation}
 
@@ -575,16 +584,16 @@ The slip compliance corresponds to the inverse slope of the curve near the origi
 \end{figure}
 
 In the real world, an input drive command will result in a non-zero slip of the rover wheel on loose terrain which will generate drift in localization algorithms.
-In order for this drift to be plausible in simulation, a wheel slip plug-in was developed and implemented for Gazebo that adjusts the slip compliance parameter based on a test results from two tests: RP single wheel drawbar pull test and RP lunar mass equivalent unit test (see figure \ref{fig:mgru}) in the SLOPElab facility at NASA Glenn Research Center (GRC) (ref: \url{https://www.nasa.gov/centers/glenn/events/tour_erb_slope.html}). 
-The simulant for these test was GRC-1 (ref: \url{https://etd.ohiolink.edu/!etd.send_file?accession=case1269272964&disposition=inline}), which has similar mechanical characteristics as the lunar regolith.
+In order for this drift to be plausible in simulation, a wheel slip plug-in was developed and implemented for Gazebo that adjusts the slip compliance parameter based on a test results from two tests: RP single wheel drawbar pull test and RP Lunar mass equivalent unit test (see figure \ref{fig:mgru}) in the SLOPElab facility at NASA Glenn Research Center (GRC) (ref: \url{https://www.nasa.gov/centers/glenn/events/tour_erb_slope.html}). 
+The simulant for these test was GRC-1 (ref: \url{https://etd.ohiolink.edu/!etd.send_file?accession=case1269272964&disposition=inline}), which has similar mechanical characteristics as the Lunar regolith.
 \begin{figure}[h!]
 	\includegraphics[width=\columnwidth]{figures/wheel_slip_MGRU.JPG}
-   	\caption{A picture of the RP lunar mass equivalent rover at the SLOPElab in NASA GRC.}
+   	\caption{A picture of the RP Lunar mass equivalent rover at the SLOPElab in NASA GRC.}
     \label{fig:mgru}
 \end{figure}
 The slip compliance tuning parameter enables simulation of loose material generating slip greater than zero on shallow angle slopes.
 
-Although not perfect at simulating the wheel/soil interaction, this plug-in enables the simulated rover to have a high level slip behavior relatively close to what will be expected on a lunar terrain. 
+Although not perfect at simulating the wheel/soil interaction, this plug-in enables the simulated rover to have a high level slip behavior relatively close to what will be expected on a Lunar terrain. 
 In order to increase the fidelity and give more realism for wheel sinkage and rover embedding, this simple model would need to be replaced by a discrete element method (DEM) model which is very costly in terms of computational power and existing system are unproven due to the complexity of the particle interaction.
 
 \section{Flight Software Prototype}
@@ -633,7 +642,7 @@ The particular modules included in the ground software are:
 \begin{description}
 \item[\textbf{Advanced Localization}]  The advanced localization module integrated the on-board pose estimates with terrain relative navigation, mono- and stereo-scopic visual odometry, 
 \item[\textbf{Stereo Reconstruction}] Produces a metric reconstruction of the scene from the rover's stereo cameras.
-\item[\textbf{Mapping}] Uses the estimated pose and reconstructed scenes to build DEMs of the lunar surface.  
+\item[\textbf{Mapping}] Uses the estimated pose and reconstructed scenes to build DEMs of the Lunar surface.  
 \item[\textbf{Hazard Detection}] Provides two forms of hazard detection.  The module processes elevation maps to identify geometric hazards to the rover, producing a cost map.  It also would process images to visually identify potential vehicle hazards that may not appear in the terrain geometry.
 \item[\textbf{Planning}]  The planning module takes goals issued by the drivers and determines a sequence of waypoints which safely navigate the cost map produced by the Hazard Detection model.  
 \item[\textbf{Simulator}]  The simulator acted as an assistive tool for the operators, to ensure that the commands being sent to the rover were the commands that were intended.  
@@ -697,10 +706,10 @@ The rover driving software is based on the NASA Visual Environment for Robotic V
 \subsection{Science Simulation and Software}
 
 \todo{Merge this first para in science section into the intro (using one or two sentences of this)}
-Although applicable to a broad range of scenarios, this lunar rover simulation was built initially to exercise and evaluate Resource Prospector's approach to lunar surface operations.  The key aspects of that approach were (a) teleoperation of the rover by a pair of drivers on Earth and (b) continuous, real-time interpretation of instrument data by a small science team that is tightly integrated within mission operations followed by limited adjustment of the mission plan.  This paper focuses on the development and capabilities of the simulator itself and how it enabled evaluation of the driving task, but we touch on the science data interpretation task in a later section.
+Although applicable to a broad range of scenarios, this Lunar rover simulation was built initially to exercise and evaluate Resource Prospector's approach to Lunar surface operations.  The key aspects of that approach were (a) teleoperation of the rover by a pair of drivers on Earth and (b) continuous, real-time interpretation of instrument data by a small science team that is tightly integrated within mission operations followed by limited adjustment of the mission plan.  This paper focuses on the development and capabilities of the simulator itself and how it enabled evaluation of the driving task, but we touch on the science data interpretation task in a later section.
 
-The goal of Resource Prospector was to take measurements to estimate the water content at and under the lunar surface over a 2500 square meter area and to repeat this data collection in several areas that differ by temperature profile.  
-This is the scale over which water would be mined to support a potential, future lunar base.  
+The goal of Resource Prospector was to take measurements to estimate the water content at and under the Lunar surface over a 2500 square meter area and to repeat this data collection in several areas that differ by temperature profile.  
+This is the scale over which water would be mined to support a potential, future Lunar base.  
 The real-time monitoring of instrument data had two purposes.  
 The first was to ensure the quality of the data collection and to adjust or correct instrument settings quickly to that end.  
 The second was to make tactical decisions about where data collection time was best spent, because the total mission duration available to a solar powered rover at polar sites does not allow a completely methodical data collection pattern.
@@ -806,7 +815,7 @@ Wheel slip was measured by comparing dead reckoning distance driven to ground tr
 Overall, the \texttt{wheel\_slip\_plugin} demonstrated the expected behavior and compared favorably with physical testbed results as can be seen in figure \ref{fig:wheelsliptuningchart}, which compares wheel slip measured from MGRU with the  \texttt{wheel\_slip\_plugin}. 
 \begin{figure}[h!]
 	\includegraphics[width=\columnwidth]{figures/wheel_slip_roverslip.png}
-   	\caption{Comparison of the RP lunar mass equivalent rover slip on GRC-1 simulant and RP rover slip in the Gazebo simulator.}
+   	\caption{Comparison of the RP Lunar mass equivalent rover slip on GRC-1 simulant and RP rover slip in the Gazebo simulator.}
     \label{fig:wheelsliptuningchart}
 \end{figure}
 
@@ -819,7 +828,7 @@ However, our test results show that at certain angles and compliance values, the
 
 \section{Summary}
 
-This project represents a fusion of COTS, open-source software, with domain specific knowledge that resulted in the production of a high-fidelity lunar rover driving simulation. 
+This project represents a fusion of COTS, open-source software, with domain specific knowledge that resulted in the production of a high-fidelity Lunar rover driving simulation. 
 It presents an approach to rapidly developing visual and physical simulations that enable the holistic evaluation of a mission, from concept of operations to algorithm and mechanism design.
 
 The simulator permitted us to develop and test three major areas for the mission operations.  
