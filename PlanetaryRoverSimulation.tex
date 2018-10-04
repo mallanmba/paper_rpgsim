@@ -114,7 +114,7 @@ We also characterize the wheel slip model, and find some inconsistencies in the 
 %   && Use existing, similar robots to emulate (Furlong)
 %     &&& Husky
 %     &&& KRex2
-%   && \todo{Does this belong in the Flight Software Prototype?} Flight software integration with Gazebo 
+%   && \todo[inline]{Does this belong in the Flight Software Prototype?} Flight software integration with Gazebo 
 %   && Wheel slip plugin (Rogg/Peters)
 %     &&& first order approximation
 %     &&& fault injection
@@ -182,7 +182,7 @@ If the rover is not designed to survive Lunar night then the mission either has 
 The Resource Prospector mission planned to operate within the constraints of the Lunar solar day, creating a need for high-tempo mission operations. 
 
 The Moon is not without its operational advantages.  
-First, the relative closeness of the Moon means that the time-of-flight communications delay is only 2.5 seconds, and not on the order of minutes\todo{get time of flight delay for Mars} for a Mars mission.  
+First, the relative closeness of the Moon means that the time-of-flight communications delay is only 2.5 seconds, and not on the order of minutes\todo[inline]{get time of flight delay for Mars} for a Mars mission.  
 Second, through the use of the Deep Space Network, it is possible to be in constant communication with a Lunar surface vehicle, barring shadows from terrain features.  
 Constant availability of a rover supports the high-tempo mission cadence missions like Resource Prospector.
 
@@ -284,15 +284,15 @@ There is no atmospheric scattering which, on Earth, can provide important depth 
 Finally, the Lunar regolith that covers the surface of the Moon has unique reflective properties. 
 
 Lunar regolith is formed through a microbombardment processes which pulvarizes rock into soil \cite{XXX}.  
-Because the Lunar soil is not produced by the erosion processes we are accustomed to on Earth the particulate matter is sharp and has reflectance properties unlike soils on Earth\todo{cite Hapke models}, which can pose a challenge to both human and automated perception systems. 
-Notably, there is a significant opposition effect \cite{hapke1986bidirectional} in which the surface brightens and loses contrast when the view angle and illumination angle approach coincidence. \todo{Find an image reference for opposition effect}
+Because the Lunar soil is not produced by the erosion processes we are accustomed to on Earth the particulate matter is sharp and has reflectance properties unlike soils on Earth\todo[inline]{cite Hapke models}, which can pose a challenge to both human and automated perception systems. 
+Notably, there is a significant opposition effect \cite{hapke1986bidirectional} in which the surface brightens and loses contrast when the view angle and illumination angle approach coincidence. \todo[inline]{Find an image reference for opposition effect}
 
 By accurately modeling (within the technical limitations of real time computer graphics and our budget) the appearance of the Lunar surface, we desired to build a grounded intuition about what it would be like to drive a rover at the Lunar poles. 
 To do this, we enhanced Gazebo to be capable of rendering high resolution, large scale terrains. 
 We developed a surface shader that models the reflective properties of Lunar regolith, and we draw the rover wheel tracks into the terrain. 
 We improved Gazebo's real-time shadow rendering for our use case, and developed tools to prerender large scale static shadows with accurate penumbras. 
 We use ephemeris models to accurately place the Sun and Earth in the sky for proposed mission landing dates. 
-We model expected [radiance/irradiance]\todo{Uland, fix this please} and attempt to approximate global illumination effects.   
+We model expected [radiance/irradiance]\todo[inline]{Uland, fix this please} and attempt to approximate global illumination effects.   
 Finally, we extend Gazebo's camera modeling capabilities by adding dynamic exposure and high bit depth rendering. 
 
 \subsection{Gazebo Terrain Improvements}
