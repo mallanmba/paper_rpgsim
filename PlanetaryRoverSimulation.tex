@@ -642,14 +642,16 @@ The particular modules included in the ground software are:
 
 \subsection{Emulation of Software with ROS Components}
 
+To enable operational testing we emulated a subset of the full mission software using ROS components. The modules used to emulate the flight software are given in \cref{tbl:flight-software-components} and those used to emulate the ground software are given in \cref{tbl:ground-software-components}.
+
 \begin{table}[htp]
 \caption{Flight software components and the corresponding ROS modules that were used as stand-ins.  
 As mentioned above, the Rover Mode Manager and Virtual Bumper were not implemented for simulated operations.\label{tbl:flight-software-components}}
 \begin{tabular}{l|p{4cm}}
 \textbf{Software Component} & \textbf{ROS Stand-in} \\
 \hline
-Rover Kinematics &  Custom additions to move\_base\\
-Waypoint Following & move\_base \footnote{\url{http://wiki.ros.org/move_base}}\\
+Rover Kinematics &  move\_base\footnote{\url{http://wiki.ros.org/move_base}} with additional explicit steering control.\\
+Waypoint Following & move\_base \\
 Localization & robot\_localization\footnote{\url{http://wiki.ros.org/robot_localization}}\\
 Camera Pointing & Custom module \\
 Wheel Module I/O & ros\_control\footnote{\url{http://wiki.ros.org/ros_control}}\\
@@ -659,7 +661,8 @@ Camera I/O & Camera sensor from gazebo\_plugins\footnote{\url{http://wiki.ros.or
 \hline
 \end{tabular}
 \end{table}
-\todo[inline]{Should gazebo\_plugins be a hector gazebo plugin for the camera?}
+
+The planned advanced localization augmented the on-board pose estimation with visual odometry and terrain relative navigation.  We did not implement the terrain relative navigation in this simulated version, however, the extensible nature of the robot\_localization package would make this addition straightforward. 
 
 \begin{table}[htp]
 \caption{Ground software components and the corresponding ROS modules that were used as stand-ins.\label{tbl:ground-software-components}}
@@ -676,17 +679,20 @@ Simulator & Gazebo Simulator as described in this paper.\\
 \end{tabular}
 \end{table}
 
-
-
 \subsection{Operations Software}
+
+To fully enable the mission simulation we employed the planned flight control software.    This consisted of the robot driving software, VERVE, and the data display framework, WARP.  To make these components speak to each other we developed a bridge that translated messages between the different communications protocols used by the operations software and the simulated rover. 
 
 \subsubsection{WARP}
 
+WARP received data from the rover and was used to 
 \cite{trimble2016open} \todo[inline]{Someone needs to write about Warp.  Preferably someone who is not me.  - pmf}
 
 \subsubsection{VERVE}
 
 The rover driving software is based on the NASA Visual Environment for Robotic Virtual Exploration (VERVE) \cite{lee2013reusable}. VERVE provides an interactive 3D user interface for remote monitoring and commanding of robotic systems (\cref{fig:verve-mvp}) and has been used for several Lunar analog field tests \cite{deans2009robotic} \cite{fong2010robotic} as well as commanding robotic assets from the International Space Station \cite{bualat2013surface}.
+
+VERVE uses the RAPID communications protocol\cite{torres2009rapid} for controlling robots.   In order to command the simulated robot we build a bridge which echoed messages between the simulated robot and the ground systems, which we called the ROS-RAPID bridge. 
 
 \begin{figure*}[htp]
 \centering
@@ -696,7 +702,7 @@ The rover driving software is based on the NASA Visual Environment for Robotic V
 
 \subsection{Science Simulation and Software}
 
-\todo{Merge this first para in science section into the intro (using one or two sentences of this)}
+\todo[inline]{Merge this first para in science section into the intro (using one or two sentences of this)}
 Although applicable to a broad range of scenarios, this lunar rover simulation was built initially to exercise and evaluate Resource Prospector's approach to lunar surface operations.  The key aspects of that approach were (a) teleoperation of the rover by a pair of drivers on Earth and (b) continuous, real-time interpretation of instrument data by a small science team that is tightly integrated within mission operations followed by limited adjustment of the mission plan.  This paper focuses on the development and capabilities of the simulator itself and how it enabled evaluation of the driving task, but we touch on the science data interpretation task in a later section.
 
 The goal of Resource Prospector was to take measurements to estimate the water content at and under the lunar surface over a 2500 square meter area and to repeat this data collection in several areas that differ by temperature profile.  
@@ -732,7 +738,7 @@ The thickness of the dry layer is a much more complex function of the time histo
 The volumetric distribution of water ice was inspired by a model of impact gardening published in \cite{hurley2012} and is a function of the distance to the rim of nearby craters above a certain size.  
 Surface frost only occurs in permanent shadow and its concentration is a function of the contiguous area of each frost patch.  
 The mineral concentrations were modeled as perlin noise and could have been calculated at simulation time, but they were converted into arrays to keep the implementation more uniform.  
-Figure [xxx] shows several of these arrays.
+\cref{fig:sim-by-real} shows several of these arrays.
 
 \begin{figure*}[htp]
 \begin{subfloat}[Surface Temperature]{
