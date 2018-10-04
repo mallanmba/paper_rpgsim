@@ -276,12 +276,12 @@ Finally, we generate a normal map which captures the surface normal at each DEM 
 
 \section{Lunar Visual Environment}
 Our simulator placed an emphasis on high fidelity visual simulation because visual cues are fundamental to driving and localization tasks. 
-Human operators must be able to perceive hazards and maintain adequate situational awareness in order to safely drive a rover, and the development of robust computer vision software requires images representative of those that would be received during them mission. 
+Human operators must be able to perceive hazards and maintain adequate situational awareness in order to safely drive a rover, and the development of robust computer vision software requires images representative of those that would be received during the mission. 
 
 The visual environment at the Lunar poles is unlike anything found on Earth. 
 The sun is very low on the horizon (5 to 10 degrees elevation in our scenarios) which causes extremely long shadows in one direction and blinding sunlight in the opposite direction. 
 There is no atmospheric scattering which, on Earth, can provide important depth queues \cite{fry1949effects} and leads to Lunar shadows appearing sharper and darker.  
-Finally, the Lunar regolith that covers the surface of the Moon has unique reflective properties. 
+Additionally, the Lunar regolith that covers the surface of the Moon has unique reflective properties. 
 
 Lunar regolith is formed through a microbombardment processes which pulvarizes rock into soil \cite{XXX}.  
 Because the Lunar soil is not produced by the erosion processes we are accustomed to on Earth the particulate matter is sharp and has reflectance properties unlike soils on Earth\todo[inline]{cite Hapke models}, which can pose a challenge to both human and automated perception systems. 
@@ -289,7 +289,7 @@ Notably, there is a significant opposition effect \cite{hapke1986bidirectional} 
 
 By accurately modeling (within the technical limitations of real time computer graphics and our budget) the appearance of the Lunar surface, we desired to build a grounded intuition about what it would be like to drive a rover at the Lunar poles. 
 To do this, we enhanced Gazebo to be capable of rendering high resolution, large scale terrains. 
-We developed a surface shader that models the reflective properties of Lunar regolith, and we draw the rover wheel tracks into the terrain. 
+We developed a surface shader that models the reflective properties of Lunar regolith, and we draw the rover wheel tracks into the terrain so drivers can see where they've been. 
 We improved Gazebo's real-time shadow rendering for our use case, and developed tools to prerender large scale static shadows with accurate penumbras. 
 We use ephemeris models to accurately place the Sun and Earth in the sky for proposed mission landing dates. 
 We model expected [radiance/irradiance]\todo[inline]{Uland, fix this please} and attempt to approximate global illumination effects.   
@@ -297,7 +297,7 @@ Finally, we extend Gazebo's camera modeling capabilities by adding dynamic expos
 
 \subsection{Gazebo Terrain Improvements}
 
-As high resolution synthetic terrains are generated and used in simulation, it became evident that the existing terrain visualization support in Gazebo has performance limitations. 
+As high resolution synthetic terrains were generated and used in simulation, it became evident that the existing terrain visualization support in Gazebo has performance limitations. 
 At the highest resolution of 8K in our experiments, the DEM can take up to several minutes to load in Gazebo, and once loaded, a significant drop in framerate was observed. 
 To address these performance issues, we added two features to Gazebo: 1) Level-Of-Detail (LOD) support and 2) caching of terrain LOD data to disk.
 Gazebo uses the Ogre3D rendering engine, which conveniently has support for both of these features. 
