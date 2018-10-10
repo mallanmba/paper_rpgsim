@@ -139,21 +139,26 @@ We also characterize the wheel slip model, and find some inconsistencies in the 
 \label{sec:intro}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Over the last twenty years, new observations of the Moon by orbital and surface missions have provided evidence of a Lunar water system that is dramatically more complex and rich than previously believed \cite{colaprete2017resource}.
+The potential to exploit water resources for \emph{in situ} utilization motivates low-cost robotic prospecting missions to the surface of the Moon.
 
-\todo[inline]{This paragraph doesn't feel complete.  Also, the intro is too short, maybe we could move the reference mission into that section?}
+However, the human perceptual system is unaccustomed to operating in the lunar environment.
+The Apollo astronauts noted difficulty in judging distances, estimating sizes, and tracking landmarks~\cite{vaniman1991lunar}.  Further compounding this is the danger that can be posed from the operating interfaces used, which can influence the types of errors which are committed during operations~\cite{mcgovern1988human,kelly2011real}.  
 
-Over the last twenty years, new observations of the Moon by orbital and surface missions have provided evidence of a Lunar water system that is dramatically more complex and rich than previously believed \cite{colaprete2017resource}.  The potential to exploit water resources for \emph{in situ} utilization motivates low-cost robotic prospecting missions to the surface of the Moon.
+It is desirable to avoid mission-terminating errors in even the lowest-cost missions, but that requires training in representative environments.  
+Since replicating the lunar environment at scale for practice operations is unfeasible, we have constructed a simulation environment which presents representative visible characteristics, as well as approximations of the expected rover-terrain interactions.  
 
-However, the human perceptual system is unaccustomed to operating in the lunar environment, which caused problems for the Apollo astronauts in judging distances, estimating sizes, and tracking landmarks~\cite{vaniman1991lunar}.  Further compounding this is the danger that can be posed from the operating interfaces used, which can influence the types of errors which are committed during operations~\cite{mcgovern1988human,kelly2011real}.  
+The Lunar polar environment provides short communications delays relative to Martian operations, which enable semi-interactive vehicle commanding.  
+However, the relatively short Lunar day places a maximum time limit on surface operations.  
+Because our simulation environment interacts transparently with our operations tools we can test the assumptions in our concepts of operations, maturing and modifying them appropriately.
 
-It is desirable to avoid mission-terminating errors in even the lowest-cost missions, but that requires training in representative environments.  Since replicating the lunar environment at scale for practice operations is unfeasible, we have constructed a simulation environment which presents representative visible characteristics, as well as approximations of the expected rover-terrain interactions.  
+We built our simulation environment using open-source tools from the ROS ecosystem (\cref{sec:sim-approach}), which we also used to simulate the on- and off-board rover software (\cref{sec:flight-software}).  
+Considerable effort was devoted to producing realistic visual renderings of lunar environments, with limited processing burden on the simulation (\cref{sec:visual-env}).  
+The structure of the RP rover was modelled using ROS tools, and we developed models in the Gazebo simulation environment for modelling wheel slip (\cref{sec:vehicle-sim}).  
 
-The Lunar polar environment provides short communications delays, relative to Martian operations, which enable semi-interactive vehicle commanding.  However, the relatively short lunar day places a maximum time limit on surface operations.  Because our simulation environment interacts transparently with our operations tools we can test the assumptions in our concepts of operations, maturing and modifying them appropriately.
-
-We built our simulation environment using open-source tools from the ROS ecosystem (\cref{sec:sim-approach}), which we also used to simulate the on- and off-board rover software (\cref{sec:flight-software}).  Considerable effort was devoted to producing realistic visual renderings of lunar environments, with limited processing burden on the simulation (\cref{sec:visual-env}).  The structure of the RP rover was modelled using ROS tools, and we developed models in the Gazebo simulation environment for modelling wheel slip (\cref{sec:vehicle-sim}).  
-
-
-% Lunar polar environment different to prior extra-terrestrial rover missions. Mars has long time delays that make interactive commanding impossible, Lunar comm delays enable semi-interactive commanding. Science involved in operations. Operations needed to develop and mature concept of operations.  
+Although applicable to a broad range of scenarios, our lunar rover simulation was built initially to exercise and evaluate Resource Prospector's approach to lunar surface operations.
+The key aspects of that approach were (a) teleoperation of the rover by a pair of drivers on Earth and (b) continuous, real-time interpretation of instrument data by a small science team that is tightly integrated within mission operations followed by limited adjustment of the mission plan.
+This paper focuses on the development and capabilities of the simulator itself and how it enabled evaluation of the driving task, but we touch on the science data interpretation task in a later section.
 
 \section{Background}
 \label{sec:background}
@@ -701,7 +706,9 @@ Simulator & Gazebo Simulator as described in this paper.\\
 
 \subsection{Operations Software}
 
-To fully enable the mission simulation we employed the planned flight control software.    This consisted of the robot driving software, VERVE, and the data display framework, WARP.  To make these components speak to each other we developed a bridge that translated messages between the different communications protocols used by the operations software and the simulated rover. 
+To fully enable the mission simulation we employed the planned flight control software.
+This consisted of the robot driving software, VERVE, and the data display framework, WARP.
+To make these components speak to each other we developed a bridge that translated messages between the different communications protocols used by the operations software and the simulated rover. 
 
 \subsubsection{WARP}
 
@@ -712,7 +719,8 @@ WARP received data from the rover and was used to
 
 The rover driving software is based on the NASA Visual Environment for Robotic Virtual Exploration (VERVE) \cite{lee2013reusable}. VERVE provides an interactive 3D user interface for remote monitoring and commanding of robotic systems (\cref{fig:verve-mvp}) and has been used for several Lunar analog field tests \cite{deans2009robotic} \cite{fong2010robotic} as well as commanding robotic assets from the International Space Station \cite{bualat2013surface}.
 
-VERVE uses the RAPID communications protocol\cite{torres2009rapid} for controlling robots.   In order to command the simulated robot we build a bridge which echoed messages between the simulated robot and the ground systems, which we called the ROS-RAPID bridge. 
+VERVE uses the RAPID communications protocol\cite{torres2009rapid} for controlling robots.
+In order to command the simulated robot we build a bridge which echoed messages between the simulated robot and the ground systems, which we called the RAPID-ROS bridge. 
 
 \begin{figure*}[htp]
 \centering
@@ -721,9 +729,6 @@ VERVE uses the RAPID communications protocol\cite{torres2009rapid} for controlli
 \end{figure*}
 
 \subsection{Science Simulation and Software}
-
-\todo[inline]{Merge this first para in science section into the intro (using one or two sentences of this)}
-Although applicable to a broad range of scenarios, this lunar rover simulation was built initially to exercise and evaluate Resource Prospector's approach to lunar surface operations.  The key aspects of that approach were (a) teleoperation of the rover by a pair of drivers on Earth and (b) continuous, real-time interpretation of instrument data by a small science team that is tightly integrated within mission operations followed by limited adjustment of the mission plan.  This paper focuses on the development and capabilities of the simulator itself and how it enabled evaluation of the driving task, but we touch on the science data interpretation task in a later section.
 
 The goal of Resource Prospector was to take measurements to estimate the water content at and under the Lunar surface over a 2500 square meter area and to repeat this data collection in several areas that differ by temperature profile.  
 This is the scale over which water would be mined to support a potential, future Lunar base.  
