@@ -144,12 +144,16 @@ We also characterize the wheel slip model, and find some inconsistencies in the 
 
 Over the last twenty years, new observations of the Moon by orbital and surface missions have provided evidence of a Lunar water system that is dramatically more complex and rich than previously believed \cite{colaprete2017resource}.  The potential to exploit water resources for \emph{in situ} utilization motivates low-cost robotic prospecting missions to the surface of the Moon.
 
-However, the human perceptual system is unaccustomed to operating in the lunar environment, which caused problems for the Apollo astronauts in judging distances, estimating sizes, and tracking landmarks\cite{vaniman1991lunar}.  
+However, the human perceptual system is unaccustomed to operating in the lunar environment, which caused problems for the Apollo astronauts in judging distances, estimating sizes, and tracking landmarks~\cite{vaniman1991lunar}.  Further compounding this is the danger that can be posed from the operating interfaces used, which can influence the types of errors which are committed during operations~\cite{mcgovern1988human,kelly2011real}.  
 
-Lunar polar environment different to prior extra-terrestrial rover missions. Mars has long time delays that make interactive commanding impossible, Lunar comm delays enable semi-interactive commanding. Science involved in operations. Operations needed to develop and mature concept of operations.  
+It is desirable to avoid mission-terminating errors in even the lowest-cost missions, but that requires training in representative environments.  Since replicating the lunar environment at scale for practice operations is unfeasible, we have constructed a simulation environment which presents representative visible characteristics, as well as approximations of the expected rover-terrain interactions.  
 
-\cite{vaniman1991lunar}
-\cite{letko1966problems}
+The Lunar polar environment provides short communications delays, relative to Martian operations, which enable semi-interactive vehicle commanding.  However, the relatively short lunar day places a maximum time limit on surface operations.  Because our simulation environment interacts transparently with our operations tools we can test the assumptions in our concepts of operations, maturing and modifying them appropriately.
+
+We built our simulation environment using open-source tools from the ROS ecosystem (\cref{sec:sim-approach}), which we also used to simulate the on- and off-board rover software (\cref{sec:flight-software}).  Considerable effort was devoted to producing realistic visual renderings of lunar environments, with limited processing burden on the simulation (\cref{sec:visual-env}).  The structure of the RP rover was modelled using ROS tools, and we developed models in the Gazebo simulation environment for modelling wheel slip (\cref{sec:vehicle-sim}).  
+
+
+% Lunar polar environment different to prior extra-terrestrial rover missions. Mars has long time delays that make interactive commanding impossible, Lunar comm delays enable semi-interactive commanding. Science involved in operations. Operations needed to develop and mature concept of operations.  
 
 \section{Background}
 \label{sec:background}
@@ -160,9 +164,9 @@ The Resource Prospector (RP) is a Lunar rover mission concept developed by NASA 
 \todo[inline]{This paragraph could go in the introduction}
 During the past twenty years, new observations of the Moon made by orbital and surface missions have provided evidence of a Lunar water system that is dramatically more complex and rich than was previously believed \cite{colaprete2017resource}. Hydrogen and other volatiles have the potential to be an enabling resource for human missions to the Moon and beyond. 
 The distribution of Lunar subsurface volatiles drives the RP mission requirement for mobility. 
-In particular, the spatial distribution of cold-trapped volatiles is hypothesized to be governed by impact cratering with the top 0.5m \todo{top 0.5m of what?} being patchy at scales of 100m. 
-The mixing time scale increases with depth (less frequent larger impacts). \todo{I think there is a link between mixing time scales by depth and increased lateral sampling which is not made for the non-planetary science reader.}
-Consequently, increased mobility (greater range) reduces the depth requirement for sampling (i.e., drilling or excavation depth). \todo{Is the point that because the surface is patchy that we need to be able to move around?  We can't just pick one point and land there?}
+In particular, the spatial distribution of cold-trapped volatiles is hypothesized to be governed by impact cratering with the top 0.5m \todo[inline]{top 0.5m of what?} being patchy at scales of 100m. 
+The mixing time scale increases with depth (less frequent larger impacts). \todo[inline]{I think there is a link between mixing time scales by depth and increased lateral sampling which is not made for the non-planetary science reader.}
+Consequently, increased mobility (greater range) reduces the depth requirement for sampling (i.e., drilling or excavation depth). \todo[inline]{Is the point that because the surface is patchy that we need to be able to move around?  We can't just pick one point and land there?}
 
 For the RP mission, a solar-powered, Lunar rover equipped with a drill and a science payload would be used to: (1) locate surface and near-subsurface volatiles; (2) excavate and analyze samples of the volatile-bearing regolith; and (3) demonstrate the form, extractability and usefulness of the materials. The payload contains two prospecting instruments, the Neutron Spectrometer System (NSS) and the NIR Volatile Spectrometer System (NIRVSS), which can sense hydrogen at concentrations as low as 0.5 WT\% to a depth of 1 m and can capture signatures of bound H2O/OH. The payload also contains a processing system that can heat regolith samples to 450 C and analyze evolved gases using a gas chromatograph / mass spectrometer.
 
@@ -171,8 +175,8 @@ The rover is designed to be capable of operating in shadowed regions for up to 6
 Because the rover is not designed to survive the cold of the Lunar night, the mission focusses is to traverse sufficient distance to determine the lateral and vertical distribution of volatiles in a target region before the Lunar day ends.
 
 The short duration of the RP mission, combined with operational constraints and limited knowledge about the surface environment (e.g., high-tempo, interactive rover commanding and real-time science operations) create unique challenges for mission operations \cite{hooey2017modeling}. 
-These challenges\todo{which challenges?} have the potential to contribute to significant levels of operator workload for the team responsible for maneuvering the rover on the Lunar surface. 
-These challenges may also impact the ease of acquiring and maintaining situation awareness, the ability to identify and handle contingencies, and ground control performance (rover driving, system monitoring, etc.)\todo{incomplete sentence}
+These challenges\todo[inline]{which challenges?} have the potential to contribute to significant levels of operator workload for the team responsible for maneuvering the rover on the Lunar surface. 
+These challenges may also impact the ease of acquiring and maintaining situation awareness, the ability to identify and handle contingencies, and ground control performance (rover driving, system monitoring, etc.)\todo[inline]{incomplete sentence}
 
 \subsection{Reference Mission Operations}
 Lunar surface operations provide for qualitatively different mission operation scenarios than what is possible in the Martian surface.  An important aspect is the broad swings in temperature on the Moon.  
@@ -187,7 +191,9 @@ Second, through the use of the Deep Space Network, it is possible to be in const
 Taking advantage of the high communications availability we designed our autonomy system to be distributed between the rover on the surface of the moon and the remote operations team on Earth.  
 The architecture would place lower-level components of an autonomous system -- e.g., waypoint following, relative pose estimation, vehicle safeguarding -- on-board the robot.  Higher-level algorithms, like absolute localization through terrain matching, are operated on the ground.  The division of software modules is given in \cref{fig:rp-software}.
 
+
 \section{Simulator Approach}
+\label{sec:sim-approach}
 
 Early in mission development, there are many unknowns. 
 As the various mission elements work to address their specific requirements within budget and technology constraints, the trade space is large and a design decision in one element may have ripple effects that impact overall system performance. 
@@ -206,6 +212,7 @@ Finally, Gazebo is an open source platform released under the permissive Apache 
 For similar reasons, we chose the widely used and also open source ROS (Robot Operating System) platform\footnote{\url{http://www.ros.org}} as the basis for our efforts in prototyping the vehicle control software~\cite{quigley2009ros}.
 
 \section{Synthetic Terrain Generation}
+\label{sec:terrain-gen}
 
 To produce a viable Lunar driving experience the simulated world must be representative of the target physical environment. 
 Specifically, the morphology of the terrain should accurately represent terrain features that would be considered either positive or negative obstacles for the rover. 
@@ -271,6 +278,7 @@ An exponential function applied to the freshness parameter determines ejecta ray
 Finally, we generate a normal map which captures the surface normal at each DEM posting. 
 
 \section{Lunar Visual Environment}
+\label{sec:visual-env}
 Our simulator placed an emphasis on high fidelity visual simulation because visual cues are fundamental to driving and localization tasks. 
 Human operators must be able to perceive hazards and maintain adequate situational awareness in order to safely drive a rover, and the development of robust computer vision software requires images representative of those that would be received during the mission. 
 
@@ -501,6 +509,7 @@ Direct 12-bit image capture is not an option in OpenGL, but a 16-bit image can b
 
 
 \section{Vehicle Simulation}
+\label{sec:vehicle-sim}
 
 The Resource Prospector robot is an explicit steered vehicle, which is capable of being skid-steered. 
 The steering configuration of the robot permits it to drive in any direction and maintain the orientation of the solar panels to maximize the insolation of the solar panels.  
@@ -598,6 +607,7 @@ Although not perfect at simulating the wheel/soil interaction, this plug-in enab
 In order to increase the fidelity and give more realism for wheel sinkage and rover embedding, this simple model would need to be replaced by a discrete element method (DEM) model which is very costly in terms of computational power and existing system are unproven due to the complexity of the particle interaction.
 
 \section{Flight Software Prototype}
+\label{sec:flight-software}
 
 In order to test operations we used a combination of ROS software components and NASA-developed software to build an end-to-end mission simulator.  As illustrated in \cref{fig:rp-software}, we split the software into on-board (Flight) and off-board (Ground) software components.  
 
@@ -792,7 +802,8 @@ Our approach generates 3D point clouds from successive stereo camera images, ali
 
 To refine the mission's concept of operations, we wanted to know how much overlap is required between camera images for stereo visual odometry to be effective. 
 The easiest way to lose overlap between successive images is by yawing the camera or rover, so that is the first test we ran. 
-We learned that with camera rotations of 50-degrees or less, stereo visual odometry yields more accurate results than the fused wheel and star tracker odometry we had been using (shown in Fig. \ref{fig:odom_error} ).
+We learned that with camera rotations of 50-degrees or less, stereo visual odometry yields more accurate results than the fused wheel and star tracker odometry we had been using (shown in \cref{fig:odom_error}).
+
 \begin{figure}[h!]
 	\includegraphics[width=\columnwidth]{figures/rotating_clouds_with_odom_error.png}
     \caption{Position error vs. camera rotation angle for stereo visual odometry and wheel-and-star-tracker odometry}
