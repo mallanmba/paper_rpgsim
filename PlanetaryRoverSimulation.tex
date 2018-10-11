@@ -254,6 +254,12 @@ During the process of sampling rocks and assigning spatial coordinates, the ejec
 At each time step, old rocks have a probability of being covered by regolith, and a new crater forming will cover old rocks under its extent. 
 When the number of generated rocks and craters equals the expected number plus some variation, the sizes, ages, and coordinates of the features are passed into fractal terrain generator.     
 
+\begin{figure}[h!]
+  \includegraphics[width=\columnwidth]{figures/crater-rock-distrib.png}
+  \caption{Graphic showing manually placed craters (green), background rock distribution (blue), and ejecta rock distribution (red).}
+  \label{fig:crater-rock-distrib}
+\end{figure}
+
 Our fratal terrain generation process synthetically increases resolution of DEMs and inserts craters utilizing techniques established by \cite{parkes2004planet}. 
 With this approach, the process starts with a low resolution DEM of the area of interest.
 A fractal expansion of the region is performed by iteratively applying the diamond-and-square algorithm to reach the desired resolution. 
