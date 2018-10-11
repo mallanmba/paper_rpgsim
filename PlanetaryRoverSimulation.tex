@@ -55,7 +55,7 @@ An overview of the mission software system is provided, along with how ROS was u
 
 Finally, we discuss the effect of using the high-fidelity synthetic Lunar images for visual odometry.
 We also characterize the wheel slip model, and find some inconsistencies in the produced wheel slip behaviour.
-
++
 \end{abstract}
 
 \begin{figure*}[htp]
@@ -850,19 +850,21 @@ Wheel slip was measured by comparing dead reckoning distance driven to ground tr
    	\caption{Gazebo simulation for the slip vs slope test with the RP rover.}
     \label{fig:simulationramps}
 \end{figure}
+
 Overall, the \texttt{wheel\_slip\_plugin} demonstrated the expected behavior and compared favorably with physical testbed results as can be seen in figure \ref{fig:wheelsliptuningchart}, which compares wheel slip measured from MGRU with the  \texttt{wheel\_slip\_plugin}. 
+
 \begin{figure}[h!]
-	\includegraphics[width=\columnwidth]{figures/wheel_slip_roverslip.png}
+	\includegraphics[width=\linewidth]{figures/wheel_slip_roverslip.png}
    	\caption{Comparison of the RP Lunar mass equivalent rover slip on GRC-1 simulant and RP rover slip in the Gazebo simulator.}
     \label{fig:wheelsliptuningchart}
 \end{figure}
 
 However, our test results show that at certain angles and compliance values, there is a wide variation in measured wheel slip (see figure \ref{fig:slipdisparities}). Those disparities are particularly large on a flat terrain.
-\begin{figure}[h!]
+\begin{figure*}[h!]
 	\includegraphics[width=\columnwidth]{figures/slip_compliance_longitudinal.png}
    	\caption{Graph of the slip of the RP rover in Gazebo showing the disparities in the amount of slip.}
     \label{fig:slipdisparities}
-\end{figure}
+\end{figure*}
 
 \section{Summary}
 
@@ -877,7 +879,7 @@ Third, by virtue of being a high-fidelity simulation of rover mechanism and soft
  Then we were able to test different concepts of operations, and even rover configurations rapidly, and build confidence in the mission design.
 
 
-\bibliographystyle{plain}
+\bibliographystyle{unsrt}
 \bibliography{refs}
 
 
