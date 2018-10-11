@@ -55,7 +55,7 @@ An overview of the mission software system is provided, along with how ROS was u
 
 Finally, we discuss the effect of using the high-fidelity synthetic Lunar images for visual odometry.
 We also characterize the wheel slip model, and find some inconsistencies in the produced wheel slip behaviour.
-+
+
 \end{abstract}
 
 \begin{figure*}[htp]
@@ -134,6 +134,10 @@ We also characterize the wheel slip model, and find some inconsistencies in the 
 
 \listoftodos
 
+\todo[inline]{2D not 2d standarization, ditto 3D not 3d}
+\todo[inline]{Hz standarization for Hertz}
+\todo[ineline]
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 \label{sec:intro}
@@ -201,6 +205,7 @@ The architecture would place lower-level components of an autonomous system -- e
 \section{Simulator Approach}
 \label{sec:sim-approach}
 
+\todo[inline]{move these two paragraphs to intro}
 Early in mission development, there are many unknowns. 
 As the various mission elements work to address their specific requirements within budget and technology constraints, the trade space is large and a design decision in one element may have ripple effects that impact overall system performance. 
 One way to reduce uncertainty about design alternatives and to answer questions about system performance, particularly from an operational perspective, is through simulation. 
@@ -216,6 +221,8 @@ With work beginning in 2002, Gazebo is among the oldest robot simulators that is
 In that time, Gazebo has been used to simulate a wide variety of robotic systems in myriad types of indoor and outdoor environments~\cite{paepcke2016gazebo}, with notable examples including the DARPA Robotics Challenge~\cite{aguero2015inside} and the NASA Space Robotics Challenge~\cite{hambuchen2017nasa}.
 Finally, Gazebo is an open source platform released under the permissive Apache 2.0 License, which means that we can freely use it for our work and modify it to fit our specific needs.
 For similar reasons, we chose the widely used and also open source ROS (Robot Operating System) platform\footnote{\url{http://www.ros.org}} as the basis for our efforts in prototyping the vehicle control software~\cite{quigley2009ros}.
+
+\todo[inline]{add paragraph here about things Gazebo didn't have that we needed to change for Lunar sim}
 
 \section{Synthetic Terrain Generation}
 \label{sec:terrain-gen}
@@ -311,7 +318,7 @@ Notably, there is a significant opposition effect \cite{hapke1986bidirectional} 
 By accurately modeling (within the technical limitations of real time computer graphics and our budget) the appearance of the Lunar surface, we desired to build a grounded intuition about what it would be like to drive a rover at the Lunar poles. 
 To do this, we enhanced Gazebo to be capable of rendering high resolution, large scale terrains. 
 We developed a surface shader that models the reflective properties of Lunar regolith, and we draw the rover wheel tracks into the terrain so drivers can see where they've been. 
-We improved Gazebo's real-time shadow rendering for our use case, and developed tools to prerender large scale static shadows with accurate penumbras. 
+We improved Gazebo's real-time shadow rendering for our use case, and developed tools to pre-render large scale static shadows with accurate penumbras. 
 We use ephemeris data to accurately place the Sun and Earth in the sky for proposed mission landing dates. 
 Expected scene irradiance is modeled in order to approximate global illumination effects.   
 Finally, we extend Gazebo's camera modeling capabilities by adding dynamic exposure and high bit depth rendering. 
@@ -533,6 +540,8 @@ Direct 12-bit image capture is not an option in OpenGL, but a 16-bit image can b
 The Resource Prospector robot is an explicit steered vehicle, which is capable of being skid-steered. 
 The steering configuration of the robot permits it to drive in any direction and maintain the orientation of the solar panels to maximize the insolation of the solar panels.  
 
+\todo[inline]{Merge figures 10 and 11, talk about how we were testing different driving styles.  Strike figure 12 (ballon tyres)}
+
 \begin{figure}[htp!]
 \centering
 \includegraphics[scale=0.35]{figures/rp-houston.jpg}
@@ -569,6 +578,7 @@ The second emulation of the vehicle was a modified version of the NASA Ames Inte
 The KRex2 robot is, like RP, an explicit-steer vehicle.  
 We modified the KRex2 model to reflect the offset steering which is present on the RP rover, but not on the actual KRex2 model.  
 However, where RP can independently lower and raise its wheels, KRex2 cannot, and relies on a differencing bar to maintain contact with the terrain, as shown in \cref{fig:krex2-differencing}.    
+\todo[inline]{mention that passive suspension was easier to model in simulator}
 
 \begin{figure}[htp]
 \includegraphics[width=\linewidth]{figures/krex2-shakedown.jpg}
@@ -578,6 +588,8 @@ However, where RP can independently lower and raise its wheels, KRex2 cannot, an
 Using KRex2 as a proxy for the RP vehicle enabled the use of the explicit steering capacity for missions operations testing.  
 Using the URDF language to describe the robot, it was easy to modify the sensors that were added to the earlier Husky model to the modified KRex2 model.  
 
+\todo[inline]{mention that chassis was important to determine camera occlusions}
+\todo[inline]{mention that skid steer was a potential design option}
 
 To both of these vehicles we added a stereo camera pair that was mounted on a gimbal at the top of the mast, seen in \cref{fig:rp-houston}, as well as the solar-panel superstructure. 
 We also added a simulated IMU and tracked wheel odometry for use in pose estimation.  
@@ -627,6 +639,8 @@ In order to increase the fidelity and give more realism for wheel sinkage and ro
 
 \section{Flight Software Prototype}
 \label{sec:flight-software}
+
+\todo[inline]{Big point to stress the distributed autonomy system, the ros-rapid bridge helps us test the end-to-end simulation.  Strongly distinguish that this is a novel architecture, the first time we've taken this approach, ROS gave us to the tools to build the system.}
 
 In order to test operations we used a combination of ROS software components and NASA-developed software to build an end-to-end mission simulator.  As illustrated in \cref{fig:rp-software}, we split the software into on-board (Flight) and off-board (Ground) software components.  
 
@@ -681,6 +695,8 @@ The particular modules included in the ground software are:
 
 \subsection{Emulation of Software with ROS Components}
 
+\todo[inline]{Merge tables below into the description lists above.}
+
 To enable operational testing we emulated a subset of the full mission software using ROS components. The modules used to emulate the flight software are given in \cref{tbl:flight-software-components} and those used to emulate the ground software are given in \cref{tbl:ground-software-components}.
 
 \begin{table}[htp]
@@ -725,6 +741,8 @@ To fully enable the mission simulation we employed the planned flight control so
 This consisted of the robot driving software, VERVE, and the data display framework, WARP.
 To make these components speak to each other we developed a bridge that translated messages between the different communications protocols used by the operations software and the simulated rover. 
 
+\todo[inline]{add paragraph on RAPID/ROS bridge and time delay}
+
 \subsubsection{WARP}
 
 WARP received data from the rover and was used to 
@@ -734,6 +752,7 @@ WARP received data from the rover and was used to
 
 The rover driving software is based on the NASA Visual Environment for Robotic Virtual Exploration (VERVE) \cite{lee2013reusable}. VERVE provides an interactive 3D user interface for remote monitoring and commanding of robotic systems (\cref{fig:verve-mvp}) and has been used for several Lunar analog field tests \cite{deans2009robotic} \cite{fong2010robotic} as well as commanding robotic assets from the International Space Station \cite{bualat2013surface}.
 
+\todo[inline]{move this into the to-be-written section on RAPID-ROS bridge}
 VERVE uses the RAPID communications protocol\cite{torres2009rapid} for controlling robots.
 In order to command the simulated robot we build a bridge which echoed messages between the simulated robot and the ground systems, which we called the RAPID-ROS bridge. 
 
@@ -774,7 +793,7 @@ The DEM was first, followed by the lightmap and then the surface temperature.
 Regolith is an excellent insulator, so the surface temperature can be approximated as a function of sun angle and shadows (ignoring Earthshine and heat rising from the interior).  
 Since the DEM was synthetic, the locations and sizes of the craters was known.  
 OH concentration is modeled a function of surface temperature.  
-The thickness of the dry layer is a much more complex function of the time history of the surface temperature, and Earthshine, heat rising from the interior and the exchange of infrared energy between nearby parts of the surface (crater interiors) very much do need to be modeled; this array came from published work [Siegler2014].  
+The thickness of the dry layer is a much more complex function of the time history of the surface temperature, and Earthshine, heat rising from the interior and the exchange of infrared energy between nearby parts of the surface (crater interiors) very much do need to be modeled; this array came from published work \cite{siegler2014lunar}\todo{This is not the polar ice stability map, should it be?}.  
 The volumetric distribution of water ice was inspired by a model of impact gardening published in \cite{hurley2012} and is a function of the distance to the rim of nearby craters above a certain size.  
 Surface frost only occurs in permanent shadow and its concentration is a function of the contiguous area of each frost patch.  
 The mineral concentrations were modeled as perlin noise and could have been calculated at simulation time, but they were converted into arrays to keep the implementation more uniform.  
