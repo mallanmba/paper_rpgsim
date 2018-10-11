@@ -442,6 +442,12 @@ The sun moves its apparent width in one hour, so any terrain pixel can potential
 This only happens at the edges of shadows, however, and is rarely important to rover operations because the rover's path is planned to avoid these areas.  
 Our approach to this slow movement is to generate one lightmap for every hour and to linearly interpolate linearly between adjacent lightmaps in the shader, however, this enhancement has not been implemented yet.
 
+\begin{figure}[h!]
+  \includegraphics[width=\columnwidth]{figures/rpgsim_camera_04.jpg}
+  \caption{Crater shadows are pre-rendered while vehicle shadows are rendered in real time.}
+  \label{fig:baked_and_realtime_shadows}
+\end{figure}
+
 \subsubsection{Gazebo Real-Time Shadow Improvements}
 Gazebo originally used a shadow mapping technique called Parallel Split Shadow Maps (PSSM) to render real-time shadows. 
 On the surface, this was a good choice because PSSM uses multiple shadow maps to provide a quality distribution of shadow resolution, even in the dueling frusta case. 
