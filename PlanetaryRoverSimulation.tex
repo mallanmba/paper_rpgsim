@@ -442,7 +442,7 @@ The lightmap was calculated at the same 4 cm resolution as the terrain, and the 
 
 This approach produces high-quality shadows over the whole terrain, with smoothly varying penumbras cast by distant features and tiny shadows cast by one pixel bumps.  
 For any given rover camera image, most of these shadows are too distant to see; the most important shadows are close to the rover, particularly those cast by the rover itself.
-These shadows are rendered using the real-time techniques described above, but the static shadows are very visible in the gazebo camera used for debugging and their soft edges add to the images' realism.
+These shadows are rendered using the real-time techniques described above, but the static shadows are very visible in the Gazebo camera used for debugging and their soft edges add to the images' realism.
 
 While the sun moves slowly, it's not fixed.  
 The sun moves its apparent width in one hour, so any terrain pixel can potentially go from fully lit to fully unlit or vice versa within that hour.  
@@ -462,7 +462,7 @@ However, there were several problems with the implementation that conspired to r
 
 Gazebo uses Ogre3D for rendering, and so it was using Ogre3D's PSSM implementation for rendering shadows. 
 Each shadow map in that implementation was also being processed by a Light-Space Perspective Shadow Map (LiSPSM) technique, which performs poorly in the dueling frusta case and also exhibited some mysterious bugs. 
-Additionally, Ogre3D assumes all scenes are oriented with the y-axis pointing up while gazebo assumes the z-axis points up. 
+Additionally, Ogre3D assumes all scenes are oriented with the y-axis pointing up while Gazebo assumes the z-axis points up. 
 This decreased the usable region of each shadow map and often caused shadow edges to be more jagged than necessary. 
 We corrected both problems by adding code to Gazebo that bypasses these troublesome parts of Ogre3D.
 
@@ -548,7 +548,7 @@ Combining that with the steering capabilities of the wheels, the robot is able t
 
 We developed the physical simulation of the robot in Gazebo in two stages. 
 This was to aid the development of on-going concept of operations missions.  
-The first version of the robot was simulated using the Husky gazebo model \cite{gariepy2015husky}.  
+The first version of the robot was simulated using the Husky Gazebo model \cite{gariepy2015husky}.  
 
 \begin{figure}[htp]
 \centering
@@ -696,7 +696,7 @@ Camera Pointing & Custom module \\
 Wheel Module I/O & ros\_control\footnote{\url{http://wiki.ros.org/ros_control}}\\
 IMU I/O & ros\_control\\
 Gimbal I/O & ros\_control\\
-Camera I/O & Camera sensor from gazebo\_plugins\footnote{\url{http://wiki.ros.org/gazebo_plugins}}\\
+Camera I/O & Camera sensor from gazebo\_plugins\footnote{\url{http://wiki.ros.org/Gazebo_plugins}}\\
 \hline
 \end{tabular}
 \end{table}
