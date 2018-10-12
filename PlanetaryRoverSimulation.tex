@@ -168,8 +168,10 @@ Although applicable to a broad range of scenarios, our Lunar rover simulation wa
 The key aspects of that approach were (a) teleoperation of the rover by a pair of drivers on Earth and (b) continuous, real-time interpretation of instrument data by a small science team that is tightly integrated within mission operations followed by limited adjustment of the mission plan.
 This paper focuses on the development and capabilities of the simulator itself and how it enabled evaluation of the driving task, but we touch on the science data interpretation task (\cref{sec:ops-software}).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background}
 \label{sec:background}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Reference Mission}
 The Resource Prospector (RP) is a Lunar rover mission concept developed by NASA \cite{andrews2015resource,colaprete2015resource}. RP is intended to characterize the nature and distribution of subsurface volatiles in permanently shadowed regions (PSR) located in one of the Moon's polar regions. RP is also intended to demonstrate the feasibility of in-situ resource utilization by extracting and processing volatiles (e.g., hydrogen) that could prove valuable for future exploration missions. RP directly addresses several of NASA's "Strategic Knowledge Gaps" for Lunar exploration as well as the Global Exploration Roadmap's strategic goal of using local resources for human spaceflight.
@@ -204,8 +206,10 @@ Taking advantage of the high communications availability we designed our autonom
 The architecture would place lower-level components of an autonomous system -- e.g., waypoint following, relative pose estimation, vehicle safeguarding -- on-board the robot.  Higher-level algorithms, like absolute localization through terrain matching, are operated on the ground.  The division of software modules is given in \cref{fig:rp-software}.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simulator Approach}
 \label{sec:sim-approach}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \todo[inline]{move these two paragraphs to intro}
 Early in mission development, there are many unknowns. 
@@ -226,8 +230,10 @@ For similar reasons, we chose the widely used and also open source ROS (Robot Op
 
 \todo[inline]{add paragraph here about things Gazebo didn't have that we needed to change for Lunar sim}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Synthetic Terrain Generation}
 \label{sec:terrain-gen}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 To produce a viable Lunar driving experience the simulated world must be representative of the target physical environment. 
 Specifically, the morphology of the terrain should accurately represent terrain features that would be considered either positive or negative obstacles for the rover. 
@@ -298,8 +304,11 @@ The excavated regolith from a fresh crater impact is lighter in shade due to lac
 An exponential function applied to the freshness parameter determines ejecta ray lightness. 
 Finally, we generate a normal map which captures the surface normal at each DEM posting. 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Lunar Visual Environment}
 \label{sec:visual-env}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 Our simulator placed an emphasis on high fidelity visual simulation because visual cues are fundamental to driving and localization tasks. 
 Human operators must be able to perceive hazards and maintain adequate situational awareness in order to safely drive a rover, and the development of robust computer vision software requires images representative of those that would be received during the mission. 
 
@@ -536,8 +545,10 @@ Direct 12-bit image capture is not an option in OpenGL, but a 16-bit image can b
 %\subsection{Lens Flares}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Vehicle Simulation}
 \label{sec:vehicle-sim}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The Resource Prospector robot is an explicit steered vehicle, which is capable of being skid-steered. 
 The steering configuration of the robot permits it to drive in any direction and maintain the orientation of the solar panels to maximize the insolation of the solar panels.  
@@ -639,8 +650,10 @@ The slip compliance tuning parameter enables simulation of loose material genera
 Although not perfect at simulating the wheel/soil interaction, this plug-in enables the simulated rover to have a high level slip behavior relatively close to what will be expected on a Lunar terrain. 
 In order to increase the fidelity and give more realism for wheel sinkage and rover embedding, this simple model would need to be replaced by a discrete element method (DEM) model which is very costly in terms of computational power and existing system are unproven due to the complexity of the particle interaction.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Flight Software Prototype}
 \label{sec:flight-software}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \todo[inline]{Big point to stress the distributed autonomy system, the ros-rapid bridge helps us test the end-to-end simulation.  Strongly distinguish that this is a novel architecture, the first time we've taken this approach, ROS gave us to the tools to build the system.}
 
@@ -736,8 +749,11 @@ Simulator & Gazebo Simulator as described in this paper.\\
 \end{tabular}
 \end{table}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Operations Software}
 \label{sec:ops-software}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 To fully enable the mission simulation we employed the planned flight control software.
 This consisted of the robot driving software, VERVE, and the data display framework, WARP.
@@ -835,7 +851,9 @@ This involved a combination of LabView displays, which were primarily used by th
 (Both kinds of displays were used by both groups.)  The web-based displays presented the most important information available in the labview displays and also presented instrument data as heat maps on top of 2D site maps so scientists could see how the data was distributed spatially.  
 This followed the approach of xGDS \cite{lee2013reusable} and xGDS components would have been used during flight.  Figure [yyy] shows several of these displays.
 
-\section{Results}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Experiments}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Stereo Visual Odometry}
 One of the goals of the visual simulation was to provide realistic data for algorithmic development. An example is the stereo visual odometry we implemented for Resource Prospector's ground software to aid in navigation.
@@ -888,7 +906,9 @@ However, our test results show that at certain angles and compliance values, the
     \label{fig:slipdisparities}
 \end{figure}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 This project represents a fusion of COTS, open-source software, with domain specific knowledge that resulted in the production of a high-fidelity Lunar rover driving simulation. 
 It presents an approach to rapidly developing visual and physical simulations that enable the holistic evaluation of a mission, from concept of operations to algorithm and mechanism design.
