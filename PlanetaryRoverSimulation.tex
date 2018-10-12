@@ -743,7 +743,7 @@ To fully enable the mission simulation we employed the planned flight control so
 This consisted of the robot driving software, VERVE, and the data display framework, WARP.
 To make these components speak to each other we developed a bridge that translated messages between the different communications protocols used by the operations software and the simulated rover. 
 
-\todo[inline]{add paragraph on RAPID/ROS bridge and time delay}
+\todo[inline]{mallan: add paragraph on RAPID/ROS bridge and time delay}
 
 \subsubsection{WARP}
 
@@ -862,6 +862,7 @@ As expected the quality of our stereo point clouds is greatly reduced when the l
 We have not attempted to quantify results in this area as it is still considered ripe for refinement.
 
 \subsection{Wheel Slip}
+\todo[inline]{mallan: add a bit more explanation here}
 In order to characterize the \texttt{wheel\_slip\_plugin}, we set up a test harness to gather data on wheel slip behavior over multiple runs. 
 We created a Gazebo world with ramps from 0 to 30 degrees at 2 degree increments (see figure \ref{fig:simulationramps}). 
 A rostest script would spawn the rover at the base of each ramp and command it to drive 10 meters forward.
