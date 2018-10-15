@@ -210,17 +210,24 @@ These challenges\todo[inline]{which challenges?} have the potential to contribut
 These challenges may also impact the ease of acquiring and maintaining situation awareness, the ability to identify and handle contingencies, and ground control performance (rover driving, system monitoring, etc.)\todo[inline]{incomplete sentence}
 
 \subsection{Reference Mission Operations}
-Lunar surface operations provide for qualitatively different mission operation scenarios than what is possible in the Martian surface.  An important aspect is the broad swings in temperature on the Moon.  
+Lunar surface operations provide for qualitatively different mission operation scenarios than what is possible in the Martian surface.
+An important aspect is the broad swings in temperature on the Moon.  
 From Lunar day to Lunar night there can be swings in temperature of over three hundred degrees.  
-Building a robot to survive Lunar night comes with additional costs and reliance on heat sources, like the radioisotope heating used in the Lunokhod missions \cite{ulamec2010survive}.  This can increase mission complexity substantially.  
+Building a robot to survive Lunar night comes with additional costs and reliance on heat sources, like the radioisotope heating used in the Lunokhod missions \cite{ulamec2010survive}.
+This can increase mission complexity substantially.  
 
-If the rover is not designed to survive Lunar night then the mission either has the time pressure to complete within a Lunar day, or the operational pressure to chase sunlight to peaks of eternal light, as proposed in \cite{otten2018strategic}.  The Resource Prospector mission planned to operate within the constraints of the Lunar solar day, creating a need for high-tempo mission operations. 
+If the rover is not designed to survive Lunar night then the mission either has the time pressure to complete within a Lunar day, or the operational pressure to chase sunlight to peaks of eternal light, as proposed in \cite{otten2018strategic}.
+The Resource Prospector mission planned to operate within the constraints of the Lunar solar day, creating a need for high-tempo mission operations. 
 
-The Moon is not without its operational advantages.  First, the relative closeness of the Moon means that the time-of-flight communications delay is only 2.5 seconds, and not on the order of minutes\todo[inline]{get time of flight delay for Mars} for a Mars mission.  
-Second, through the use of the Deep Space Network, it is possible to be in constant communication with a Lunar surface vehicle, barring shadows from terrain features.  Constant availability of a rover supports the high-tempo mission cadence missions like Resource Prospector.
+The Moon is not without its operational advantages.
+First, the relative closeness of the Moon means that the time-of-flight communications delay is only 2.5 seconds, and not on the order of minutes\todo[inline]{get time of flight delay for Mars} for a Mars mission.  
+Second, through the use of the Deep Space Network, it is possible to be in constant communication with a Lunar surface vehicle, barring shadows from terrain features.  
+Constant availability of a rover supports the high-tempo mission cadence missions like Resource Prospector.
 
 Taking advantage of the high communications availability we designed our autonomy system to be distributed between the rover on the surface of the moon and the remote operations team on Earth.  
-The architecture would place lower-level components of an autonomous system -- e.g., waypoint following, relative pose estimation, vehicle safeguarding -- on-board the robot.  Higher-level algorithms, like absolute localization through terrain matching, are operated on the ground.  The division of software modules is given in \cref{fig:rp-software}.
+The architecture would place lower-level components of an autonomous system -- e.g., waypoint following, relative pose estimation, vehicle safeguarding -- on-board the robot.
+Higher-level algorithms, like absolute localization through terrain matching, are operated on the ground.
+The division of software modules is given in \cref{fig:rp-software}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -275,7 +282,7 @@ Next, an age is assigned pseudo-randomly to each crater with the probability of 
 The sampled distribution is ordered sequentially in time and assigned a flag based on whether it is large enough to generate ejecta. 
 Working forward in time, ejecta generating craters are "placed" by assigning a uniform random (x,y) location while their shape is stencilled onto a spatial probability map used to generate ejecta rocks. 
 Shape consists of an interior, rim, and ejecta blanket which are all tunable physical parameters. 
-Small craters do not generate ejecta and are thus only assigned spatial coordinates without contributing to the ejecta map.           
+Small craters do not generate ejecta and are thus only assigned spatial coordinates without contributing to the ejecta map.
 
 Unlike craters, it is difficult and time consuming to identify existing rocks from orbital imagery for each terrain. 
 Moreover, small rocks are under image resolution limits and must be extrapolated from models. 
@@ -284,7 +291,7 @@ There are two populations associated with rocks, one for ejecta thrown during cr
 For the Polar regions, the background distribution is several orders of magnitude sparser than ejecta. 
 During the process of sampling rocks and assigning spatial coordinates, the ejecta probability map is consulted in order to modulate local density. 
 At each time step, old rocks have a probability of being covered by regolith, and a new crater forming will cover old rocks under its extent. 
-When the number of generated rocks and craters equals the expected number plus some variation, the sizes, ages, and coordinates of the features are passed into fractal terrain generator.     
+When the number of generated rocks and craters equals the expected number plus some variation, the sizes, ages, and coordinates of the features are passed into fractal terrain generator.
 
 \begin{figure}[h!]
   \includegraphics[width=\columnwidth]{figures/crater-rock-distrib.png}
@@ -331,7 +338,7 @@ Human operators must be able to perceive hazards and maintain adequate situation
 
 The visual environment at the Lunar poles is unlike anything found on Earth. 
 The sun is very low on the horizon (5 to 10 degrees elevation in our scenarios) which causes extremely long shadows in one direction and blinding sunlight in the opposite direction. 
-There is no atmospheric scattering which, on Earth, can provide important depth queues \cite{fry1949effects} and leads to Lunar shadows appearing sharper and darker.  
+There is no atmospheric scattering which, on Earth, can provide important depth queues \cite{fry1949effects} and leads to Lunar shadows appearing sharper and darker.
 Additionally, the Lunar regolith that covers the surface of the Moon has unique reflective properties. 
 
 Lunar regolith is formed through a microbombardment processes which pulvarizes rock into soil \cite{lunarsourcebook}. Because the Lunar soil is not produced by the erosion processes we are accustomed to on Earth the particulate matter is sharp and has reflectance properties unlike soils on Earth, which can pose a challenge to both human and automated perception systems. 
@@ -792,7 +799,8 @@ In order to command the simulated robot we build a bridge which echoed messages 
 
 \subsubsection{LabVIEW and WARP}
 
-LabVIEW\cite{labview2018} is commercial software and was used during the development and testing of RP's instruments.  The simulation provides inputs that flows through the real data processing pipeline and into the labview displays (\cref{fig:labview}).
+LabVIEW\cite{labview2018} is commercial software and was used during the development and testing of RP's instruments.
+The simulation provides inputs that flows through the real data processing pipeline and into the labview displays (\cref{fig:labview}).
 
 \begin{figure}[h!]
   \includegraphics[width=\columnwidth]{figures/labview.png}
@@ -800,7 +808,8 @@ LabVIEW\cite{labview2018} is commercial software and was used during the develop
   \label{fig:labview}
 \end{figure}
 
-WARP \cite{trimble2016open} provides a wide-variety of displays needed by flight control teams including real-time and historical telemetry display, caution and warning and event display, access to telemetry dictionaries, shift logs, timelines and activity plans, support for multiple missions, and base maps and map layers including the rover's path and heat map displays of instrument data (\cref{fig:warp}).  WARP is built on OpenMCT \cite{OpenMCT}, a web-based framework developed by NASA’s Advanced Multi-Mission Operations System (AMMOS), Ames Research Center (ARC) and the Jet Propulsion Laboratory (JPL) and is used by several JPL missions including the next Mars rover (M2020).
+WARP \cite{trimble2016open} provides a wide-variety of displays needed by flight control teams including real-time and historical telemetry display, caution and warning and event display, access to telemetry dictionaries, shift logs, timelines and activity plans, support for multiple missions, and base maps and map layers including the rover's path and heat map displays of instrument data (\cref{fig:warp}).
+WARP is built on OpenMCT \cite{OpenMCT}, a web-based framework developed by NASA’s Advanced Multi-Mission Operations System (AMMOS), Ames Research Center (ARC) and the Jet Propulsion Laboratory (JPL) and is used by several JPL missions including the next Mars rover (M2020).
 
 \begin{figure}[h!]
   \includegraphics[width=\columnwidth]{figures/warp.png}
