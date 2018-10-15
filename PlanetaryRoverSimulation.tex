@@ -21,7 +21,7 @@
 \title{Planetary Rover Simulation for Lunar Exploration Missions}
 
 \author{
-Mark Allan, Uland Wong, Michael Furlong, Terry Welsh, Arno Rogg, Scott McMichael\\ 
+Mark Allan, Uland Wong, P. Michael Furlong, Terry Welsh, Arno Rogg, Scott McMichael\\ 
 KBRwyle \\
 Moffett Field, CA 94035 \\
 \and 
@@ -49,6 +49,8 @@ Moffett Field, CA 94035 \\
 
 \thispagestyle{plain}
 \pagestyle{plain}
+
+\todo[inline]{rejigger authors, Terry Welsh is Logyx}
 
 \begin{abstract}
 
@@ -510,7 +512,7 @@ We were then able to affect the relative size of the shadow maps and the distanc
 
 With the resolution distribution problems mitigated, we turned to the overall lack of shadow resolution. 
 The easiest first step was to increase Gazebo's default shadow map resolution from 1024 to 2048. 
-This double our resolution everywhere, but there were still small features on the rover, such as the mast, that were not casting shadows consistently. 
+This doubled our resolution everywhere, but there were still small features on the rover, such as the mast, that were not casting shadows consistently. 
 The shader that Gazebo was using to apply shadows was smoothing shadow edges using Percentage Closest Filtering (PCF) with a 3x3 grid of sample positions. 
 This worked well for smoothing jagged shadow edges, but, due to the filter's uniformity, sometimes small features would fall through the cracks and not affect the final shadow intensity. 
 We replaced PCF with something known as hardware PCF, a common graphics driver hack that accomplishes the same type of smoothing with little performance impact. 
@@ -527,7 +529,12 @@ Gazebo was extended to allow lights to be attached to articulated rover componen
 Ogre3D material files were used to pass light parameters from Gazebo to our GLSL shader. 
 The shader simulates up to four spotlights having brightness, cone angle, and distance falloff that can be specified as part of our Gazebo light description.
 We also added a texture projection feature for simulating the detailed pattern projected by a real-world light source. 
-This infrastructure gives us the ability to simulate a variety of lighting hardware and placement before settling on a final solution. 
+This infrastructure gives us the ability to simulate a variety of lighting hardware and placement before settling on a final solution.
+\begin{figure}[h!]
+  \includegraphics[width=\columnwidth]{figures/rpgsim_nav_lights.jpg}
+  \caption{Rover lights}
+  \label{fig:roverlights}
+\end{figure}
 
 \subsection {Photometry}
 The reference mission required training in use of photographic systems coupled with active illumination for driving. 
@@ -571,17 +578,24 @@ Direct 12-bit image capture is not an option in OpenGL, but a 16-bit image can b
 \label{sec:vehicle-sim}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The Resource Prospector robot is an explicit steered vehicle, which is capable of being skid-steered. 
+The first prototype of the Resource Prospector robot (\cref{fig:rp-real}) is an explicit steered vehicle, which is capable of being skid-steered.  During the early stages of the project we were exploring which driving style (skid-steered vs explicit steering) would result in more effective operations.   
+
 The steering configuration of the robot permits it to drive in any direction and maintain the orientation of the solar panels to maximize the insolation of the solar panels.  
 
-\todo[inline]{Merge figures 10 and 11, talk about how we were testing different driving styles.  Strike figure 12 (ballon tyres)}
+\todo[inline]{talk about how we were testing different driving styles.}
 
-\begin{figure}[htp!]
-\centering
-\includegraphics[scale=0.35]{figures/rp-houston.jpg}
-\caption{The Resource Prospector (RP) robot is capable of independently steering each of its wheels.  
-Additionally, each wheel can be raised and lowered independently, permitting the robot to ``walk'' out of sand traps.  \label{fig:rp-houston}}
-\end{figure}
+\begin{figure*}[htp]
+\begin{subfloat}[The Resource Prospector (RP) robot is capable of independently steering each of its wheels.  Additionally, each wheel can be raised and lowered independently, permitting the robot to ``walk'' out of sand traps.]{
+\includegraphics[width=0.5\linewidth]{figures/rp-houston.jpg}\label{fig:rp-real}
+}
+\end{subfloat}
+\qquad
+\begin{subfloat}[We used the robot modelling framework of Gazebo to generate simulated versions of the RP rover.  First, we used a skid steer model of the rover, based on the Husky robot model.  Second, we based the steering mechanism on a model of the KRex2 robot.]{
+\includegraphics[width=0.45\linewidth]{figures/husky-gazebo-cropped.png}\label{fig:rp-sim}
+}
+\end{subfloat}
+\caption{The RP prototype (\protect\cref{fig:rp-real}) was constructed at Johnson Space Center, the rover was simulated (\protect\cref{fig:rp-sim}) using Gazebo and ROS \label{fig:rover-by-sim}}
+\end{figure*}
 
 It is also possible to raise and lower each of the wheels independently. 
 Combining that with the steering capabilities of the wheels, the robot is able to navigate out of sand traps by taking steps, instead of rotating the wheels and possibly further worsening the vehicle's embedding.
@@ -589,30 +603,13 @@ Combining that with the steering capabilities of the wheels, the robot is able t
 \subsection{Simulating Vehicle Mobility}
 \label{sec:simulated-rover}
 
-We developed the physical simulation of the robot in Gazebo in two stages. 
-This was to aid the development of on-going concept of operations missions.  
-The first version of the robot was simulated using the Husky Gazebo model \cite{gariepy2015husky}.  
+We developed the physical simulation of the robot in Gazebo in order to test skid-steered and explicit steered driving. This was to aid the development of the mission's concept of operations.  The first version of the robot was simulated using the Husky Gazebo model \cite{gariepy2015husky}.  
 
-\begin{figure}[htp]
-\centering
-\includegraphics[width=\linewidth]{figures/husky-gazebo-cropped.png}
-\caption{We used the Husky model to carry the RP instrument suite.  We used the skid-steered Husky vehicle as a first approximation of the RP robot. The Husky is manufactured by Clearpath Robotics.\label{fig:husky}}
-\end{figure}
+The Husky robot is only capable of skid-steering, which does not reflect the full capabilities of the RP vehicle.  However, since the RP vehicle is capable of skid steering, the Husky provided a platform to quickly mount the sensors needed for conducting missions operations tests and provide a reasonable approximation of vehicle motion.  
 
-The Husky robot (\cref{fig:husky}) is only capable of skid-steering, which does not reflect the full capabilities of the RP vehicle.  
-However, since the RP vehicle is capable of skid steering, the Husky provided a platform to quickly mount the sensors needed for conducting missions operations tests and provide a reasonable approximation of vehicle motion.  
+To model explicit-steered driving, we used a modified version of the NASA Ames Intelligent Robotics Group's KRex2 robot.  The KRex2 robot is, like RP, an explicit-steer vehicle.  We modified the KRex2 model to reflect the offset steering which is present on the RP rover, but not on the actual KRex2 model.  
 
-\begin{figure}[htp]
-\centering
-\includegraphics[width=\linewidth]{figures/krex2-gazebo-cropped.png}
-\caption{The simulated RP rover based on KRex2.  Visible on the side of the vehicle is the grey side-arm which is part of the differencing mechanism, demonstrated below. \label{fig:krex2}}
-\end{figure}
-
-The second emulation of the vehicle was a modified version of the NASA Ames Intelligent Robotics Group's KRex2 robot (\cref{fig:krex2}).  
-The KRex2 robot is, like RP, an explicit-steer vehicle.  
-We modified the KRex2 model to reflect the offset steering which is present on the RP rover, but not on the actual KRex2 model.  
-However, where RP can independently lower and raise its wheels, KRex2 cannot, and relies on a differencing bar to maintain contact with the terrain, as shown in \cref{fig:krex2-differencing}.    
-\todo[inline]{mention that passive suspension was easier to model in simulator}
+However, where RP can independently lower and raise its wheels, KRex2 cannot, and relies on a differencing bar to maintain contact with the terrain, as shown in \cref{fig:krex2-differencing}. We chose to use a differencing system rather than to fully model the RP suspension, because it was a simpler to model, and did not involve modelling the control system of the RP rover in order to achieve full terrain contact with the wheels.
 
 \begin{figure}[htp]
 \includegraphics[width=\linewidth]{figures/krex2-shakedown.jpg}
