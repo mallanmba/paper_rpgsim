@@ -501,7 +501,7 @@ On the surface, this was a good choice because PSSM uses multiple shadow maps to
 However, there were several problems with the implementation that conspired to ruin the shadows in our simulation, often leaving us with low-resolution shadows or no shadow on parts of the screen.
 
 Gazebo uses Ogre3D for rendering, and so it was using Ogre3D's PSSM implementation for rendering shadows. 
-Each shadow map in that implementation was also being processed by a Light-Space Perspective Shadow Map (LiSPSM) technique, which performs poorly in the dueling frusta case and also exhibited some mysterious bugs. 
+Each shadow map in that implementation was also being processed by a Light-Space Perspective Shadow Map (LiSPSM)\cite{wimmer2004light} technique, which performs poorly in the dueling frusta case and also exhibited some mysterious bugs. 
 Additionally, Ogre3D assumes all scenes are oriented with the y-axis pointing up while Gazebo assumes the z-axis points up. 
 This decreased the usable region of each shadow map and often caused shadow edges to be more jagged than necessary. 
 We corrected both problems by adding code to Gazebo that bypasses these troublesome parts of Ogre3D.
@@ -734,7 +734,10 @@ This consisted of the robot driving software, VERVE, the instrument monitoring d
 To make these components speak to each other we developed a bridge that translated messages between the different communications protocols used by the operations software and the simulated rover. 
 The bridge primarily converted between ROS and the RAPID communications protocol\cite{torres2009rapid} used by some NASA-developed software. 
 
-In addition to protocol translation, the bridge models time delay and jitter to serve as a space comms emulator. Each data topic can be assigned either a fixed time delay and/or assigned to a logical data channel with fixed bandwidth. The logical data channels use a token bucket to restrict data flow and data payload size is either taken directly from the ROS message or from a configuration file for cases where ROS payload size is significantly different from its flight counterpart. 
+In addition to protocol translation, the bridge models time delay and jitter to serve as a space comms emulator.  
+Each data topic can be assigned either a fixed time delay and/or assigned to a logical data channel with set bandwidth.  
+The logical data channels use a token bucket to restrict data flow and data payload size is either taken directly from the ROS message or from a configuration file for cases where ROS payload size is significantly different from its flight counterpart. 
+
 
 \subsubsection{VERVE}
 
@@ -749,7 +752,7 @@ The rover driving software is based on the NASA Visual Environment for Robotic V
 \subsubsection{LabVIEW and WARP}
 
 LabVIEW\cite{labview2018} is commercial software and was used during the development and testing of RP's instruments.
-The simulation provides inputs that flows through the real data processing pipeline and into the labview displays (\cref{fig:labview}).
+The simulation provides inputs that flows through the real data processing pipeline and into the LabVIEW displays (\cref{fig:labview}).
 
 \begin{figure}[h!]
   \includegraphics[width=\columnwidth]{figures/labview.png}
@@ -784,7 +787,7 @@ NIRVSS also contained a Longwave Calibration Sensor (LCS) that measured surface 
 The world model provides data for these instruments that varies as the rover moves in ways that must be consistent with physics and with theories about how ices have been emplanted or removed.  
 It did this by modeling the distribution of several physical quantities, some as 2D functions (variation over the surface) and others as 3D functions (variation within the top meter of regolith).
 
-The quantities modeled are: (a) the surface temperature, (b) the area concentration of water ice as a surface frost, (c) the area concentration of OH adhered to the surface, (d) the thickness of the upper layer of regolith that must be dry based on its known thermal history, (e) the water ice concentration in the layer below that as a weight percentage, (f) the volumetric concentration of hydrogen in hydrogen-bearing minerals, and (g) the surface distribution of several minerals.  
+The quantities modeled are: (a) the surface temperature, (b) the area concentration of water ice as a surface frost, (c) the area concentration of \ce{OH} adhered to the surface, (d) the thickness of the upper layer of regolith that must be dry based on its known thermal history, (e) the water ice concentration in the layer below that as a weight percentage, (f) the volumetric concentration of hydrogen in hydrogen-bearing minerals, and (g) the surface distribution of several minerals.  
 The most important of these were the water ice surface and volumetric concentrations.  
 The others were included to present a consistent picture and to provide realistic sources of noise and other variations that could make interpreting the data more difficult.
 
@@ -796,7 +799,7 @@ A sequence of arrays was generated, with each array calculated using only the ar
 The DEM was first, followed by the lightmap and then the surface temperature.  
 Regolith is an excellent insulator, so the surface temperature can be approximated as a function of sun angle and shadows (ignoring Earthshine and heat rising from the interior).  
 Since the DEM was synthetic, the locations and sizes of the craters was known.  
-OH concentration is modeled a function of surface temperature.  
+\ce{OH} concentration is modeled a function of surface temperature.  
 The thickness of the dry layer is a much more complex function of the time history of the surface temperature, and Earthshine, heat rising from the interior and the exchange of infrared energy between nearby parts of the surface (crater interiors) very much do need to be modeled; this array came from published work\cite{siegler2015}. 
 The volumetric distribution of water ice was inspired by a model of impact gardening published in \cite{hurley2012} and is a function of the distance to the rim of nearby craters above a certain size.  
 Surface frost only occurs in permanent shadow and its concentration is a function of the contiguous area of each frost patch.  
@@ -834,8 +837,8 @@ This allowed most of the real data processing pipeline for each instrument to be
 
 \subsubsection{Science Data Displays}
 Instrument data was presented to the scientists using the displays that RP intended to use in flight.  
-This involved a combination of LabView displays, which were primarily used by the scientists responsible for the health of the instrument and the quality of the data collection, and a web-based set of displays \cite{OpenMCT} that were primarily used by scientists responsible for data interpretation and tactical decision-making.  
-(Both kinds of displays were used by both groups.)  The web-based displays presented the most important information available in the labview displays and also presented instrument data as heat maps on top of 2D site maps so scientists could see how the data was distributed spatially.  
+This involved a combination of LabVIEW displays, which were primarily used by the scientists responsible for the health of the instrument and the quality of the data collection, and a web-based set of displays \cite{OpenMCT} that were primarily used by scientists responsible for data interpretation and tactical decision-making.  
+(Both kinds of displays were used by both groups.)  The web-based displays presented the most important information available in the LabVIEW displays and also presented instrument data as heat maps on top of 2D site maps so scientists could see how the data was distributed spatially.  
 This followed the approach of xGDS \cite{lee2013reusable} and xGDS components would have been used during flight.  \cref{fig:labview} and  \cref{fig:warp} show examples of these displays.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
