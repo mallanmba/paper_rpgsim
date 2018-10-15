@@ -166,12 +166,21 @@ However, the human perceptual system is unaccustomed to operating in the Lunar e
 The Apollo astronauts noted difficulty in judging distances, estimating sizes, and tracking landmarks~\cite{vaniman1991lunar}.  Further compounding this is the danger that can be posed from the operating interfaces used, which can influence the types of errors which are committed during operations~\cite{mcgovern1988human,kelly2011real}.  
 
 It is desirable to avoid mission-terminating errors in even the lowest-cost missions, but that requires training in representative environments.  
-Since replicating the Lunar environment at scale for practice operations is not feasible, we have constructed a simulation environment which presents representative visible characteristics, as well as approximations of the expected rover-terrain interactions.  
+Replicating the Lunar environment at scale for practice operations is not feasible, but a viable alternative is to construct a simulation environment which presents representative visible characteristics, as well as approximations of the expected rover-terrain interactions.
 
-\todo[inline]{this paragraph seems unnecessary, maybe move it to the next section?} 
-The Lunar polar environment provides short communications delays relative to Martian operations, which enables semi-interactive vehicle commanding.  
-However, the relatively short Lunar day places a maximum time limit on surface operations.  
-Because our simulation environment interacts transparently with our operations tools we can test the assumptions in our concepts of operations, maturing and modifying them appropriately.
+%\todo[inline]{this paragraph seems unnecessary, maybe move it to the next section?} 
+%The Lunar polar environment provides short communications delays relative to Martian operations, which enables semi-interactive vehicle commanding.  
+%However, the relatively short Lunar day places a maximum time limit on surface operations.  
+%Because our simulation environment interacts transparently with our operations tools we can test the assumptions in our concepts of operations, maturing and modifying them appropriately.
+
+Additionally, early in mission development there are many unknowns.
+As the various mission elements work to address their specific requirements within budget and technology constraints, the trade space is large and a design decision in one element may have ripple effects that impact overall system performance. 
+One way to reduce uncertainty about design alternatives and to answer questions about system performance, particularly from an operational perspective, is through simulation. 
+For example, it may be obvious that a skid steer mobility system would be simple, cheap, and robust from a mechanical perspective but that dead reckoning from an explicit steer platform would give superior localization results. 
+But how would the driving behavior of these two platforms compare with respect to solar charging rates over a traverse? 
+
+Our goal was to create a simulation environment in which we could rapidly create approximate prototypes of complete Lunar rover systems to estimate characteristics and performance. 
+Due to the broad scope of the simulation and the desire to have a functional, end-to-end Lunar driving simulation as quickly as possible, a simulation framework that offered a rich set of off-the-shelf capability was necessary. 
 
 We built our simulation environment using the open-source Gazebo platorm and tools from the ROS ecosystem (\cref{sec:sim-approach}). 
 ROS is used in conjunction with in-house software to simulate both the on- and off-board rover mission software (\cref{sec:flight-software}).  
@@ -188,11 +197,11 @@ This paper focuses on the development and capabilities of the simulator itself a
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Reference Mission}
-The Resource Prospector (RP) is a Lunar rover mission concept developed by NASA \cite{andrews2015resource,colaprete2015resource}. RP is intended to characterize the nature and distribution of subsurface volatiles in permanently shadowed regions (PSR) located in one of the Moon's polar regions. RP is also intended to demonstrate the feasibility of in-situ resource utilization by extracting and processing volatiles (e.g., hydrogen) that could prove valuable for future exploration missions. RP directly addresses several of NASA's "Strategic Knowledge Gaps" for Lunar exploration as well as the Global Exploration Roadmap's strategic goal of using local resources for human spaceflight.
+The Resource Prospector (RP) is a Lunar rover mission concept developed by NASA \cite{andrews2015resource,colaprete2015resource}. RP is intended to characterize the nature and distribution of subsurface volatiles in permanently shadowed regions (PSR) located in one of the Moon's polar regions. RP is also intended to demonstrate the feasibility of \emph{in situ} resource utilization by extracting and processing volatiles (e.g., hydrogen) that could prove valuable for future exploration missions. RP directly addresses several of NASA's "Strategic Knowledge Gaps" for Lunar exploration as well as the Global Exploration Roadmap's strategic goal of using local resources for human spaceflight.
 
 Hydrogen and other volatiles have the potential to be an enabling resource for human missions to the Moon and beyond. 
 The distribution of Lunar subsurface volatiles drives the RP mission requirement for mobility. 
-In particular, the spatial distribution of cold-trapped volatiles is hypothesized to be governed by impact cratering with the top 0.5m \todo[inline]{top 0.5m of what?} being patchy at scales of 100m. 
+In particular, the spatial distribution of cold-trapped volatiles is hypothesized to be governed by impact cratering with the top 0.5m of the surface being patchy at scales of 100m. 
 The mixing time scale increases with depth (less frequent larger impacts). \todo[inline]{I think there is a link between mixing time scales by depth and increased lateral sampling which is not made for the non-planetary science reader.}
 Consequently, increased mobility (greater range) reduces the depth requirement for sampling (i.e., drilling or excavation depth). \todo[inline]{Is the point that because the surface is patchy that we need to be able to move around?  We can't just pick one point and land there?}
 
@@ -231,16 +240,6 @@ The division of software modules is given in \cref{fig:rp-software}.
 \section{Simulator Approach}
 \label{sec:sim-approach}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\todo[inline]{move these two paragraphs to intro}
-Early in mission development, there are many unknowns. 
-As the various mission elements work to address their specific requirements within budget and technology constraints, the trade space is large and a design decision in one element may have ripple effects that impact overall system performance. 
-One way to reduce uncertainty about design alternatives and to answer questions about system performance, particularly from an operational perspective, is through simulation. 
-For example, it may be obvious that a skid steer mobility system would be simple, cheap, and robust from a mechanical perspective but odometry from an explicit steer platform would give superior localization results. 
-But how would the driving behavior of these two platforms compare with respect to solar charging rates over a traverse? 
-
-Our goal was to create a simulation environment in which we could rapidly create approximate prototypes of complete Lunar rover systems to estimate characteristics and performance. 
-Due to the broad scope of the simulation and the desire to have a functional, end-to-end Lunar driving simulation as quickly as possible, a simulation framework that offered a rich set of off-the-shelf capability was necessary. 
 
 After examining the options available in the industry, we chose to base our work on the robot simulator Gazebo~\cite{koenig2004design}\footnote{\url{http://gazebosim.org}}.
 We based this decision on three key characteristics of Gazebo: maturity, breadth, and openness.
