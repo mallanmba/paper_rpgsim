@@ -184,10 +184,10 @@ But how would the driving behavior of these two platforms compare with respect t
 Our goal was to create a simulation environment in which we could rapidly create approximate prototypes of complete Lunar rover systems to estimate characteristics and performance. 
 Due to the broad scope of the simulation and the desire to have a functional, end-to-end Lunar driving simulation as quickly as possible, a simulation framework that offered a rich set of off-the-shelf capability was necessary. 
 
-We built our simulation environment using the open-source Gazebo platorm and tools from the ROS ecosystem (\cref{sec:sim-approach}). 
+We built our simulation environment using the open-source Gazebo platform and tools from the ROS ecosystem (\cref{sec:sim-approach}). 
 ROS is used in conjunction with in-house software to simulate both the on- and off-board rover mission software (\cref{sec:flight-software}).  
 Considerable effort was devoted to producing realistic visual renderings of Lunar environments, with limited processing burden on the simulation (\cref{sec:visual-env}).  
-The structure of the rover prototypes was modelled using ROS tools, and we developed models in the Gazebo simulation environment for approximating wheel slip in loose soil(\cref{sec:vehicle-sim}).  
+The structure of the rover prototypes was modeled using ROS tools, and we developed models in the Gazebo simulation environment for approximating wheel slip in loose soil(\cref{sec:vehicle-sim}).  
 
 Although applicable to a broad range of scenarios, our Lunar rover simulation was built initially to exercise and evaluate our reference mission's approach to Lunar surface operations.
 The key aspects of that approach were (a) teleoperation of the rover by a pair of drivers on Earth and (b) continuous, real-time interpretation of instrument data by a small science team that is tightly integrated within mission operations followed by limited adjustment of the mission plan.
@@ -698,11 +698,10 @@ The role of the rover was played by the modified simulated RP rover, as describe
 \begin{description}
 \item[\textbf{Rover Kinematics}] The software that translates vehicle body motion commands into motor commands.  We modelled the Rover Kinematics module with the move\_base\footnote{\url{http://wiki.ros.org/move_base}} module with additional explicit steering control.
 \item[\textbf{Mobility}] The mobility module is responsible for closed-loop control on waypoint navigation.  This functionality was also supplied by the move\_base module. 
-\item[\textbf{Localization}]  The pose estimation solution which integrated wheel odometry, a star tracker, and the IMU.  robot\_localization\footnote{\url{http://wiki.ros.org/robot_localization}}
-\item[\textbf{Camera/Gimbal Pointing}] The RP navigation cameras and the high-gain antenna are mounted on gimbals on the mast.
-This module is responsible for closed-loop control of those gimbals.  
+\item[\textbf{Localization}]  The pose estimation solution which integrated wheel odometry, a star tracker, and the IMU.  We modelled the Localization module with ROS' robot\_localization\footnote{\url{http://wiki.ros.org/robot_localization}} package.
+\item[\textbf{Camera/Gimbal Pointing}] The RP navigation cameras and the high-gain antenna are mounted on gimbals on the mast. This module is responsible for closed-loop control of those gimbals.  
 In our simulation we have primarily concerned ourselves with camera pointing and not the effects of antenna pointing, although planned improvements to communications system simulation fidelity would take antenna pointing into account.  
-\item[\textbf{Wheel, IMU, Gimbal, and Camera I/O}]  These modules responsible for low-level hardware interfaces.  
+\item[\textbf{Wheel, IMU, Gimbal, and Camera I/O}]  These modules responsible for low-level hardware interfaces.  This functionality was supplied by the ros\_control\footnote{\url{http://wiki.ros.org/ros_control}} module.
 \item[\textbf{Rover Mode Manager}] This software component is responsible for preventing the robot from executing illegal or unsafe actions, and ensuring that all on-board modules are in the appropriate operating mode.  
 While this module did exist on the prototype RP rover, we did not implement it for the simulated rover operations, and as such we did not seek a ROS equivalent.
 \item[\textbf{Virtual Bumper}]  The virtual bumper is designed to keep the rover safe from navigation obstacles, as per \cite{matthies1997fast}. 
@@ -716,56 +715,14 @@ The ground software components represented higher-level software, which integrat
 The particular modules included in the ground software are:
 
 \begin{description}
-\item[\textbf{Advanced Localization}]  The advanced localization module integrated the on-board pose estimates with terrain relative navigation, mono- and stereo-scopic visual odometry, 
-\item[\textbf{Stereo Reconstruction}] Produces a metric reconstruction of the scene from the rover's stereo cameras.
-\item[\textbf{Mapping}] Uses the estimated pose and reconstructed scenes to build DEMs of the Lunar surface.  
-\item[\textbf{Hazard Detection}] Provides two forms of hazard detection.  The module processes elevation maps to identify geometric hazards to the rover, producing a cost map.  It also would process images to visually identify potential vehicle hazards that may not appear in the terrain geometry.
-\item[\textbf{Planning}]  The planning module takes goals issued by the drivers and determines a sequence of waypoints which safely navigate the cost map produced by the Hazard Detection model.  
-\item[\textbf{Simulator}]  The simulator acted as an assistive tool for the operators, to ensure that the commands being sent to the rover were the commands that were intended.  
+\item[\textbf{Advanced Localization}]  The advanced localization module integrated the on-board pose estimates with terrain relative navigation, mono- and stereo-scopic visual odometry.  We again used the robot\_localization module to integrate the different sources of motion estimation. We did not implement the terrain relative navigation in this simulated version, however, the extensible nature of the robot\_localization package would make this addition straightforward.
+\item[\textbf{Stereo Reconstruction}] Produces a metric reconstruction of the scene from the rover's stereo cameras.  We used OpenCV\footnote{\url{http://wiki.ros.org/vision_opencv}} to perform Stereo Reconstruction.
+\item[\textbf{Mapping}] Uses the estimated pose and reconstructed scenes to build DEMs of the Lunar surface.  \todo[inline]{check on what module we're using.}
+\item[\textbf{Hazard Detection}] Provides two forms of hazard detection.  The module processes elevation maps to identify geometric hazards to the rover, producing a cost map.  It also would process images to visually identify potential vehicle hazards that may not appear in the terrain geometry. The ROS costmap\_2d\footnote{\url{http://wiki.ros.org/costmap_2d}} module provided this functionality. 
+\item[\textbf{Planning}]  The planning module takes goals issued by the drivers and determines a sequence of waypoints which safely navigate the cost map produced by the Hazard Detection model. We used the move\_base module to plan trajectories between waypoints.  
+\item[\textbf{Simulator}]  The simulator acted as an assistive tool for the operators, to ensure that the commands being sent to the rover were the commands that were intended.  We used the Gazebo paper with the modifications described in this paper.  
 \item[\textbf{Operator Interface}]  The operations interface was provided through two modules.  Direct and immediate control of the rover was accomplished through NASA Ames Intelligent Robotics Group's VERVE software.  Overall missions operations, and plan-level contextual information was provided through the WARP system.  Both of these modules are described in greater detail below, and communicated to the ROS system using a software bridge developed for mission simulation experiments.
 \end{description}
-
-\subsection{Emulation of Software with ROS Components}
-
-\todo[inline]{Merge tables below into the description lists above.}
-
-To enable operational testing we emulated a subset of the full mission software using ROS components. The modules used to emulate the flight software are given in \cref{tbl:flight-software-components} and those used to emulate the ground software are given in \cref{tbl:ground-software-components}.
-
-\begin{table}[htp]
-\caption{Flight software components and the corresponding ROS modules that were used as stand-ins.  
-As mentioned above, the Rover Mode Manager and Virtual Bumper were not implemented for simulated operations.\label{tbl:flight-software-components}}
-\begin{tabular}{l|p{4cm}}
-\textbf{Software Component} & \textbf{ROS Stand-in} \\
-\hline
-Rover Kinematics &  \\
-Waypoint Following & \\
-Localization & \\
-Camera Pointing & Custom module \\
-Wheel Module I/O & ros\_control\footnote{\url{http://wiki.ros.org/ros_control}}\\
-IMU I/O & ros\_control\\
-Gimbal I/O & ros\_control\\
-Camera I/O & Camera sensor from gazebo\_plugins\footnote{\url{http://wiki.ros.org/Gazebo_plugins}}\\
-\hline
-\end{tabular}
-\end{table}
-
-The planned advanced localization augmented the on-board pose estimation with visual odometry and terrain relative navigation.  We did not implement the terrain relative navigation in this simulated version, however, the extensible nature of the robot\_localization package would make this addition straightforward. 
-
-\begin{table}[htp]
-\caption{Ground software components and the corresponding ROS modules that were used as stand-ins.\label{tbl:ground-software-components}}
-\begin{tabular}{l|p{4cm}}
-\textbf{Software Component} & \textbf{ROS Stand-in} \\
-\hline 
-Advanced Localization & robot\_localization\\
-Stereo Reconstruction & OpenCV\footnote{\url{http://wiki.ros.org/vision_opencv}}\\
-Mapping & move\_base\\
-Planning & move\_base\\
-Hazard Detection & costmap\_2d\footnote{\url{http://wiki.ros.org/costmap_2d}}\\
-Simulator & Gazebo Simulator as described in this paper.\\
-\hline
-\end{tabular}
-\end{table}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Operations Software}
@@ -777,9 +734,7 @@ This consisted of the robot driving software, VERVE, the instrument monitoring d
 To make these components speak to each other we developed a bridge that translated messages between the different communications protocols used by the operations software and the simulated rover. 
 The bridge primarily converted between ROS and the RAPID communications protocol\cite{torres2009rapid} used by some NASA-developed software. 
 
-In addition to protocol translation, the bridge models time delay and jitter to serve as a space comms emulator. 
-Each data topic can be assigned either a fixed time delay and/or assigned to a logical data channel with fixed bandwidth. 
-The logical data channels use a token bucket to restrict data flow and data payload size is either taken directly from the ROS message or from a configuration file for cases where ROS payload size is significantly different from its flight counterpart. 
+In addition to protocol translation, the bridge models time delay and jitter to serve as a space comms emulator. Each data topic can be assigned either a fixed time delay and/or assigned to a logical data channel with fixed bandwidth. The logical data channels use a token bucket to restrict data flow and data payload size is either taken directly from the ROS message or from a configuration file for cases where ROS payload size is significantly different from its flight counterpart. 
 
 \subsubsection{VERVE}
 
