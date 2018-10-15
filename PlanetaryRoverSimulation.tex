@@ -696,7 +696,7 @@ The division of those software components are given in \cref{fig:rp-software}.
 The role of the rover was played by the modified simulated RP rover, as described in \cref{sec:simulated-rover}.  The flight software consisted of the components that were designated the minimum viable components to complete the mission.  The flight software components include:
 
 \begin{description}
-\item[\textbf{Rover Kinematics}] The software that translates vehicle body motion commands into motor commands. move\_base\footnote{\url{http://wiki.ros.org/move_base}} with additional explicit steering control.
+\item[\textbf{Rover Kinematics}] The software that translates vehicle body motion commands into motor commands.  We modelled the Rover Kinematics module with the move\_base\footnote{\url{http://wiki.ros.org/move_base}} module with additional explicit steering control.
 \item[\textbf{Mobility}] The mobility module is responsible for closed-loop control on waypoint navigation.
 \item[\textbf{Localization}]  The pose estimation solution which integrated wheel odometry, a star tracker, and the IMU.  
 \item[\textbf{Camera/Gimbal Pointing}] The RP navigation cameras and the high-gain antenna are mounted on gimbals on the mast.
