@@ -776,17 +776,15 @@ Simulator & Gazebo Simulator as described in this paper.\\
 \label{sec:ops-software}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-To enable teams of flight controllers to participate in driving simulations and to improve simulation fidelity, we interfaced the rover model with the mission control software intended for RP.  This consisted of the robot driving software, VERVE, the instrument monitoring displays, LabVIEW, and an integrated mission control software framework (WARP) that provides a wide variety of functions.  To make these components speak to each other we developed a bridge that translated messages between the different communications protocols used by the operations software and the simulated rover.
+To enable teams of flight controllers to participate in driving simulations and to improve simulation fidelity, we interfaced the rover model with the mission control software intended for RP.  This consisted of the robot driving software, VERVE, the instrument monitoring displays, LabVIEW, and an integrated mission control software framework (WARP) that provides a wide variety of functions.  To make these components speak to each other we developed a bridge that translated messages between the different communications protocols used by the operations software and the simulated rover. The bridge primarily converted between the RAPID communications protocol\cite{torres2009rapid} used by some NASA-developed software and ROS. 
 
-\todo[inline]{mallan: add paragraph on RAPID/ROS bridge and time delay}
+In addition to comm protocol translation, the bridge served as a simple space comms emulator. 
+
+
 
 \subsubsection{VERVE}
 
 The rover driving software is based on the NASA Visual Environment for Robotic Virtual Exploration (VERVE) \cite{lee2013reusable}. VERVE provides an interactive 3D user interface for remote monitoring and commanding of robotic systems (\cref{fig:verve-mvp}) and has been used for several Lunar analog field tests \cite{deans2009robotic} \cite{fong2010robotic} as well as commanding robotic assets from the International Space Station \cite{bualat2013surface}.
-
-\todo[inline]{move this into the to-be-written section on RAPID-ROS bridge}
-VERVE uses the RAPID communications protocol\cite{torres2009rapid} for controlling robots.
-In order to command the simulated robot we build a bridge which echoed messages between the simulated robot and the ground systems, which we called the RAPID-ROS bridge. 
 
 \begin{figure*}[htp]
 \centering
