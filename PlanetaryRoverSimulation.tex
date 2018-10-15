@@ -698,7 +698,7 @@ The role of the rover was played by the modified simulated RP rover, as describe
 \begin{description}
 \item[\textbf{Rover Kinematics}] The software that translates vehicle body motion commands into motor commands.  We modelled the Rover Kinematics module with the move\_base\footnote{\url{http://wiki.ros.org/move_base}} module with additional explicit steering control.
 \item[\textbf{Mobility}] The mobility module is responsible for closed-loop control on waypoint navigation.  This functionality was also supplied by the move\_base module. 
-\item[\textbf{Localization}]  The pose estimation solution which integrated wheel odometry, a star tracker, and the IMU.  
+\item[\textbf{Localization}]  The pose estimation solution which integrated wheel odometry, a star tracker, and the IMU.  robot\_localization\footnote{\url{http://wiki.ros.org/robot_localization}}
 \item[\textbf{Camera/Gimbal Pointing}] The RP navigation cameras and the high-gain antenna are mounted on gimbals on the mast.
 This module is responsible for closed-loop control of those gimbals.  
 In our simulation we have primarily concerned ourselves with camera pointing and not the effects of antenna pointing, although planned improvements to communications system simulation fidelity would take antenna pointing into account.  
@@ -739,7 +739,7 @@ As mentioned above, the Rover Mode Manager and Virtual Bumper were not implement
 \hline
 Rover Kinematics &  \\
 Waypoint Following & \\
-Localization & robot\_localization\footnote{\url{http://wiki.ros.org/robot_localization}}\\
+Localization & \\
 Camera Pointing & Custom module \\
 Wheel Module I/O & ros\_control\footnote{\url{http://wiki.ros.org/ros_control}}\\
 IMU I/O & ros\_control\\
