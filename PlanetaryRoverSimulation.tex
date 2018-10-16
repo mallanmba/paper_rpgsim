@@ -2,7 +2,8 @@
 %
 %
 % REMOVE DRAFT FROM DOCUMENT CLASS BEFORE FINAL 
-%
+% Compiling the document is timing out on Overleaf
+% use draft mode for now
 %
 \documentclass[draft,twocolumn,letterpaper]{IEEEAerospaceCLS}  % only supports two-column, letterpaper format
 
@@ -670,7 +671,7 @@ The simulant for these test was GRC-1 \cite{he2010geotechnical}, which has simil
 The slip compliance tuning parameter enables simulation of loose material generating slip greater than zero on shallow angle slopes.
 
 Although not perfect at simulating the wheel/soil interaction, this plug-in enables the simulated rover to have a high level slip behavior relatively close to what will be expected on a Lunar terrain. 
-In order to increase the fidelity and give more realism for wheel sinkage and rover embedding, this simple model would need to be replaced by a discrete element method (DEM) model which is very costly in terms of computational power and existing system are unproven due to the complexity of the particle interaction.
+In order to increase the fidelity and give more realism for wheel sinkage and rover embedding, this simple model would need to be replaced by a discrete element method (DEM) model which is very computationally expensive \cite{soni2012dem}. Additionally, existing DEM solutions lack validations for lunar terrain.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Flight Software Prototype}
