@@ -1,5 +1,10 @@
 % IEEEAerospace2012.cls requires the following packages: times, rawfonts, oldfont, geometry
-\documentclass[twocolumn,letterpaper]{IEEEAerospaceCLS}  % only supports two-column, letterpaper format
+%
+%
+% REMOVE DRAFT FROM DOCUMENT CLASS BEFORE FINAL 
+%
+%
+\documentclass[draft,twocolumn,letterpaper]{IEEEAerospaceCLS}  % only supports two-column, letterpaper format
 
 % The next line gives some packages you may find useful for your paper--these are not required though.
 %\usepackage[]{graphicx,float,latexsym,amssymb,amsfonts,amsmath,amstext,times,psfig}
@@ -73,7 +78,7 @@ An overview of the mission software system is provided, along with how ROS was u
 %The operations team exploited the simulator’s flexibility to experiment with different rover configurations and compare the effect of things such as different camera placement options and mobility system steering constraints.
 
 Finally, we discuss the effect of using the high-fidelity synthetic Lunar images for visual odometry.
-We also characterize the wheel slip model, and find some inconsistencies in the produced wheel slip behaviour.
+We also characterize the wheel slip model, and find some inconsistencies in the produced wheel slip behavior.
 
 \end{abstract}
 
@@ -501,7 +506,7 @@ On the surface, this was a good choice because PSSM uses multiple shadow maps to
 However, there were several problems with the implementation that conspired to ruin the shadows in our simulation, often leaving us with low-resolution shadows or no shadow on parts of the screen.
 
 Gazebo uses Ogre3D for rendering, and so it was using Ogre3D's PSSM implementation for rendering shadows. 
-Each shadow map in that implementation was also being processed by a Light-Space Perspective Shadow Map (LiSPSM)\cite{wimmer2004light} technique, which performs poorly in the dueling frusta case and also exhibited some mysterious bugs. 
+Each shadow map was also being processed by the Light-Space Perspective Shadow Map (LiSPSM)\cite{wimmer2004light} technique, but that LiSPSM implementation exhibited some mysterious bugs. 
 Additionally, Ogre3D assumes all scenes are oriented with the y-axis pointing up while Gazebo assumes the z-axis points up. 
 This decreased the usable region of each shadow map and often caused shadow edges to be more jagged than necessary. 
 We corrected both problems by adding code to Gazebo that bypasses these troublesome parts of Ogre3D.
@@ -746,7 +751,8 @@ The rover driving software is based on the NASA Visual Environment for Robotic V
 \begin{figure*}[htp]
 \centering
 \includegraphics[width=\textwidth]{figures/verve_mvp.png}
-\caption{VERVE was used as the robot control interface for the Mojave Volatiles Prospector (MVP) project.  MVP tested high-tempo prospecting operations which would be applicable to missions like Resource Prospector.\label{fig:verve-mvp}}
+\caption{VERVE was used as the robot control interface for the Mojave Volatiles Prospector (MVP) project.  MVP tested high-tempo prospecting operations which would be applicable to missions like Resource Prospector.}
+\label{fig:verve-mvp}
 \end{figure*}
 
 \subsubsection{LabVIEW and WARP}
@@ -884,7 +890,7 @@ Wheel slip was measured by comparing dead reckoning distance driven to ground tr
 Overall, the \texttt{wheel\_slip\_plugin} demonstrated the expected behavior and compared favorably with physical testbed results as can be seen in figure \ref{fig:wheelsliptuningchart}, which compares wheel slip measured from MGRU with the  \texttt{wheel\_slip\_plugin}. 
 
 \begin{figure}[h!]
-	\includegraphics[width=\linewidth]{figures/wheel_slip_roverslip.png}
+	\includegraphics[width=\linewidth]{figures/wheel_slip_roverslip2.png}
    	\caption{Comparison of the RP Lunar mass equivalent rover slip on GRC-1 simulant and RP rover slip in the Gazebo simulator.}
     \label{fig:wheelsliptuningchart}
 \end{figure}
