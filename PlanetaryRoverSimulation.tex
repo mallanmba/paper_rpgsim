@@ -284,7 +284,7 @@ Variation from uncertainty is allowed by estimating sigma from fitting residuals
 In the case where the scene is based on a prior DEM, large craters are identified by hand and this is factored into the sampled distribution so that double counting does not occur. 
 Next, an age is assigned pseudo-randomly to each crater with the probability of a crater being old decreasing with size such that small craters are uniformly distributed \cite{Fassett2014}. 
 The sampled distribution is ordered sequentially in time and assigned a flag based on whether it is large enough to generate ejecta. 
-Working forward in time, ejecta generating craters are "placed" by assigning a uniform random (x,y) location while their shape is stencilled onto a spatial probability map used to generate ejecta rocks. 
+Working forward in time, ejecta generating craters are "placed" by assigning a uniform random (x,y) location while their shape is stenciled onto a spatial probability map used to generate ejecta rocks. 
 Shape consists of an interior, rim, and ejecta blanket which are all tunable physical parameters. 
 Small craters do not generate ejecta and are thus only assigned spatial coordinates without contributing to the ejecta map.
 
@@ -502,7 +502,7 @@ Our approach to this slow movement is to generate one lightmap for every hour an
 \end{figure}
 
 \subsubsection{Gazebo Real-Time Shadow Improvements}
-Gazebo originally used a shadow mapping technique called Parallel Split Shadow Maps (PSSM) to render real-time shadows. 
+Gazebo originally used a shadow mapping technique called Parallel Split Shadow Maps (PSSM)\cite{zhang2006parallel} to render real-time shadows. 
 On the surface, this was a good choice because PSSM uses multiple shadow maps to provide a quality distribution of shadow resolution, even in the dueling frusta case. 
 However, there were several problems with the implementation that conspired to ruin the shadows in our simulation, often leaving us with low-resolution shadows or no shadow on parts of the screen.
 
@@ -853,7 +853,7 @@ This followed the approach of xGDS \cite{lee2013reusable} and xGDS components wo
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Stereo Visual Odometry}
-One of the goals of the visual simulation was to provide realistic data for algorithmic development. An example is the stereo visual odometry we implemented for Resource Prospector's ground software to aid in navigation.
+One of the goals of the visual simulation was to provide realistic data for algorithmic development. One such algorithm is the stereo visual odometry we implemented for Resource Prospector's ground software to aid in navigation.
 Our approach generates 3D point clouds from successive stereo camera images, aligns them using the Point Cloud Library's implementation of the Iterative Closest Point algorithm, and uses the transforms between point clouds to track changes in the rover's movements. This module interacts with other software and sensors to estimate the rover's absolute pose.
 
 To refine the mission's concept of operations, we wanted to know how much overlap is required between camera images for stereo visual odometry to be effective. 
