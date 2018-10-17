@@ -260,7 +260,8 @@ In that time, Gazebo has been used to simulate a wide variety of robotic systems
 Finally, Gazebo is an open source platform released under the permissive Apache 2.0 License, which means that we can freely use it for our work and modify it to fit our specific needs.
 For similar reasons, we chose the widely used and also open source ROS (Robot Operating System) platform\footnote{\url{http://www.ros.org}} as the basis for our efforts in prototyping the vehicle control software~\cite{quigley2009ros}.
 
-\todo[inline]{mallan: add paragraph here about things Gazebo didn't have that we needed to change for Lunar sim}
+Driving planetary rovers on the Lunar poles is not a common use case, however. Consequently, significant modifications, extensions, and adaptations were needed in order to implement our target scenarios. First, high resolution terrain representative of the potential landing sites for the reference mission was required, The simulation environment must be capable of supporting large, high resolution terrain in order to enable traverses on the order of hundreds of meters. The synthetic camera views rendered by the simulation must have sufficient fidelity to test human perception and situational awareness, as well as be suitable as test data for computer vision researchers. Although high fidelity mechanism modeling was not required for our purposes, we would need flexible mechanism configuration to explore the impact of design elements such as steering limits and camera placement. Finally, the simulation would need to integrate with operations software 
+\todo[inline]{mallan: FINISH THIS PARAGRAPH}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Synthetic Terrain Generation}
