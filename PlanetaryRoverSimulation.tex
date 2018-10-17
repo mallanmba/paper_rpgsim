@@ -745,14 +745,15 @@ The particular modules included in the ground software are:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 To enable teams of flight controllers to participate in driving simulations and to improve simulation fidelity, we interfaced the rover model with the mission control software intended for RP.  
-This consisted of the robot driving software, VERVE, the instrument monitoring displays, LabVIEW, and an integrated mission control software framework (WARP) that provides a wide variety of functions.  
+This consisted of the robot driving software, VERVE, the science instrument monitoring displays, LabVIEW, and an integrated mission control software framework (WARP) that provides a wide variety of functions.  
 To make these components speak to each other we developed a bridge that translated messages between the different communications protocols used by the operations software and the simulated rover. 
 The bridge primarily converted between ROS and the RAPID communications protocol\cite{torres2009rapid} used by some NASA-developed software. 
 
 In addition to protocol translation, the bridge models time delay and jitter to serve as a space comms emulator.  
-Each data topic can be assigned either a fixed time delay and/or assigned to a logical data channel with set bandwidth.  
+Each data topic can be assigned a fixed time delay and/or assigned to a logical data channel with set bandwidth.  
 The logical data channels use a token bucket to restrict data flow and data payload size is either taken directly from the ROS message or from a configuration file for cases where ROS payload size is significantly different from its flight counterpart. 
-
+The bridge reproduces the expected time-of-flight, bandwidth, and ground processing delays under nominal conditions so that simulated operations have an appropriate cadence. 
+Future work on the bridge will introduce off-nominal conditions such as comm dropouts and variable bandwidth. 
 
 \subsubsection{VERVE}
 
