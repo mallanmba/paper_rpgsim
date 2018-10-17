@@ -260,7 +260,7 @@ In that time, Gazebo has been used to simulate a wide variety of robotic systems
 Finally, Gazebo is an open source platform released under the permissive Apache 2.0 License, which means that we can freely use it for our work and modify it to fit our specific needs.
 For similar reasons, we chose the widely used and also open source ROS (Robot Operating System) platform\footnote{\url{http://www.ros.org}} as the basis for our efforts in prototyping the vehicle control software~\cite{quigley2009ros}.
 
-Driving planetary rovers on the Lunar poles is not a common use case, however. Consequently, significant modifications, extensions, and adaptations were needed in order to implement our target scenarios.  
+Driving planetary rovers on the Lunar poles is not a common use case, however. Consequently, significant modifications, extensions, and new development was needed in order to implement our target scenarios.  
 First, high resolution terrain representative of the potential landing sites for the reference mission was required. 
 The simulation environment must be capable of supporting large, high resolution terrain in order to enable traverses on the order of hundreds of meters.  
 The synthetic camera views rendered by the simulation must have sufficient fidelity to test human perception and situational awareness, as well as be suitable as test data for computer vision researchers.  
@@ -925,6 +925,11 @@ This includes medium fidelity wheel/terrain interactions and high fidelity visua
 Second, due to the increased physical verisimilitude, we were able to test rover navigation and perception algorithms on the simulation data with increased confidence in the accuracy of the results.  
 Third, by virtue of being a high-fidelity simulation of rover mechanism and software behaviour, we were able to close the loop for the communications and operations infrastructure for the mission. 
  Then we were able to test different concepts of operations, and even rover configurations rapidly, and build confidence in the mission design.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Acknowledgements}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The authors would like to thank the NASA Human Exploration and Operations Mission Directorate (HEOMD) and Advanced Exploration Systems (AES) division for the opportunity to advance the Resource Prospector mission concept. Many thanks are due to Tony Colaprete and Rick Elphic for sharing their knowledge of selenology and giving guidance on Lunar appearance modeling. Finally, thanks to all the mission element leads who displayed extraordinary leadership and to Mission Systems Engineering who tied it all together. 
 
 
 \bibliographystyle{unsrt}
