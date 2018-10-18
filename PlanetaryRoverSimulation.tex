@@ -517,18 +517,17 @@ We implemented a standard PSSM algorithm that provides a good distribution of sh
 These modifications mitigated the most severe artifacts, but there were still small features on the rover, such as the mast, that were not casting shadows consistently. 
 The shader that Gazebo was using to apply shadows was smoothing shadow edges using Percentage Closest Filtering (PCF) with a 3x3 grid of sample positions. 
 This worked well for smoothing jagged shadow edges but, due to the filter's uniformity, sometimes small features would fall through the cracks and not affect the final shadow intensity. 
-We replaced PCF with something known as hardware PCF, a common graphics driver hack that accomplishes similar smoothing with little performance impact. 
-Then we applied a 9-sample Poisson filter which smoothed the shadows even more and does a much better job of preserving small features.
+We replaced PCF with something known as Hardware PCF, a common graphics driver hack that accomplishes similar smoothing with little performance impact. 
+Then we applied a 9-sample Poisson filter which further smoothed the shadows and does a much better job of preserving small features than the uniform filter.
 
 \subsection{Ephemeris}
 The position of the Sun and Earth relative to the moon is computed using the SPICE C toolkit provided by the Navigation and Ancillary Information Facility (NAIF) \footnote{\url{https://naif.jpl.nasa.gov/naif/toolkit.html}}.  
 Using the timestamp maintained by the simulator, this toolkit generates the transformations between the Moon, the Sun, and the Earth at the current simulated time.  
 We are not concerned about the locations of stars because they are not drawn in the simulator.
-By chaining these transformations with the rover's current position on the surface of the moon we are able to compute the positions of the Sun and the Earth relative to our local coordinate system and position them accurately in the simulator.  
+By chaining these transformations with the rover's current position on the surface of the moon we are able to compute the positions of the Sun and the Earth relative to our local coordinate system and position them accurately in the simulated environment. 
 
 \subsection{Rover Lights}
 Gazebo was extended to allow lights to be attached to articulated rover components specified in the Unified Robot Desription Format (URDF), which is the file format commonly used to describe ROS robot models.
-This greatly simplified code associated with light placement. 
 Ogre3D material files were used to pass light parameters from Gazebo to our GLSL shader. 
 Our terrain shader simulates up to four spotlights having brightness, cone angle, and distance falloff that can be specified as part of the Gazebo light description.
 We also added a texture projection feature for simulating the detailed pattern projected by a real-world light source. 
@@ -659,7 +658,7 @@ The slip compliance corresponds to the inverse slope of the curve near the origi
 \end{figure}
 
 In the real world, an input drive command will result in a non-zero slip of the rover wheel on loose terrain which will generate drift in localization algorithms.
-In order for this drift to be plausible in simulation, a wheel slip plug-in was developed and implemented for Gazebo that adjusts the slip compliance parameter based on a test results from two tests: RP single wheel drawbar pull test and RP Lunar mass equivalent unit test, MGRU (see figure \ref{fig:mgru}) in the SLOPElab facility at NASA Glenn Research Center (GRC) \cite{nasa2018slope}. 
+In order for this drift to be plausible in simulation, a wheel slip plug-in was developed and implemented for Gazebo that adjusts the slip compliance parameter based on a test results from two tests: RP single wheel drawbar pull test and RP Lunar mass equivalent test unit, MGRU (see figure \ref{fig:mgru}) in the SLOPElab facility at NASA Glenn Research Center (GRC) \cite{nasa2018slope}. 
 The simulant for these test was GRC-1 \cite{he2010geotechnical}, which has similar mechanical characteristics as the Lunar regolith.
 \begin{figure}[h!]
 	\includegraphics[width=\columnwidth]{figures/wheel_slip_MGRU.JPG}
