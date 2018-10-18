@@ -887,8 +887,8 @@ As expected the quality of our stereo point clouds is greatly reduced when the l
 We have not attempted to quantify results in this area as it is still considered ripe for refinement.
 
 \subsection{Wheel Slip}
-\todo[inline]{mallan: add a bit more explanation here}
 In order to characterize the \texttt{wheel\_slip\_plugin}, we set up a test harness to gather data on wheel slip behavior over multiple runs. 
+The purpose of this effort was twofold; to determine whether the overall slip behavior was in line with expectations for wheels in contact with unconsolidated soil, and to determine what parameter values should be used for the plugin to most closely match results from the physical testbed. 
 We created a Gazebo world with ramps from 0 to 30 degrees at 2 degree increments (see figure \ref{fig:simulationramps}). 
 A rostest script would spawn the rover at the base of each ramp and command it to drive 10 meters forward.
 Wheel slip was measured by comparing dead reckoning distance driven to ground truth and test runs covered sets of parameter values for longitudinal compliance, physics engine solver iterations, and drive speed. 
@@ -906,7 +906,9 @@ Overall, the \texttt{wheel\_slip\_plugin} demonstrated the expected behavior and
     \label{fig:wheelsliptuningchart}
 \end{figure}
 
-However, our test results show that at certain angles and compliance values, there is a wide variation in measured wheel slip (see figure \ref{fig:slipdisparities}). Those disparities are particularly large on a flat terrain. 
+However, our test results show that at certain angles and compliance values, there is a wide variation in measured wheel slip (see figure \ref{fig:slipdisparities}). 
+Those disparities are particularly large on a flat terrain.  
+The cause of this variation is unknown and is currently under investigation. 
 \begin{figure}[h!]
 	\includegraphics[width=\linewidth]{figures/slip_compliance_longitudinal.png}
    	\caption{Graph of the slip of the RP rover in Gazebo showing the disparities in the amount of slip.}
