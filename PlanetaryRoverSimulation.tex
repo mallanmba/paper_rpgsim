@@ -242,9 +242,9 @@ First, the relative closeness of the Moon means that the time-of-flight communic
 Second, through the use of the Deep Space Network, it is possible to be in constant communication with a Lunar surface vehicle, barring shadows from terrain features.  
 Constant availability of a rover supports the high-tempo mission cadence missions like Resource Prospector.
 
-Taking advantage of the high communications availability we designed our autonomy system to be distributed between the rover on the surface of the moon and the remote operations team on Earth.  
+Taking advantage of the high communications availability, we designed our autonomy system to be distributed between the rover on the surface of the Moon and the remote operations team on Earth.  
 The architecture would place lower-level components of an autonomous system -- e.g., waypoint following, relative pose estimation, vehicle safeguarding -- on-board the robot.
-Higher-level algorithms, like absolute localization through terrain matching, are operated on the ground.
+Higher-level algorithms, like terrain analysis and absolute localization through terrain matching, are operated on the ground.
 The division of software modules is given in \cref{fig:rp-software}.
 
 
@@ -304,7 +304,7 @@ There are two populations associated with rocks, one for ejecta thrown during cr
 For the Polar regions, the background distribution is several orders of magnitude sparser than ejecta. 
 During the process of sampling rocks and assigning spatial coordinates, the ejecta probability map is consulted in order to modulate local density. 
 At each time step, old rocks have a probability of being covered by regolith, and a new crater forming will cover old rocks under its extent. 
-When the number of generated rocks and craters equals the expected number plus some variation, the sizes, ages, and coordinates of the features are passed into fractal terrain generator.
+When the number of generated rocks and craters equals the expected number plus some variation, the sizes, ages, and coordinates of the features are passed into the fractal terrain generator.
 
 \begin{figure}[h!]
   \includegraphics[width=\columnwidth]{figures/crater-rock-distrib.png}
@@ -316,7 +316,7 @@ Our fratal terrain generation process synthetically increases resolution of DEMs
 With this approach, the process starts with a low resolution DEM of the area of interest.
 A fractal expansion of the region is performed by iteratively applying the diamond-and-square algorithm to reach the desired resolution. 
 Craters are placed by fitting a plane to a patch of terrain, inserting the crater bowl profile into the plane, and blending the ejecta blanket into the surrounding terrain. 
-The crater profile is defined by four connected polynomials for which a "freshness" parameter controls the amount of degredation of the crater. 
+The crater profile is defined by four connected polynomials for which a "freshness" parameter controls crater degredation. 
 
 The diamond-and-square method of fractal terrain generation is straightforward to implement and a reasonable choice for adding higher frequency details. 
 However, the method is known to create interpolation artifacts when constrained \cite{miller1986definition}, particularly on low frequency features like aged crater rims. 
@@ -354,7 +354,7 @@ The sun is very low on the horizon (5 to 10 degrees elevation in our scenarios) 
 There is no atmospheric scattering which, on Earth, can provide important depth queues \cite{fry1949effects} and leads to Lunar shadows appearing sharper and darker.
 Additionally, the Lunar regolith that covers the surface of the Moon has unique reflective properties. 
 
-Lunar regolith is formed through a microbombardment processes which pulvarizes rock into soil \cite{lunarsourcebook}. Because the Lunar soil is not produced by the erosion processes we are accustomed to on Earth the particulate matter is sharp and has reflectance properties unlike soils on Earth, which can pose a challenge to both human and automated perception systems. 
+Lunar regolith is formed through a microbombardment processes which pulvarizes rock into soil \cite{lunarsourcebook}. Because the Lunar soil is not produced by the erosion processes we are accustomed to on Earth - the particulate matter is sharp and has reflectance properties unlike Earth soils, which can pose a challenge to both human and automated perception systems. 
 Notably, there is a significant opposition effect \cite{hapke1986bidirectional} in which the surface brightens and loses contrast when the view angle and illumination angle approach coincidence.
 
 \begin{figure}[h!]
@@ -381,7 +381,7 @@ Gazebo uses the Ogre3D rendering engine, which conveniently has support for both
 \subsubsection{LOD}
 
 The most noticeable drop in runtime rendering performance occurs when the entire terrain is within the camera view, in which case, no parts of the terrain are frustum-culled. 
-While the camera sensors onboard on rover do not necessary see the entire terrain, the degraded performance was affecting normal usage of the simulator such as basic user interaction with the simulation environment. 
+While the camera sensors onboard the rover do not necessary see the entire terrain, the degraded performance was affecting normal usage of the simulator such as basic user interaction with the simulation environment. 
 Integrating LOD support helped to reduce the triangle count and hence improves the frame rate in this scenario (see figure \ref{fig:heightmaplod}). 
 The quad-tree based LOD implementation in Ogre3D lets users configure LOD transitions to some degree by specifying the maximum screen pixel error allowed when rendering. 
 In general, a node higher up the tree, i.e. lower detail, can only be rendered if its screen space pixel error, computed based on the height characteristics of the node and the current camera distance, does not exceed the specified maximum. 
@@ -428,8 +428,8 @@ However, our material simulation of regolith is not commonly found in shaders.
 
 Regolith is the layer of powdery dust which covers most of the moon except for the rare vertical rocky surface. 
 As such, correctly simulating the appearance of regolith via the bidirectional reflectance distribution function (BRDF) is a major factor in achieving visual fidelity. 
-The reflectance of Lunar regolith and regolith-like materials have been comprehensively studied and the Hapke functions remain the most accurate physically-based models \cite{Shepard2007}, \cite{hapke2012}. 
-However, the Hapke BRDF has several drawbacks when used for rover-scale rendering including mathematical complexity, non-invertibility, and edge artifacts \cite{Wong2012}. We implement an approximation to the full BRDF suggested by Hapke, which combines coherent-backscatter and shadow hiding into a single term \cite{hapke2012}. 
+The reflectance of Lunar regolith and regolith-like materials have been comprehensively studied and the Hapke functions remain the most accurate physically-based models \cite{Shepard2007}, \cite{hapke2012wavelength}. 
+However, the Hapke BRDF has several drawbacks when used for rover-scale rendering including mathematical complexity, non-invertibility, and edge artifacts \cite{Wong2012}. We implement an approximation to the full BRDF suggested by Hapke, which combines coherent-backscatter and shadow hiding into a single term \cite{hapke2012wavelength}. 
 Furthermore, our Hapke approximation shader is combined with a Lambertian BRDF with a nadir-dependent angle to reduce rendering artifacts. 
 This is a similar strategy used by \cite{McEwen1996} in developing the Lunar-Lambertian model derived from Lommel-Seeliger reflectance. 
 Our Hapke parameters are estimated from prior literature for Highlands regolith, which is a stand-in for Polar regions of the moon. 
@@ -518,7 +518,7 @@ These modifications mitigated the most severe artifacts, but there were still sm
 The shader that Gazebo was using to apply shadows was smoothing shadow edges using Percentage Closest Filtering (PCF) with a 3x3 grid of sample positions. 
 This worked well for smoothing jagged shadow edges but, due to the filter's uniformity, sometimes small features would fall through the cracks and not affect the final shadow intensity. 
 We replaced PCF with something known as Hardware PCF, a common graphics driver hack that accomplishes similar smoothing with little performance impact. 
-Then we applied a 9-sample Poisson filter which further smoothed the shadows and does a much better job of preserving small features than the uniform filter.
+We then applied a 9-sample Poisson filter which further smoothed the shadows and does a much better job of preserving small features than the uniform filter.
 
 \subsection{Ephemeris}
 The position of the Sun and Earth relative to the moon is computed using the SPICE C toolkit provided by the Navigation and Ancillary Information Facility (NAIF) \footnote{\url{https://naif.jpl.nasa.gov/naif/toolkit.html}}.  
@@ -725,6 +725,7 @@ The particular modules included in the ground software are:
 \item[\textbf{Hazard Detection}] Provides two forms of hazard detection.  The module processes \emph{a prior} elevation maps to identify geometric hazards to the rover, as well as point clouds from the stereo cameras to identify potential vehicle hazards that may not appear in the terrain geometry. A NASA developed terrain analysis module produced a cost map which was injected into the ROS costmap\_2d\footnote{\url{http://wiki.ros.org/costmap_2d}} module to provide this functionality. 
 \item[\textbf{Planning}]  The planning module takes goals issued by the drivers and determines a sequence of waypoints which safely navigate the cost map produced by the Hazard Detection model. We used the move\_base module to plan trajectories between waypoints.  
 \item[\textbf{Simulator}]  The simulator acted as an assistive tool for the operators, to ensure that the commands being sent to the rover were the commands that were intended.  We used the Gazebo paper with the modifications described in this paper.  
+\todo[inline]{huh? "the Gazebo paper with the modifications described in this paper"}
 \item[\textbf{Operator Interface}]  The operations interface was provided through two modules.  Direct and immediate control of the rover was accomplished through NASA Ames Intelligent Robotics Group's VERVE software.  Overall missions operations, and plan-level contextual information was provided through the WARP system.  Both of these modules are described in greater detail below, and communicated to the ROS system using a software bridge developed for mission simulation experiments.
 \end{description}
 
@@ -787,8 +788,8 @@ The second was to make tactical decisions about where data collection time was b
 The science simulation consists of a world model and several instrument models.  
 The world model describes the 'truth' that RP was intended to estimate in the form of several interrelated physical quantities that are measured by RP's instruments.  
 Two of the instruments, NSS and NIRVSS, were introduced above.  
-NSS measured hydrogen concentration in the regolith immediately in front of the rover, and NIRVSS measured surface frost, minerology, and the concentration of ices in regolith brought up by the drill.  
-NIRVSS also contained a Longwave Calibration Sensor (LCS) that measured surface temperature.
+NSS measures hydrogen concentration in the regolith immediately in front of the rover, and NIRVSS measures surface frost, minerology, and the concentration of ices in regolith brought up by the drill.  
+NIRVSS also contains a Longwave Calibration Sensor (LCS) that measures surface temperature.
 
 The world model provides data for these instruments that varies as the rover moves in ways that must be consistent with physics and with theories about how ices have been emplanted or removed.  
 It did this by modeling the distribution of several physical quantities, some as 2D functions (variation over the surface) and others as 3D functions (variation within the top meter of regolith).
@@ -799,7 +800,7 @@ The others were included to present a consistent picture and to provide realisti
 
 The 2D and 3D functions implemented as a set of 30720 x 30720 arrays generated before simulation and representing a 4cm grid covering a 1.5 km2 area that would be driven over during the simulations.  
 This approach was used because the distributions of the quantities (except the minerals) were generated by modeling the physical processes that could have created them over time.  
-(The mineral concentrations were modeled as Perlin noise.)
+Mineral concentrations were modeled as Perlin noise.
 
 A sequence of arrays was generated, with each array calculated using only the arrays before it.  
 The DEM was first, followed by the lightmap and then the surface temperature.  
@@ -809,7 +810,7 @@ Since the DEM was synthetic, the locations and sizes of the craters was known.
 The thickness of the dry layer is a much more complex function of the time history of the surface temperature, and Earthshine, heat rising from the interior and the exchange of infrared energy between nearby parts of the surface (crater interiors) very much do need to be modeled; this array came from published work\cite{siegler2015}. 
 The volumetric distribution of water ice was inspired by a model of impact gardening published in \cite{hurley2012} and is a function of the distance to the rim of nearby craters above a certain size.  
 Surface frost only occurs in permanent shadow and its concentration is a function of the contiguous area of each frost patch.  
-The mineral concentrations were modeled as Perlin noise and could have been calculated at simulation time, but they were converted into arrays to keep the implementation more uniform.  
+As mentioned above, mineral concentrations were modeled as Perlin noise and could have been calculated at simulation time, but they were converted into arrays to keep the implementation more uniform.  
 \cref{fig:data-layers} shows several of these arrays.
 
 \begin{figure*}[htp]
@@ -837,7 +838,7 @@ The mineral concentrations were modeled as Perlin noise and could have been calc
 \end{figure*}
 
 \subsubsection{Instrument Models}
-During simulation, the rover's location was looked up in these arrays and the results were broadcast at several Hz to the instrument models.  
+During simulation, the rover's ground truth pose was used as a lookup into these arrays and the results were broadcast at several Hz to the instrument models.  
 The instrument models added noise and converted these quantities into the data format generated by the sensors within the instruments.  
 This allowed most of the real data processing pipeline for each instrument to be used.
 
@@ -878,8 +879,9 @@ We have not attempted to quantify results in this area as it is still considered
 \subsection{Wheel Slip}
 In order to characterize the \texttt{wheel\_slip\_plugin}, we set up a test harness to gather data on wheel slip behavior over multiple runs. 
 The purpose of this effort was twofold; to determine whether the overall slip behavior was in line with expectations for wheels in contact with unconsolidated soil, and to determine what parameter values should be used for the plugin to most closely match results from the physical testbed. 
+
 We created a Gazebo world with ramps from 0 to 30 degrees at 2 degree increments (see figure \ref{fig:simulationramps}). 
-A rostest script would spawn the rover at the base of each ramp and command it to drive 10 meters forward.
+A \texttt{rostest}\footnote{\url{http://wiki.ros.org/rostest}} script would spawn the rover at the base of each ramp and command it to drive 10 meters forward.
 Wheel slip was measured by comparing dead reckoning distance driven to ground truth and test runs covered sets of parameter values for longitudinal compliance, physics engine solver iterations, and drive speed. 
 \begin{figure}[h!]
 	\includegraphics[width=\columnwidth]{figures/world_lots_o_ramps.jpg}
