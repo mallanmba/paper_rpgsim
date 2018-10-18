@@ -679,7 +679,7 @@ The simulant for these test was GRC-1 \cite{he2010geotechnical}, which has simil
 \end{figure}
 The slip compliance tuning parameter enables simulation of loose material generating slip greater than zero on shallow angle slopes.
 
-Although not perfect at simulating the wheel/soil interaction, this plug-in enables the simulated rover to have a high level slip behavior relatively close to what will be expected on a Lunar terrain. 
+Although not perfect at simulating the wheel/soil interaction, this plug-in enables the simulated rover to have high level slip behavior relatively close to what would be expected on Lunar terrain. 
 In order to increase the fidelity and give more realism for wheel sinkage and rover embedding, this simple model would need to be replaced by a discrete element method (DEM) model which is very computationally expensive \cite{soni2012dem}. Additionally, existing DEM solutions lack validations for lunar terrain.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -864,7 +864,7 @@ This followed the approach of xGDS \cite{lee2013reusable} and xGDS components wo
 
 \subsection{Stereo Visual Odometry}
 One of the goals of the visual simulation was to provide realistic data for algorithmic development. One such algorithm is the stereo visual odometry we implemented for Resource Prospector's ground software to aid in navigation.
-Our approach generates 3D point clouds from successive stereo camera images, aligns them using the Point Cloud Library's implementation of the Iterative Closest Point algorithm, and uses the transforms between point clouds to track changes in the rover's movements. This module interacts with other software and sensors to estimate the rover's absolute pose.
+Our approach generates 3D point clouds from successive stereo camera images, aligns them using the Point Cloud Library's (PCL)\footnote{\url{http://pointclouds.org/}} implementation of the Iterative Closest Point algorithm, and uses the transforms between point clouds to track changes in the rover's movements. This module interacts with other software and sensors to estimate the rover's absolute pose.
 
 To refine the mission's concept of operations, we wanted to know how much overlap is required between camera images for stereo visual odometry to be effective. 
 The easiest way to lose overlap between successive images is by yawing the camera or rover, so that is the first test we ran. 
@@ -906,7 +906,7 @@ Overall, the \texttt{wheel\_slip\_plugin} demonstrated the expected behavior and
     \label{fig:wheelsliptuningchart}
 \end{figure}
 
-However, our test results show that at certain angles and compliance values, there is a wide variation in measured wheel slip (see figure \ref{fig:slipdisparities}). Those disparities are particularly large on a flat terrain.
+However, our test results show that at certain angles and compliance values, there is a wide variation in measured wheel slip (see figure \ref{fig:slipdisparities}). Those disparities are particularly large on a flat terrain. 
 \begin{figure}[h!]
 	\includegraphics[width=\linewidth]{figures/slip_compliance_longitudinal.png}
    	\caption{Graph of the slip of the RP rover in Gazebo showing the disparities in the amount of slip.}
