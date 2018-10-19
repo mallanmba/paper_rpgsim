@@ -37,7 +37,7 @@ Logyx LLC \\
 425 N. Whisman Road \#400 \\
 Mountain View, CA 94043 \\
 \and 
-Brian Gerkey, Ian Chen, Steven Peters, Morgan Quigley \\
+Ian Chen, Steven Peters, Brian Gerkey, Morgan Quigley \\
 Open Robotics \\
 170 S. Whisman Road \\
 Mountain View, CA 94041 \\
@@ -161,9 +161,9 @@ We also characterize the wheel slip model, and find some inconsistencies in the 
 %   && wheel slip results (Allan/Rogg/Peters)
 %  \end{easylist} 
 
-\listoftodos
+%\listoftodos
 
-\todo[inline]{square metre vs metre squared}
+%\todo[inline]{square metre vs metre squared}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -213,9 +213,11 @@ The Resource Prospector (RP) is a Lunar rover mission concept developed by NASA 
 
 Hydrogen and other volatiles have the potential to be an enabling resource for human missions to the Moon and beyond. 
 The distribution of Lunar subsurface volatiles drives the RP mission requirement for mobility. 
-In particular, the spatial distribution of cold-trapped volatiles is hypothesized to be governed by impact cratering with the top 0.5m of the surface being patchy at scales of 100m. 
-The mixing time scale increases with depth (less frequent larger impacts). \todo[inline]{I think there is a link between mixing time scales by depth and increased lateral sampling which is not made for the non-planetary science reader.}
-Consequently, increased mobility (greater range) reduces the depth requirement for sampling (i.e., drilling or excavation depth). \todo[inline]{Is the point that because the surface is patchy that we need to be able to move around?  We can't just pick one point and land there?}
+In particular, the spatial distribution of cold-trapped volatiles is hypothesized to be governed by impact cratering with the top 0.5m being patchy at scales of 100m. 
+The mixing time scale increases with depth (less frequent larger impacts). 
+%\todo[inline]{I think there is a link between mixing time scales by depth and increased lateral sampling which is not made for the non-planetary science reader.}
+Consequently, increased mobility (greater range) reduces the depth requirement for sampling (i.e., drilling or excavation depth). 
+%\todo[inline]{Is the point that because the surface is patchy that we need to be able to move around?  We can't just pick one point and land there?}
 
 For the RP mission, a solar-powered, Lunar rover equipped with a drill and a science payload would be used to: (1) locate surface and near-subsurface volatiles; (2) excavate and analyze samples of the volatile-bearing regolith; and (3) demonstrate the form, extractability and usefulness of the materials. The payload contains two prospecting instruments, the Neutron Spectrometer System (NSS) and the Near Infra-Red Volatile Spectrometer System (NIRVSS), which can sense hydrogen at concentrations as low as 0.5 WT\% to a depth of 1 m and can capture signatures of bound \ce{H2O}/\ce{OH}. The payload also contains a processing system that can heat regolith samples to 450 C and analyze evolved gases using a gas chromatograph / mass spectrometer.
 
@@ -224,8 +226,9 @@ The rover is designed to be capable of operating in shadowed regions for up to 6
 Because the rover is not designed to survive the cold of the Lunar night, the mission focus is to traverse sufficient distance to determine the lateral and vertical distribution of volatiles in a target region before the Lunar day ends.
 
 The short duration of the RP mission, combined with operational constraints and limited knowledge about the surface environment (e.g., high-tempo, interactive rover commanding and real-time science operations) create unique challenges for mission operations \cite{hooey2017modeling}. 
-These challenges\todo[inline]{which challenges?} have the potential to contribute to significant levels of operator workload for the team responsible for maneuvering the rover on the Lunar surface. 
-These challenges may also impact the ease of acquiring and maintaining situation awareness, the ability to identify and handle contingencies, and ground control performance (rover driving, system monitoring, etc.)\todo[inline]{incomplete sentence}
+These challenges have the potential to contribute to significant levels of operator workload for the team responsible for maneuvering the rover on the Lunar surface. 
+These challenges may also impact the ease of acquiring and maintaining situation awareness, the ability to identify and handle contingencies, and ground control performance (rover driving, system monitoring, etc.)
+%\todo[inline]{incomplete sentence}
 
 \subsection{Reference Mission Operations}
 Lunar surface operations provide for qualitatively different mission operation scenarios than what is possible in the Martian surface.
@@ -669,8 +672,7 @@ In order to increase the fidelity and give more realism for wheel sinkage and ro
 \section{Flight Software Prototype}
 \label{sec:flight-software}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\todo[inline]{Big point to stress the distributed autonomy system, the ros-rapid bridge helps us test the end-to-end simulation.  Strongly distinguish that this is a novel architecture, the first time we've taken this approach, ROS gave us to the tools to build the system.}
+%\todo[inline]{Big point to stress the distributed autonomy system, the ros-rapid bridge helps us test the end-to-end simulation.  Strongly distinguish that this is a novel architecture, the first time we've taken this approach, ROS gave us to the tools to build the system.}
 
 A major aspect of the Resource Prospector project was the use of distributed autonomy. The decision to distribute the software was possible because of the high communications availability between the rover and the Earth.     
 
@@ -718,7 +720,7 @@ The particular modules included in the ground software are:
 \begin{description}
 \item[\textbf{Advanced Localization}]  The advanced localization module integrated the on-board pose estimates with terrain relative navigation, mono- and stereo-scopic visual odometry.  We again used the robot\_localization module to integrate the different sources of motion estimation. We did not implement the terrain relative navigation in this simulated version, however, the extensible nature of the robot\_localization package would make this addition straightforward.
 \item[\textbf{Stereo Reconstruction}] Produces a metric reconstruction of the scene from the rover's stereo cameras.  We used OpenCV\footnote{\url{http://wiki.ros.org/vision_opencv}} to perform Stereo Reconstruction.
-\item[\textbf{Mapping}] Uses the estimated pose and reconstructed scenes to build DEMs of the Lunar surface.  \todo[inline]{check on what module we're using.}
+\item[\textbf{Mapping}] Uses the estimated pose and reconstructed scenes to build DEMs of the Lunar surface.  %\todo[inline]{check on what module we're using.}
 \item[\textbf{Hazard Detection}] Provides two forms of hazard detection.  The module processes \emph{a prior} elevation maps to identify geometric hazards to the rover, as well as point clouds from the stereo cameras to identify potential vehicle hazards that may not appear in the terrain geometry. A NASA developed terrain analysis module produced a cost map which was injected into the ROS costmap\_2d\footnote{\url{http://wiki.ros.org/costmap_2d}} module to provide this functionality. 
 \item[\textbf{Planning}]  The planning module takes goals issued by the drivers and determines a sequence of waypoints which safely navigate the cost map produced by the Hazard Detection model. We used the move\_base module to plan trajectories between waypoints.  
 \item[\textbf{Simulator}]  The simulator acted as an assistive tool for the operators, to ensure that the commands being sent to the rover were the commands that were intended.  We used the Gazebo simulator with the modifications described in this paper.  
