@@ -582,9 +582,7 @@ Direct 12-bit image capture is not an option in OpenGL, but a 16-bit image can b
 
 The first prototype of the Resource Prospector robot (\cref{fig:rp-real}) is an explicit steered vehicle, which is capable of being skid-steered.  During the early stages of the project we were exploring which driving style (skid-steered vs explicit steering) would result in more effective operations.   
 
-The steering configuration of the robot permits it to drive in any direction and maintain the orientation of the solar panels to maximize the insolation of the solar panels.  
-
-\todo[inline]{talk about how we were testing different driving styles.}
+Explicit steering permits the robot to drive in any direction and maintain the orientation of the solar panels to maximize the insolation of the solar panels.  Further, the ability of the vehicle to ``walk'' out sand traps improves the robustness of the vehicle to environmental hazards.  The skid-steered version of RP would present a simpler control problem, and simpler mechanical construction, reducing cost and complexity of the vehicle.
 
 \begin{figure*}[htp]
 \begin{subfloat}[The Resource Prospector (RP) robot is capable of independently steering each of its wheels.  Additionally, each wheel can be raised and lowered independently, permitting the robot to ``walk'' out of sand traps.]{
@@ -599,8 +597,6 @@ The steering configuration of the robot permits it to drive in any direction and
 \caption{The RP prototype (\protect\cref{fig:rp-real}) was constructed at Johnson Space Center, the rover was simulated (\protect\cref{fig:rp-sim}) using Gazebo and ROS \label{fig:rover-by-sim}}
 \end{figure*}
 
-It is also possible to raise and lower each of the wheels independently. 
-Combining that with the steering capabilities of the wheels, the robot is able to navigate out of sand traps by taking steps, instead of rotating the wheels and possibly further worsening the vehicle's embedding.
 
 \subsection{Simulating Vehicle Mobility}
 \label{sec:simulated-rover}
@@ -676,9 +672,13 @@ In order to increase the fidelity and give more realism for wheel sinkage and ro
 
 \todo[inline]{Big point to stress the distributed autonomy system, the ros-rapid bridge helps us test the end-to-end simulation.  Strongly distinguish that this is a novel architecture, the first time we've taken this approach, ROS gave us to the tools to build the system.}
 
-A major s
+A major aspect of the Resource Prospector project was the use of distributed autonomy. The decision to distribute the software was possible because of the high communications availability between the rover and the Earth.     
+
+The autonomy software for the vehicle was divided into on-board (Flight) software, which was responsible for safeguarding the vehicle and executing simple waypoint following, and the off-board (Ground) software, which acted as assistive tools for the remote human operators, illustrated in \cref{fig:rp-software}.  
 
 In order to test operations we used a combination of ROS software components and NASA-developed software to build an end-to-end mission simulator.  As illustrated in \cref{fig:rp-software}, we split the software into on-board (Flight) and off-board (Ground) software components.  
+
+To validate the distributed autonomy concept we needed to model the anticipated communications delays and interruptions in the Earth to Moon communications link.  We built a communications bridge between the operations center and the simulated Lunar rover.
 
 \begin{figure*}
 \centering
@@ -687,10 +687,7 @@ In order to test operations we used a combination of ROS software components and
 On the right hand side of the diagram are the more computationally intensive algorithms, which are proposed to run on the Earth.  Exploiting greater computing resources on the ground lets the robot access algorithms which would not be feasible on on-board radiation-hardened computers. \label{fig:rp-software}}
 \end{figure*}
 
-The RP concept of operations committed to human-in-the-loop driving.  The decision to split the software was possible because of the high communications availability between the rover and the Earth.  
-
 Autonomy algorithms (mapping, planning) carry a substantial burden for validation and verification. Operating the higher-level algorithms on the ground as assistive tools, instead of on-board the rover in a decision-making capacity, mitigates the validation and verification burden, enabling faster and more cost-effective deployment and development.
-
 
 \subsection{Flight/Ground Software split}
 
@@ -724,8 +721,7 @@ The particular modules included in the ground software are:
 \item[\textbf{Mapping}] Uses the estimated pose and reconstructed scenes to build DEMs of the Lunar surface.  \todo[inline]{check on what module we're using.}
 \item[\textbf{Hazard Detection}] Provides two forms of hazard detection.  The module processes \emph{a prior} elevation maps to identify geometric hazards to the rover, as well as point clouds from the stereo cameras to identify potential vehicle hazards that may not appear in the terrain geometry. A NASA developed terrain analysis module produced a cost map which was injected into the ROS costmap\_2d\footnote{\url{http://wiki.ros.org/costmap_2d}} module to provide this functionality. 
 \item[\textbf{Planning}]  The planning module takes goals issued by the drivers and determines a sequence of waypoints which safely navigate the cost map produced by the Hazard Detection model. We used the move\_base module to plan trajectories between waypoints.  
-\item[\textbf{Simulator}]  The simulator acted as an assistive tool for the operators, to ensure that the commands being sent to the rover were the commands that were intended.  We used the Gazebo paper with the modifications described in this paper.  
-\todo[inline]{huh? "the Gazebo paper with the modifications described in this paper"}
+\item[\textbf{Simulator}]  The simulator acted as an assistive tool for the operators, to ensure that the commands being sent to the rover were the commands that were intended.  We used the Gazebo simulator with the modifications described in this paper.  
 \item[\textbf{Operator Interface}]  The operations interface was provided through two modules.  Direct and immediate control of the rover was accomplished through NASA Ames Intelligent Robotics Group's VERVE software.  Overall missions operations, and plan-level contextual information was provided through the WARP system.  Both of these modules are described in greater detail below, and communicated to the ROS system using a software bridge developed for mission simulation experiments.
 \end{description}
 
@@ -749,7 +745,7 @@ Future work on the bridge will introduce off-nominal conditions such as comm dro
 
 The rover driving software is based on the NASA Visual Environment for Robotic Virtual Exploration (VERVE) \cite{lee2013reusable}. VERVE provides an interactive 3D user interface for remote monitoring and commanding of robotic systems (\cref{fig:verve-mvp}) and has been used for several Lunar analog field tests \cite{deans2009robotic} \cite{fong2010robotic} as well as commanding robotic assets from the International Space Station \cite{bualat2013surface}.
 
-\begin{figure*}[htp]
+\begin{figure*}[htp!]
 \centering
 \includegraphics[width=\textwidth]{figures/verve_mvp.png}
 \caption{VERVE was used as the robot control interface for the Mojave Volatiles Prospector (MVP) project.  MVP tested high-tempo prospecting operations which would be applicable to missions like Resource Prospector.}
