@@ -484,7 +484,7 @@ There are other shadow techniques, but shadow mapping provides a popular combina
 One common challenge related to shadow mapping is providing an appropriate amount of shadow map resolution in every part of a scene.  
 Ideally, shadow detail decreases with distance from the user's point of view such that there is a unique shadow map texel for every pixel in the final image.  
 In a small scene such as an indoor room, a uniform distribution of shadow resolution can work well.
-When rendering a landscape out to the horizon, however, a uniform distribution of shadow resolution is impractical from the standpoint of memory consumption.
+A uniform distribution of shadow resolution is impractical from the standpoint of memory consumption when rendering a landscape out to the horizon, however.
 
 It is possible to improve shadow quality if you can determine in advance which shadows in the scene are static and which are dynamic.  
 If the light source moves then all the shadows it casts are dynamic.  
