@@ -326,12 +326,12 @@ The division of software modules is given in \cref{fig:rp-software}.
 \label{sec:sim-approach}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-After examining the options available in the industry, we chose to base our work on the robot simulator Gazebo~\cite{koenig2004design}\footnote{\url{http://gazebosim.org}}.
+After examining the options available in the industry, we chose to base our work on the robot simulator Gazebo~\cite{koenig2004design}\footnote{\bf http://gazebosim.org}.
 We based this decision on three key characteristics of Gazebo: maturity, breadth, and openness.
 With work beginning in 2002, Gazebo is among the oldest robot simulators that is still actively developed and widely used today.
 In that time, Gazebo has been used to simulate a wide variety of robotic systems in myriad types of indoor and outdoor environments~\cite{paepcke2016gazebo}, with notable examples including the DARPA Robotics Challenge~\cite{aguero2015inside} and the NASA Space Robotics Challenge~\cite{hambuchen2017nasa}.
 Finally, Gazebo is an open source platform released under the permissive Apache 2.0 License, which means that we can freely use it for our work and modify it to fit our specific needs.
-For similar reasons, we chose the widely used and also open source ROS (Robot Operating System) platform\footnote{\url{http://www.ros.org}} as the basis for our efforts in prototyping the vehicle control software~\cite{quigley2009ros}.
+For similar reasons, we chose the widely used and also open source ROS (Robot Operating System) platform\footnote{\bf http://www.ros.org} as the basis for our efforts in prototyping the vehicle control software~\cite{quigley2009ros}.
 
 Driving planetary rovers on the Lunar poles is not a common use case, however.  Consequently, significant modifications, extensions, and new development was needed in order to implement our target scenarios.  
 First, high resolution terrain representative of the potential landing sites for the reference mission was required.  
@@ -599,7 +599,7 @@ We replaced PCF with something known as Hardware PCF, a common graphics driver h
 We then applied a 9-sample Poisson filter which further smoothed the shadows and does a much better job of preserving small features than the uniform filter.
 
 \subsection{Ephemeris}
-The position of the Sun and Earth relative to the moon is computed using the SPICE C toolkit provided by the Navigation and Ancillary Information Facility (NAIF) \footnote{\url{https://naif.jpl.nasa.gov/naif/toolkit.html}}.  
+The position of the Sun and Earth relative to the moon is computed using the SPICE C toolkit provided by the Navigation and Ancillary Information Facility (NAIF) \footnote{\bf https://naif.jpl.nasa.gov/naif/toolkit.html}.  
 Using the timestamp maintained by the simulator, this toolkit generates the transformations between the Moon, the Sun, and the Earth at the current simulated time.  
 We are not concerned about the locations of stars because they are not drawn in the simulator.
 By chaining these transformations with the rover's current position on the surface of the moon we are able to compute the positions of the Sun and the Earth relative to our local coordinate system and position them accurately in the simulated environment.  
@@ -774,12 +774,12 @@ The division of those software components are given in \cref{fig:rp-software}.
 The role of the rover was played by the modified simulated RP rover, as described in \cref{sec:simulated-rover}.  The flight software consisted of the components that were designated the minimum viable components to complete the mission.  The flight software components include:
 
 \begin{description}
-\item[\textbf{Rover Kinematics}] The software that translates vehicle body motion commands into motor commands.  We modelled the Rover Kinematics module with the move\_base\footnote{\url{http://wiki.ros.org/move_base}} module with additional explicit steering control.
+\item[\textbf{Rover Kinematics}] The software that translates vehicle body motion commands into motor commands.  We modelled the Rover Kinematics module with the move\_base\footnote{\bf http://wiki.ros.org/move_base} module with additional explicit steering control.
 \item[\textbf{Mobility}] The mobility module is responsible for closed-loop control on waypoint navigation.  This functionality was also supplied by the move\_base module.  
-\item[\textbf{Localization}]  The pose estimation solution which integrated wheel odometry, a star tracker, and the IMU.  We modelled the Localization module with ROS' robot\_localization\footnote{\url{http://wiki.ros.org/robot_localization}} package.
+\item[\textbf{Localization}]  The pose estimation solution which integrated wheel odometry, a star tracker, and the IMU.  We modelled the Localization module with ROS' robot\_localization\footnote{\bf http://wiki.ros.org/robot_localization} package.
 \item[\textbf{Camera/Gimbal Pointing}] The RP navigation cameras and the high-gain antenna are mounted on gimbals on the mast.  This module is responsible for closed-loop control of those gimbals.  
 In our simulation we have primarily concerned ourselves with camera pointing and not the effects of antenna pointing, although planned improvements to communications system simulation fidelity would take antenna pointing into account.  
-\item[\textbf{Wheel, IMU, Gimbal, and Camera I/O}]  These modules responsible for low-level hardware interfaces.  This functionality was supplied by the ros\_control\footnote{\url{http://wiki.ros.org/ros_control}} module.
+\item[\textbf{Wheel, IMU, Gimbal, and Camera I/O}]  These modules responsible for low-level hardware interfaces.  This functionality was supplied by the ros\_control\footnote{\bf http://wiki.ros.org/ros_control} module.
 \item[\textbf{Rover Mode Manager}] This software component is responsible for preventing the robot from executing illegal or unsafe actions, and ensuring that all on-board modules are in the appropriate operating mode.  
 While this module did exist on the prototype RP rover, we did not implement it for the simulated rover operations, and as such we did not seek a ROS equivalent.
 \item[\textbf{Virtual Bumper}]  The virtual bumper is designed to keep the rover safe from navigation obstacles, as per \cite{matthies1997fast}.  
@@ -794,9 +794,9 @@ The particular modules included in the ground software are:
 
 \begin{description}
 \item[\textbf{Advanced Localization}]  The advanced localization module integrated the on-board pose estimates with terrain relative navigation, mono- and stereo-scopic visual odometry.  We again used the robot\_localization module to integrate the different sources of motion estimation.  We did not implement the terrain relative navigation in this simulated version, however, the extensible nature of the robot\_localization package would make this addition straightforward.
-\item[\textbf{Stereo Reconstruction}] Produces a metric reconstruction of the scene from the rover's stereo cameras.  We used OpenCV\footnote{\url{http://wiki.ros.org/vision_opencv}} to perform Stereo Reconstruction.
+\item[\textbf{Stereo Reconstruction}] Produces a metric reconstruction of the scene from the rover's stereo cameras.  We used OpenCV\footnote{\bf http://wiki.ros.org/vision_opencv} to perform Stereo Reconstruction.
 \item[\textbf{Mapping}] Uses the estimated pose and reconstructed scenes to build DEMs of the Lunar surface.  %\todo[inline]{check on what module we're using.}
-\item[\textbf{Hazard Detection}] Provides two forms of hazard detection.  The module processes \emph{a prior} elevation maps to identify geometric hazards to the rover, as well as point clouds from the stereo cameras to identify potential vehicle hazards that may not appear in the terrain geometry.  A NASA developed terrain analysis module produced a cost map which was injected into the ROS costmap\_2d\footnote{\url{http://wiki.ros.org/costmap_2d}} module to provide this functionality.  
+\item[\textbf{Hazard Detection}] Provides two forms of hazard detection.  The module processes \emph{a prior} elevation maps to identify geometric hazards to the rover, as well as point clouds from the stereo cameras to identify potential vehicle hazards that may not appear in the terrain geometry.  A NASA developed terrain analysis module produced a cost map which was injected into the ROS costmap\_2d\footnote{\bf http://wiki.ros.org/costmap_2d} module to provide this functionality.  
 \item[\textbf{Planning}]  The planning module takes goals issued by the drivers and determines a sequence of waypoints which safely navigate the cost map produced by the Hazard Detection model.  We used the move\_base module to plan trajectories between waypoints.  
 \item[\textbf{Simulator}]  The simulator acted as an assistive tool for the operators, to ensure that the commands being sent to the rover were the commands that were intended.  We used the Gazebo simulator with the modifications described in this paper.  
 \item[\textbf{Operator Interface}]  The operations interface was provided through two modules.  Direct and immediate control of the rover was accomplished through NASA Ames Intelligent Robotics Group's VERVE software.  Overall missions operations, and plan-level contextual information was provided through the WARP system.  Both of these modules are described in greater detail below, and communicated to the ROS system using a software bridge developed for mission simulation experiments.
@@ -927,7 +927,7 @@ This followed the approach of xGDS \cite{lee2013reusable} and xGDS components wo
 
 \subsection{Stereo Visual Odometry}
 One of the goals of the visual simulation was to provide realistic data for algorithmic development.  One such algorithm is the stereo visual odometry we implemented for Resource Prospector's ground software to aid in navigation.
-Our approach generates 3D point clouds from successive stereo camera images, aligns them using the Point Cloud Library's (PCL)\footnote{\url{http://pointclouds.org/}} implementation of the Iterative Closest Point algorithm, and uses the transforms between point clouds to track changes in the rover's movements.  This module interacts with other software and sensors to estimate the rover's absolute pose.
+Our approach generates 3D point clouds from successive stereo camera images, aligns them using the Point Cloud Library's (PCL)\footnote{\bf http://pointclouds.org/} implementation of the Iterative Closest Point algorithm, and uses the transforms between point clouds to track changes in the rover's movements.  This module interacts with other software and sensors to estimate the rover's absolute pose.
 
 To refine the mission's concept of operations, we wanted to know how much overlap is required between camera images for stereo visual odometry to be effective.  
 The easiest way to lose overlap between successive images is by yawing the camera or rover, so that is the first test we ran.  
@@ -960,7 +960,7 @@ In order to characterize the \texttt{wheel\_slip\_plugin}, we set up a test harn
 The purpose of this effort was twofold; to determine whether the overall slip behavior was in line with expectations for wheels in contact with unconsolidated soil, and to determine what parameter values should be used for the plugin to most closely match results from the physical testbed.  
 
 We created a Gazebo world with ramps from 0 to 30 degrees at 2 degree increments (see figure \ref{fig:simulationramps}).  
-A \texttt{rostest}\footnote{\url{http://wiki.ros.org/rostest}} script would spawn the rover at the base of each ramp and command it to drive 10 meters forward.
+A \texttt{rostest}\footnote{\bf http://wiki.ros.org/rostest} script would spawn the rover at the base of each ramp and command it to drive 10 meters forward.
 Wheel slip was measured by comparing dead reckoning distance driven to ground truth and test runs covered sets of parameter values for longitudinal compliance, physics engine solver iterations, and drive speed.  
 
 Overall, the \texttt{wheel\_slip\_plugin} demonstrated the expected behavior and compared favorably with physical testbed results as can be seen in figure \ref{fig:wheelsliptuningchart}, which compares wheel slip measured from MGRU with the \texttt{wheel\_slip\_plugin}.  
