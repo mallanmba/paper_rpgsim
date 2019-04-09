@@ -1,0 +1,26 @@
+Planetary Rover Simulation for Lunar Exploration Missions
+
+Authors:
+  Mark Allan
+  Uland Wong
+  Terry Welsh
+  Michael Furlong
+  Matt Deans
+  Scott McMichael
+  Arno Rogg
+  Terry Fong
+
+  Brian Gerkey
+  Ian Chen
+  Steven Peters
+  Morgan Quigley
+
+When planning planetary rover missions it is useful to develop intuition and skills driving in, quite literally, alien environments before incurring the cost of reaching said locales. Simulators make it possible to operate in environments that have the physical characteristics of target locations without the expense and overhead of extensive physical tests. To that end, NASA Ames and Open Robotics collaborated on a lunar rover driving simulator based on the open source Gazebo simulation platform and leveraging ROS (Robotic Operating System) components. The simulator was integrated with research and mission software for rover driving, system monitoring, and science instrument simulation to constitute an end-to-end lunar mission simulation capability.
+
+Although we expect our simulator to be applicable to arbitrary lunar regions, we designed to a reference mission of prospecting in polar regions. The harsh lighting and low illumination angles at the lunar poles combine with the unique reflectance properties of lunar regolith to present a challenging visual environment for both human and computer perception. Our simulator placed an emphasis on high fidelity visual simulation in order to produce synthetic imagery suitable for evaluating human rover drivers with navigation tasks, as well as providing test data for computer vision software development.
+
+In this paper, we describe the software used to construct the simulated lunar environment and the components of the driving simulation. Our synthetic terrain generation software artificially increases the resolution of lunar digital elevation maps by fractal synthesis and inserts craters and rocks based on lunar size-frequency distribution models. We describe the necessary enhancements to import large scale, high resolution terrains into Gazebo, as well as our approach to modeling the visual environment of the lunar surface. An overview of the mission software system is provided, along with how ROS was used to emulate flight software components that had not been developed yet.
+
+We summarize how the simulator has been used to refine the mission concept of operations and to evaluate the operations impact of rover engineering design decisions. We reduced uncertainty about mission operations tempo by simulating mission scenarios with representative drive speeds, telemetry rates and network delays. The operations team exploited the simulator’s flexibility to experiment with different rover configurations and compare the effect of things such as different camera placement options and mobility system steering constraints.
+
+Finally, we discuss the effect of using the high-fidelity synthetic lunar images for visual odometry.  We also discuss the characterization of the shader model for lunar illumination relative to a ray-tracing with accurate reflectance models.  Further, we characterize the wheel slip model, and find some inconsistencies in the produced wheel slip behaviour.
